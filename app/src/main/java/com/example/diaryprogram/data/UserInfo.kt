@@ -1,4 +1,4 @@
-package com.example.diaryprogram.Data
+package com.example.diaryprogram.data
 
 class UserInfo {
     data class SignUpInfo(
@@ -11,7 +11,7 @@ class UserInfo {
     data class Diary(
         val title: String,
         val content: String,
-        val location: String, // 위치 저장형식에따라 추후 수정
+        val location: String, // 위치 저장 형식에 따라 추후 수정
         val date: String
     )
 }

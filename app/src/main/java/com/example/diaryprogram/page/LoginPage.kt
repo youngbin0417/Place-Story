@@ -1,4 +1,4 @@
-package com.example.diaryprogram.Page
+package com.example.diaryprogram.page
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column

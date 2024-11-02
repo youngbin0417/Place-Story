@@ -4,14 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.example.diaryprogram.Page.BrowseDetailPage
-import com.example.diaryprogram.Page.BrowsePage
-import com.example.diaryprogram.Page.EnrollPage
-import com.example.diaryprogram.Page.LoginPage
-import com.example.diaryprogram.Page.MainPage
-import com.example.diaryprogram.Page.MapPage
-import com.example.diaryprogram.Page.SettingPage
-import com.example.diaryprogram.Page.WritePage
+import com.example.diaryprogram.page.BrowseDetailPage
+import com.example.diaryprogram.page.BrowsePage
+import com.example.diaryprogram.page.EnrollPage
+import com.example.diaryprogram.page.LoginPage
+import com.example.diaryprogram.page.MainPage
+import com.example.diaryprogram.page.MapPage
+import com.example.diaryprogram.page.SettingPage
+import com.example.diaryprogram.page.WritePage
 
 /**
  *  앱의 전반적인 흐름 통제함
