@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
                 ){
                     //val navController =rememberNavController()
                     //NavGraph(navController=navController)
-                    val location = LatLng(37.7749, -122.4194) // 일단 예시로 캘리포니아 잡음
+                    val location = LatLng(37.5638, 126.9844) // 일단 예시로 서울 잡음
                     MapScreen(location)
                 }
             }
