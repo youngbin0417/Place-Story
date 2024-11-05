@@ -1,4 +1,4 @@
-//package com.example.diaryprogram.data
+package com.example.diaryprogram.data
 //
 //class UserInfo {
 //    data class SignUpInfo(
