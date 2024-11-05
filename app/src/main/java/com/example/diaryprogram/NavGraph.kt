@@ -6,7 +6,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.diaryprogram.page.BrowsePage
 import com.example.diaryprogram.page.DiaryPage
-import com.example.diaryprogram.page.EnrollPage
 import com.example.diaryprogram.page.LoginPage
 import com.example.diaryprogram.page.MainPage
 import com.example.diaryprogram.page.MapPage
@@ -18,14 +17,10 @@ import com.example.diaryprogram.page.WritePage
  */
 @Composable
 fun NavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "enroll") {
+    NavHost(navController = navController, startDestination = "write") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)
-        }
-        //회원 가입 페이지
-        composable(route = "enroll") {
-            EnrollPage(navController)
         }
         //메인 페이지
         composable(route = "main") {
