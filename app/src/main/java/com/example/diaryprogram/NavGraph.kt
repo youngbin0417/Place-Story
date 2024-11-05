@@ -18,7 +18,7 @@ import com.example.diaryprogram.page.WritePage
  */
 @Composable
 fun NavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = "browseDetail") {
+    NavHost(navController = navController, startDestination = "enroll") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)

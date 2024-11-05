@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
         NavGraph(navController = navController)
     }
 
-
+    // 백그라운드
     private fun startMyForegroundServiceWithDelay() {
         Log.d("ServiceStart", "Preparing to start foreground service with delay.")
         window.decorView.postDelayed({
@@ -99,6 +99,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    // 권한 체크용이라 신경쓸 것 없음
     private fun checkPermissions(): Boolean {
         val fineLocationPermission = ContextCompat.checkSelfPermission(
             this, Manifest.permission.ACCESS_FINE_LOCATION

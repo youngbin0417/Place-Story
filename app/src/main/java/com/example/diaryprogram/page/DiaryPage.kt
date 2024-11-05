@@ -41,7 +41,7 @@ fun DiaryPage(navHostController: NavHostController) {
             .fillMaxSize()
             .padding(16.dp)
     ){
-        IconButton(onClick = { navHostController.navigate("main") }) {
+        IconButton(onClick = { navHostController.navigate("browseDetail") }) {
             Image(
                 painter = painterResource(id = R.drawable.backbutton),
                 contentDescription = "백버튼",
