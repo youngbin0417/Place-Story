@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="daisy">#FF816D6C</color>
+    <color name="light_daisy">#FF816D6C</color>
+    <color name="box_daisy">#FF6B5757</color>
 </resources>

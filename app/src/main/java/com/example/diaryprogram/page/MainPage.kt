@@ -47,7 +47,7 @@ fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
         )
     ) {
         Column(modifier = Modifier.padding(30.dp)) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             Row (
                 modifier = Modifier.fillMaxWidth(),
@@ -62,7 +62,7 @@ fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Text(text = "나의 장소들", color = Color.White, fontSize = 15.sp,
                 fontFamily = FontFamily(Font(R.font.nanumbarunpenr)))
@@ -73,7 +73,6 @@ fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
                     .width(500.dp)
                     .height(550.dp)
                     .clip(RoundedCornerShape(48.dp))
-
             ) {
                 // GoogleMap을 Box 내부에 배치
                 GoogleMap(
@@ -96,7 +95,7 @@ fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
         }
         AppBar(modifier = Modifier
             .align(Alignment.BottomCenter)
-            .padding(bottom = 40.dp),
+            .padding(bottom = 30.dp),
             navHostController = navHostController,
             option=0
         )
