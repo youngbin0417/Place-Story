@@ -1,9 +1,80 @@
 package com.example.diaryprogram.page
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.diaryprogram.R
+import com.example.diaryprogram.data.MarkerData
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun MapPage(navHostController: NavHostController) {
+fun MapPage(navHostController: NavHostController, initialPosition: LatLng) {
+    var zoom by remember { mutableFloatStateOf(20f) }
+    var markers by remember { mutableStateOf(listOf<MarkerData>()) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(initialPosition, zoom)
+    } // 현재 위치를 초기값으로
 
+    var markerPosition by remember { mutableStateOf(initialPosition) }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            onMapClick = { latLng ->
+                // 사용자가 지도를 클릭하면 해당 위치로 마커 업데이트
+                markerPosition = latLng
+                // 클릭한 위치로 카메라 이동
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(latLng, zoom)
+            }
+        ) {
+            // markerPosition이 null이 아닐 때만 Marker를 추가합니다.
+            markerPosition?.let { position ->
+                Marker(
+                    state = MarkerState(position = position),
+                    title = "Selected Location",
+                    snippet = "Lat: ${position.latitude}, Lng: ${position.longitude}"
+                )
+            }
+        }
+
+        IconButton(
+            onClick = { navHostController.navigate("main") },
+            modifier = Modifier
+                .width(50.dp)
+                .height(100.dp)
+                .align(Alignment.TopStart)
+                .padding(top = 10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.back),
+                contentDescription = "Back Button"
+            )
+        }
+    }
 }
+

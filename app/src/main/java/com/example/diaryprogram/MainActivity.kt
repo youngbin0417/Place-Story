@@ -1,4 +1,5 @@
 package com.example.diaryprogram
+
 import android.Manifest
 import android.content.Intent
 import android.os.Build
@@ -18,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.navigation.compose.rememberNavController
+import com.example.diaryprogram.navi.NavGraph
 import com.example.diaryprogram.ui.theme.DiaryProgramTheme
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +40,8 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun PermissionRequestAndServiceStart() {
+    fun PermissionRequestAndServiceStart(
+    ) {
         val context = LocalContext.current
         val navController = rememberNavController()
 
@@ -71,13 +74,10 @@ class MainActivity : ComponentActivity() {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.FOREGROUND_SERVICE
                 )
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    permissionsToRequest.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
-                }
+                permissionsToRequest.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
                 permissionLauncher.launch(permissionsToRequest.toTypedArray())
             }
         }
-
         NavGraph(navController = navController)
     }
 
@@ -91,12 +91,8 @@ class MainActivity : ComponentActivity() {
 
     private fun startMyForegroundService() {
         val serviceIntent = Intent(this, MyForegroundService::class.java)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Log.d("ServiceStart", "Starting foreground service.")
-            startForegroundService(serviceIntent)
-        } else {
-            startService(serviceIntent)
-        }
+        Log.d("ServiceStart", "Starting foreground service.")
+        startForegroundService(serviceIntent)
     }
 
     // 권한 체크용이라 신경쓸 것 없음
@@ -109,13 +105,10 @@ class MainActivity : ComponentActivity() {
             this, Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PermissionChecker.PERMISSION_GRANTED
 
-        val foregroundServicePermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        val foregroundServicePermission =
             ContextCompat.checkSelfPermission(
                 this, Manifest.permission.FOREGROUND_SERVICE
             ) == PermissionChecker.PERMISSION_GRANTED
-        } else {
-            true
-        }
 
         val allPermissionsGranted = fineLocationPermission && coarseLocationPermission && foregroundServicePermission
         Log.d("PermissionCheck", "Foreground service permission: $foregroundServicePermission")

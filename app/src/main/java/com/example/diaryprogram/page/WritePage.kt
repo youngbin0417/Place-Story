@@ -74,7 +74,7 @@ fun WritePage(navHostController: NavHostController) {
         ) {
             IconButton(onClick = { navHostController.navigate("main") }) {
                 Image(
-                    painter = painterResource(id = R.drawable.backbutton),
+                    painter = painterResource(id = R.drawable.back),
                     contentDescription = "백버튼",
                     modifier = Modifier.size(100.dp)
                 )

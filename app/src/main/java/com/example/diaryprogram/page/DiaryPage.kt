@@ -1,6 +1,5 @@
 package com.example.diaryprogram.page
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -19,33 +18,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 
 @Composable
 fun DiaryPage(navHostController: NavHostController) {
-    val context = LocalContext.current
-
 
     Column (
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ){
-        IconButton(onClick = { navHostController.navigate("browseDetail") }) {
+        IconButton(onClick = { navHostController.navigate("browse") }) {
             Image(
-                painter = painterResource(id = R.drawable.backbutton),
+                painter = painterResource(id = R.drawable.back),
                 contentDescription = "백버튼",
-                modifier =Modifier.size(30.dp),)
+                modifier =Modifier.size(50.dp)
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))

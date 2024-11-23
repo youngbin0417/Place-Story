@@ -1,5 +1,7 @@
 package com.example.diaryprogram.api
 
+import android.content.Context
+import android.widget.Toast
 import com.example.diaryprogram.data.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -25,13 +27,13 @@ object UserApi {
     }
 
     // 사용자 로그인
-    fun signIn(loginRequestDto: LoginRequestDto) {
+    fun signIn(context: Context, loginRequestDto: LoginRequestDto) {
         ApiClient.apiService.signIn(loginRequestDto).enqueue(object : Callback<ResponseDto> {
             override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
                 if (response.isSuccessful) {
-                    println("Login successful: ${response.body()?.statusMessage}")
+                    Toast.makeText(context,"Login successful: ${response.body()?.statusMessage}", Toast.LENGTH_SHORT).show()
                 } else {
-                    println("Error during login: ${response.errorBody()?.string()}")
+                    Toast.makeText(context, "Error during login: ${response.errorBody()?.string()}", Toast.LENGTH_SHORT).show()
                 }
             }
 

@@ -10,7 +10,8 @@ data class UserProfileResponseDto(
     val id: Long,
     val name: String,
     val premiumBadge: Boolean,
-    val profileImage: Image?
+    val profileImage: Image?,
+    val totalLikesCount: Int
 )
 
 data class DiariesResponseDto(
@@ -19,6 +20,7 @@ data class DiariesResponseDto(
     data class DiaryInfo(
         val diaryIds: Long,
         val diaryTitles: String
+
     )
 }
 
