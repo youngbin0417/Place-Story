@@ -16,11 +16,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.diaryprogram.page.BrowsePage
 import com.example.diaryprogram.page.DiaryPage
+import com.example.diaryprogram.page.FollowPage
+import com.example.diaryprogram.page.FollowProfilePage
 import com.example.diaryprogram.page.LoadingPage
 import com.example.diaryprogram.page.LoginPage
 import com.example.diaryprogram.page.MainPage
 import com.example.diaryprogram.page.MapPage
 import com.example.diaryprogram.page.ProfilePage
+import com.example.diaryprogram.page.SettingPage
+import com.example.diaryprogram.page.SubscribePage
 import com.example.diaryprogram.page.WritePage
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -100,7 +104,22 @@ fun NavGraph(navController: NavHostController) {
         composable(route = "browseDetail") {
             DiaryPage(navController)
         }
-
+        // 프로필 편집 페이지
+        composable(route = "setting") {
+            SettingPage(navController)
+        }
+        // 구독 페이지
+        composable(route = "subscribe") {
+            SubscribePage(navController)
+        }
+        // 팔로잉 프로필 목록 보기
+        composable(route = "following") {
+            FollowPage(navController)
+        }
+        // 팔로워 프로필 상세 보기
+        composable(route = "followingProfile") {
+            FollowProfilePage(navController)
+        }
     }
 }
 
