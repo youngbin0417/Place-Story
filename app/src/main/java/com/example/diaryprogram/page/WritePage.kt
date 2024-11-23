@@ -33,6 +33,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
@@ -41,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
-import com.example.diaryprogram.appbar.AppBar
 import java.util.Calendar
 
 @Composable
@@ -74,43 +75,56 @@ fun WritePage(navHostController: NavHostController) {
                 end = Offset(0f, 3000f)
             ) // 그라데이션 세팅
         )) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
+        Column {
+            Spacer(modifier = Modifier.height(20.dp))
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp), // Row 양쪽 여백 추가
+                verticalAlignment = Alignment.CenterVertically // 세로 중앙 정렬
             ) {
-                IconButton(onClick = { navHostController.navigate("main") }) {
+                // 왼쪽 백버튼
+                IconButton(
+                    onClick = { navHostController.navigate("main") },
+                    modifier = Modifier.size(50.dp) // 버튼 크기 고정
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.whiteback),
-                        contentDescription = "백버튼",
-                        modifier = Modifier.size(100.dp)
+                        contentDescription = "백버튼"
                     )
                 }
 
+                // 중앙 텍스트
                 Text(
-                    text = "${year}년 ${month}월",
-                    textAlign = TextAlign.Center,
+                    text = "일기 작성하기",
+                    fontSize = 20.sp,
+                    fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                    color = Color.White,
                     modifier = Modifier
-                        .weight(5f), // Text를 중앙에 배치
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold
+                        .weight(1f) // 텍스트를 중앙에 배치하기 위해 가중치 부여
+                        .padding(horizontal = 16.dp), // 양쪽 버튼과 간격 확보
+                    textAlign = TextAlign.Center // 텍스트 중앙 정렬
                 )
 
-                Button(
-                    onClick = { /*일기 등록 기능 api 추가*/ },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent, // 추후 칼라 수정
-                        contentColor = Color.Red
-                    )
+                // 오른쪽 등록 버튼
+                IconButton(
+                    onClick = { /* 등록 버튼 클릭 이벤트 */ },
+                    modifier = Modifier.size(50.dp) // 버튼 크기 고정
                 ) {
-                    Text(text = "등록")
+                    Image(
+                        painter = painterResource(id = R.drawable.check),
+                        contentDescription = "등록 버튼"
+                    )
                 }
             }
+        }
+
+
+        Column(
+            modifier = Modifier
+                .padding(30.dp)
+        ) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -125,6 +139,14 @@ fun WritePage(navHostController: NavHostController) {
                         .heightIn(1000.dp)
                 ) {
                     Row {
+                        Text(
+                            text = "${year}년 ${month}월",
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .weight(5f), // Text를 중앙에 배치
+                            fontSize = 25.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                         Text(
                             text = "${day}일",
                             modifier = Modifier
@@ -224,12 +246,6 @@ fun WritePage(navHostController: NavHostController) {
             }
 
         }
-        AppBar(modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(bottom = 40.dp),
-            navHostController = navHostController,
-            option=1
-        )
     }
 }
 /*

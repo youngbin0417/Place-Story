@@ -40,7 +40,7 @@ fun NavGraph(navController: NavHostController) {
         mutableStateOf(LatLng(0.0, 0.0))
     }
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "write") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)
