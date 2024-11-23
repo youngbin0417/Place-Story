@@ -36,9 +36,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
-    val customfont1 = FontFamily(Font(R.font.nanumbarunpenb))
-    val customfont2 = FontFamily(Font(R.font.nanumbarunpenr))
-
     Box(modifier = Modifier
         .size(200.dp)
         .background(
@@ -61,13 +58,14 @@ fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
                     text = "PLACE STORY",
                     color = Color.White,
                     fontSize = 25.sp,
-                    fontFamily = customfont1
+                    fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
                 )
             }
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            Text(text = "나의 장소들", color = Color.White, fontSize = 15.sp, fontFamily = customfont2)
+            Text(text = "나의 장소들", color = Color.White, fontSize = 15.sp,
+                fontFamily = FontFamily(Font(R.font.nanumbarunpenr)))
             Spacer(modifier = Modifier.height(12.dp))
 
             Box(
@@ -96,11 +94,12 @@ fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
                 )
             }
         }
-        AppBar(modifier = Modifier.align(Alignment.BottomCenter)
+        AppBar(modifier = Modifier
+            .align(Alignment.BottomCenter)
             .padding(bottom = 40.dp),
-            navHostController = navHostController
+            navHostController = navHostController,
+            option=0
         )
-
     }
 }
 

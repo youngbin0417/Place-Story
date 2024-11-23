@@ -21,7 +21,8 @@ import com.example.diaryprogram.R
 @Composable
 fun AppBar(
     modifier: Modifier = Modifier,
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    option: Int //0 메인, 1 일기작성, 2 나의일기, 3 공개일기, 4 이웃일기, 5 프로필
 ) {
     Row(
         modifier = modifier
@@ -32,26 +33,71 @@ fun AppBar(
         verticalAlignment = Alignment.CenterVertically // 세로 중앙 정렬
     ) {
         // 각 아이템 추가
-        AppBarItem(
-            iconResId = R.drawable.buttonwritediary,
-            onClick = { navHostController.navigate("write") }
-        )
-        AppBarItem(
-            iconResId = R.drawable.buttonmydiarys,
-            onClick = { navHostController.navigate("browseMine") }
-        )
-        AppBarItem(
-            iconResId = R.drawable.buttonpublic,
-            onClick = { navHostController.navigate("browsePublic") }
-        )
-        AppBarItem(
-            iconResId = R.drawable.buttonfollowers,
-            onClick = { navHostController.navigate("browseFollow") }
-        )
-        AppBarItem(
-            iconResId = R.drawable.buttonmyprofile,
-            onClick = { navHostController.navigate("profile") }
-        )
+        if (option==1){
+            AppBarItem(
+                iconResId = R.drawable.selectedbuttonwritediary,
+                onClick = { navHostController.navigate("write") }
+            )
+        }
+        else{
+            AppBarItem(
+                iconResId = R.drawable.buttonwritediary,
+                onClick = { navHostController.navigate("write") }
+            )
+        }
+
+        if (option==2){
+            AppBarItem(
+                iconResId = R.drawable.selectedbuttonmydiarys,
+                onClick = { navHostController.navigate("browseMine") }
+            )
+        }
+        else {
+            AppBarItem(
+                iconResId = R.drawable.buttonmydiarys,
+                onClick = { navHostController.navigate("browseMine") }
+            )
+        }
+
+        if (option==3){
+            AppBarItem(
+                iconResId = R.drawable.selectedbuttonpublic,
+                onClick = { navHostController.navigate("browsePublic") }
+            )
+        }
+        else {
+            AppBarItem(
+                iconResId = R.drawable.buttonpublic,
+                onClick = { navHostController.navigate("browsePublic") }
+            )
+        }
+
+        if (option==4){
+            AppBarItem(
+                iconResId = R.drawable.selectedbuttonfollowers,
+                onClick = { navHostController.navigate("browseFollow") }
+            )
+
+        }
+        else {
+            AppBarItem(
+                iconResId = R.drawable.buttonfollowers,
+                onClick = { navHostController.navigate("browseFollow") }
+            )
+        }
+
+        if (option==5){
+            AppBarItem(
+                iconResId = R.drawable.selectedbuttonmyprofile,
+                onClick = { navHostController.navigate("profile") }
+            )
+        }
+        else {
+            AppBarItem(
+                iconResId = R.drawable.buttonmyprofile,
+                onClick = { navHostController.navigate("profile") }
+            )
+        }
     }
 }
 
