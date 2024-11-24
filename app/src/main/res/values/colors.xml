@@ -10,4 +10,6 @@
     <color name="daisy">#FF816D6C</color>
     <color name="light_daisy">#FF816D6C</color>
     <color name="box_daisy">#FF6B5757</color>
+    <color name="dark_daisy">#FF2B231E</color>
+    <color name="letter_daisy">#FFD2B2A8</color>
 </resources>

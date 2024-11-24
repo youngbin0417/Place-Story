@@ -28,9 +28,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -54,20 +56,21 @@ fun WritePage(navHostController: NavHostController) {
     val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
     var title by remember { mutableStateOf("") }
     var userInput by remember { mutableStateOf("") }
+    val customfont = FontFamily(Font(R.font.nanumbarunpenb))
 
 
     val dayOfWeekString = when(dayOfWeek) {
-        Calendar.SUNDAY -> "일요일"
-        Calendar.MONDAY -> "월요일"
-        Calendar.TUESDAY -> "화요일"
-        Calendar.WEDNESDAY -> "수요일"
-        Calendar.THURSDAY -> "목요일"
-        Calendar.FRIDAY -> "금요일"
-        Calendar.SATURDAY -> "토요일"
-        else -> "알 수 없음"
+        Calendar.SUNDAY -> "SUN"
+        Calendar.MONDAY -> "MON"
+        Calendar.TUESDAY -> "TUE"
+        Calendar.WEDNESDAY -> "WED"
+        Calendar.THURSDAY -> "THU"
+        Calendar.FRIDAY -> "FRI"
+        Calendar.SATURDAY -> "SAT"
+        else -> "ERROR"
     }
     Box(modifier = Modifier
-        .size(200.dp)
+        .fillMaxSize()
         .background(
             Brush.linearGradient(
                 colors = listOf(Color(0xFF070301), Color(0xFF886B5F)),
@@ -99,7 +102,7 @@ fun WritePage(navHostController: NavHostController) {
                 Text(
                     text = "일기 작성하기",
                     fontSize = 20.sp,
-                    fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                    fontFamily = customfont,
                     color = Color.White,
                     modifier = Modifier
                         .weight(1f) // 텍스트를 중앙에 배치하기 위해 가중치 부여
@@ -118,49 +121,20 @@ fun WritePage(navHostController: NavHostController) {
                     )
                 }
             }
-        }
-
-
-        Column(
-            modifier = Modifier
-                .padding(30.dp)
-        ) {
-
             Spacer(modifier = Modifier.height(16.dp))
 
             Box(
                 modifier = Modifier
-                    .border(width = 2.dp, color = Color.Gray) // 테두리 추가
-                    .padding(8.dp),
+                    .border(width = 1.dp, color = Color.Transparent) // 테두리 추가
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(24.dp))
+                    .background(color = colorResource(R.color.dark_daisy))
             ) {
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(20.dp)
                         .heightIn(1000.dp)
                 ) {
-                    Row {
-                        Text(
-                            text = "${year}년 ${month}월",
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .weight(5f), // Text를 중앙에 배치
-                            fontSize = 25.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "${day}일",
-                            modifier = Modifier
-                                .weight(5f), // Text를 중앙에 배치
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            textDecoration = TextDecoration.Underline
-                        )
-                        Text(
-                            text = "$dayOfWeekString",
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     BasicTextField(
                         value = title,
                         onValueChange = { title = it },
@@ -192,14 +166,25 @@ fun WritePage(navHostController: NavHostController) {
                             ) {
                                 if (title.isEmpty()) {
                                     Text(
-                                        text = "제목을 입력하세요",
-                                        style = TextStyle(color = Color.Gray, fontSize = 20.sp)
+                                        text = "제목을 작성해주세요",
+                                        style = TextStyle(color = colorResource(R.color.letter_daisy),
+                                            fontSize = 20.sp,
+                                            fontFamily = customfont)
                                     )
                                 }
                                 innerTextField()
                             }
                         }
                     )
+
+                    Text(
+                        text = "${year}/${month}/${day} $dayOfWeekString",
+                        textAlign = TextAlign.Center,
+                        fontSize = 18.sp,
+                        fontFamily = customfont,
+                        color = Color.White
+                    )
+
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -244,8 +229,8 @@ fun WritePage(navHostController: NavHostController) {
 
                 }
             }
-
         }
+
     }
 }
 /*
