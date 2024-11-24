@@ -23,6 +23,7 @@ import com.example.diaryprogram.page.LoginPage
 import com.example.diaryprogram.page.MainPage
 import com.example.diaryprogram.page.MapPage
 import com.example.diaryprogram.page.ProfilePage
+import com.example.diaryprogram.page.SearchLocation
 import com.example.diaryprogram.page.SettingPage
 import com.example.diaryprogram.page.SubscribePage
 import com.example.diaryprogram.page.WritePage
@@ -40,7 +41,7 @@ fun NavGraph(navController: NavHostController) {
         mutableStateOf(LatLng(0.0, 0.0))
     }
 
-    NavHost(navController = navController, startDestination = "write") {
+    NavHost(navController = navController, startDestination = "login") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)
@@ -84,7 +85,7 @@ fun NavGraph(navController: NavHostController) {
 
         //일기 작성 페이지
         composable(route="write") {
-            WritePage(navController)
+            WritePage(navController,currentLocation)
         }
 
         // 일기 조회 페이지
@@ -119,6 +120,11 @@ fun NavGraph(navController: NavHostController) {
         // 팔로워 프로필 상세 보기
         composable(route = "followingProfile") {
             FollowProfilePage(navController)
+        }
+
+        //위치 정하는 페이지
+        composable(route="searchLocation") {
+            SearchLocation(currentLocation)
         }
     }
 }

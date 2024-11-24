@@ -3,7 +3,6 @@ package com.example.diaryprogram.page
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,8 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,18 +35,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.google.android.gms.maps.model.LatLng
 import java.util.Calendar
 
 @Composable
-fun WritePage(navHostController: NavHostController) {
+fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH) + 1
@@ -57,7 +54,7 @@ fun WritePage(navHostController: NavHostController) {
     var title by remember { mutableStateOf("") }
     var userInput by remember { mutableStateOf("") }
     val customfont = FontFamily(Font(R.font.nanumbarunpenb))
-
+    var diary_location by remember { mutableStateOf("") }
 
     val dayOfWeekString = when(dayOfWeek) {
         Calendar.SUNDAY -> "SUN"
@@ -69,6 +66,7 @@ fun WritePage(navHostController: NavHostController) {
         Calendar.SATURDAY -> "SAT"
         else -> "ERROR"
     }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .background(
@@ -112,7 +110,7 @@ fun WritePage(navHostController: NavHostController) {
 
                 // 오른쪽 등록 버튼
                 IconButton(
-                    onClick = { /* 등록 버튼 클릭 이벤트 */ },
+                    onClick = { /*서버에 일기 올리는 함수*/ },
                     modifier = Modifier.size(50.dp) // 버튼 크기 고정
                 ) {
                     Image(
@@ -125,7 +123,7 @@ fun WritePage(navHostController: NavHostController) {
 
             Box(
                 modifier = Modifier
-                    .border(width = 1.dp, color = Color.Transparent) // 테두리 추가
+                    .border(width = 1.dp, color = Color.Transparent)
                     .padding(16.dp)
                     .clip(RoundedCornerShape(24.dp))
                     .background(color = colorResource(R.color.dark_daisy))
@@ -143,25 +141,19 @@ fun WritePage(navHostController: NavHostController) {
                             .fillMaxWidth()
                             .border(
                                 width = 2.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(12.dp) // 모서리를 둥글게 설정
-                            )
-                            .padding(8.dp), // 내부 여백 추가
-                        keyboardOptions = KeyboardOptions.Default.copy(
+                                color = Color.Transparent
+                            ),
+                            keyboardOptions = KeyboardOptions.Default.copy(
                             imeAction = ImeAction.Next // 키보드에서 "다음" 버튼을 표시
                         ),
                         textStyle = TextStyle(
-                            color = Color.Black,
+                            color = Color.White,
                             fontSize = 20.sp
                         ),
                         decorationBox = { innerTextField ->
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(
-                                        start = 8.dp,
-                                        end = 8.dp
-                                    ), // 여백을 통해 내부 텍스트와 경계 사이 공간 확보
+                                    .fillMaxSize(),
                                 contentAlignment = Alignment.CenterStart
                             ) {
                                 if (title.isEmpty()) {
@@ -177,12 +169,47 @@ fun WritePage(navHostController: NavHostController) {
                         }
                     )
 
+                    HorizontalDivider(
+                        color = Color.White,
+                        thickness = 1.dp
+                    )
+
                     Text(
                         text = "${year}/${month}/${day} $dayOfWeekString",
                         textAlign = TextAlign.Center,
                         fontSize = 18.sp,
                         fontFamily = customfont,
                         color = Color.White
+                    )
+
+                    HorizontalDivider(
+                        color = Color.White,
+                        thickness = 1.dp
+                    )
+
+                    Row {
+                        Text(
+                            text = "위치: ",
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                            fontSize = 18.sp,
+                            fontFamily = customfont,
+                        )
+                        IconButton(
+                            onClick = { navHostController.navigate("searchLocation") },
+                            modifier = Modifier
+
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.locationicon),
+                                contentDescription = "select location button"
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(
+                        color = Color.White,
+                        thickness = 1.dp
                     )
 
 
@@ -204,6 +231,9 @@ fun WritePage(navHostController: NavHostController) {
                             color = Color.Black,
                             fontSize = 20.sp
                         ),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            imeAction = ImeAction.Done // 키보드에서 "다음" 버튼을 표시
+                        ),
                         decorationBox = { innerTextField ->
                             Box(
                                 modifier = Modifier
@@ -212,7 +242,7 @@ fun WritePage(navHostController: NavHostController) {
                                         start = 8.dp,
                                         end = 8.dp
                                     ), // 여백을 통해 내부 텍스트와 경계 사이 공간 확보
-                                contentAlignment = Alignment.TopStart
+                                contentAlignment = Alignment.TopStart,
                             ) {
                                 if (userInput.isEmpty()) {
                                     Text(
