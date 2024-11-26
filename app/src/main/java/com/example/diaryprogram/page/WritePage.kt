@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -28,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -48,11 +50,13 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
+import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.google.android.gms.maps.model.LatLng
 import java.util.Calendar
 
 @Composable
 fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
+    val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH) + 1
@@ -64,10 +68,8 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
     var diary_location by remember { mutableStateOf(initialPosition) }
     var diaryPeriod by remember { mutableStateOf("") }
     var showSearchLocation by remember { mutableStateOf(false) }
-
+    var address by remember { mutableStateOf("주소를 가져오는 중...") }
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
-
-
 
     val dayOfWeekString = when(dayOfWeek) {
         Calendar.SUNDAY -> "SUN"
@@ -79,6 +81,12 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
         Calendar.SATURDAY -> "SAT"
         else -> "ERROR"
     }
+
+    LaunchedEffect(diary_location) {
+        // 좌표가 변경될 때 동까지만 가져오기
+        address = getAddressFromLatLng(context, diary_location.latitude, diary_location.longitude)
+    }
+
     if (showSearchLocation) {
         // SearchLocation 화면 표시
         SearchLocation(
@@ -203,14 +211,14 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
 
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth().height(24.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "위치: ${diary_location.latitude}, ${diary_location.longitude}",
+                                text = "위치: $address",
                                 color = Color.White,
-                                fontSize = 18.sp,
+                                fontSize = 13.sp,
                                 fontFamily = customfont
                             )
                             IconButton(
@@ -270,14 +278,18 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                             }
                         )
                         if (selectedImageUris.isNotEmpty()) {
-                            LazyColumn {
+                            LazyRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp) // 이미지 간 간격 설정
+                            ) {
                                 items(selectedImageUris) { uri ->
                                     Image(
                                         painter = rememberAsyncImagePainter(model = uri),
                                         contentDescription = "Selected Image",
                                         modifier = Modifier
                                             .size(100.dp)
-                                            .padding(8.dp)
                                     )
                                 }
                             }
