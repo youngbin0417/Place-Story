@@ -63,6 +63,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenb))
     var diary_location by remember { mutableStateOf(initialPosition) }
     var diaryPeriod by remember { mutableStateOf("") }
+    var showSearchLocation by remember { mutableStateOf(false) }
 
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
@@ -78,379 +79,392 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
         Calendar.SATURDAY -> "SAT"
         else -> "ERROR"
     }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(
-                    onClick = { navHostController.popBackStack() },
-                    modifier = Modifier.size(50.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.whiteback),
-                        contentDescription = "백버튼"
-                    )
-                }
-
-                Text(
-                    text = "일기 작성하기",
-                    fontSize = 20.sp,
-                    fontFamily = customfont,
-                    color = Color.White,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(horizontal = 16.dp),
-                    textAlign = TextAlign.Center
-                )
-
-                // 오른쪽 등록 버튼
-                IconButton(
-                    onClick = { navHostController.navigate("main") },
-                    modifier = Modifier.size(50.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.check),
-                        contentDescription = "등록 버튼"
-                    )
-                }
+    if (showSearchLocation) {
+        // SearchLocation 화면 표시
+        SearchLocation(
+            initialPosition = initialPosition,
+            onBack = { position ->
+                diary_location = position // 선택된 위치 저장
+                showSearchLocation = false // SearchLocation 닫기
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(color = colorResource(R.color.dark_daisy))
+        )
+    }
+    else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                Column(
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Row(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 제목 입력 필드
-                    BasicTextField(
-                        value = title,
-                        onValueChange = { title = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp)
-                            .border(
-                                width = 2.dp,
-                                color = Color.Transparent
-                            ),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Next
-                        ),
-                        textStyle = TextStyle(
-                            color = Color.White,
-                            fontSize = 20.sp
-                        ),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                if (title.isEmpty()) {
-                                    Text(
-                                        text = "제목을 작성해주세요",
-                                        style = TextStyle(
-                                            color = colorResource(R.color.letter_daisy),
-                                            fontSize = 20.sp,
-                                            fontFamily = customfont
-                                        )
-                                    )
-                                }
-                                innerTextField()
-                            }
-                        }
-                    )
-
-                    HorizontalDivider(color = Color.White, thickness = 1.dp)
-
-                    Text(
-                        text = "${year}/${month}/${day} $dayOfWeekString",
-                        textAlign = TextAlign.Center,
-                        fontSize = 18.sp,
-                        fontFamily = customfont,
-                        color = Color.White
-                    )
-
-                    HorizontalDivider(color = Color.White, thickness = 1.dp)
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    IconButton(
+                        onClick = { navHostController.popBackStack() },
+                        modifier = Modifier.size(50.dp)
                     ) {
-                        Text(
-                            text = "위치: ",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontFamily = customfont
+                        Image(
+                            painter = painterResource(id = R.drawable.whiteback),
+                            contentDescription = "백버튼"
                         )
-                        IconButton(
-                            onClick = { navHostController.navigate("searchLocation") },
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.locationicon),
-                                contentDescription = "위치 버튼"
-                            )
-                        }
                     }
 
-                    HorizontalDivider(color = Color.White, thickness = 1.dp)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // 사용자 입력 필드
-                    BasicTextField(
-                        value = userInput,
-                        onValueChange = { userInput = it },
+                    Text(
+                        text = "일기 작성하기",
+                        fontSize = 20.sp,
+                        fontFamily = customfont,
+                        color = Color.White,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(400.dp)
-                            .border(
-                                width = 2.dp,
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-                            .padding(8.dp),
-                        textStyle = TextStyle(
-                            color = Color.White,
-                            fontSize = 20.sp
-                        ),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            imeAction = ImeAction.Done
-                        ),
-                        decorationBox = { innerTextField ->
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.TopStart
-                            ) {
-                                if (userInput.isEmpty()) {
-                                    Text(
-                                        text = "이번 여정은 별이 빛나는 것처럼\n무척이나 아름다웠어...",
-                                        style = TextStyle(
-                                            color = colorResource(R.color.letter_daisy),
-                                            fontSize = 15.sp,
-                                            fontFamily = customfont
-                                        )
-                                    )
-                                }
-                                innerTextField()
-                            }
-                        }
+                            .weight(1f)
+                            .padding(horizontal = 16.dp),
+                        textAlign = TextAlign.Center
                     )
-                    if (selectedImageUris.isNotEmpty()) {
-                        LazyColumn {
-                            items(selectedImageUris) { uri ->
+
+                    // 오른쪽 등록 버튼
+                    IconButton(
+                        onClick = { navHostController.navigate("main") },
+                        modifier = Modifier.size(50.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.check),
+                            contentDescription = "등록 버튼"
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(color = colorResource(R.color.dark_daisy))
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                    ) {
+                        // 제목 입력 필드
+                        BasicTextField(
+                            value = title,
+                            onValueChange = { title = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(50.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.Transparent
+                                ),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Next
+                            ),
+                            textStyle = TextStyle(
+                                color = Color.White,
+                                fontSize = 20.sp
+                            ),
+                            decorationBox = { innerTextField ->
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    if (title.isEmpty()) {
+                                        Text(
+                                            text = "제목을 작성해주세요",
+                                            style = TextStyle(
+                                                color = colorResource(R.color.letter_daisy),
+                                                fontSize = 20.sp,
+                                                fontFamily = customfont
+                                            )
+                                        )
+                                    }
+                                    innerTextField()
+                                }
+                            }
+                        )
+
+                        HorizontalDivider(color = Color.White, thickness = 1.dp)
+
+                        Text(
+                            text = "${year}/${month}/${day} $dayOfWeekString",
+                            textAlign = TextAlign.Center,
+                            fontSize = 18.sp,
+                            fontFamily = customfont,
+                            color = Color.White
+                        )
+
+                        HorizontalDivider(color = Color.White, thickness = 1.dp)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "위치: ${diary_location.latitude}, ${diary_location.longitude}",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontFamily = customfont
+                            )
+                            IconButton(
+                                onClick = {
+                                    showSearchLocation = true
+                                },
+                                modifier = Modifier.size(24.dp)
+                            ) {
                                 Image(
-                                    painter = rememberAsyncImagePainter(model = uri),
-                                    contentDescription = "Selected Image",
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .padding(8.dp)
+                                    painter = painterResource(id = R.drawable.locationicon),
+                                    contentDescription = "위치 버튼"
                                 )
                             }
                         }
-                    } else {
-                        Spacer(modifier = Modifier.height(108.dp))
-                    }
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.Transparent),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(
-                            text = "Period",
-                            fontFamily = customfont,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
+                        HorizontalDivider(color = Color.White, thickness = 1.dp)
 
-                        Box(
-                            modifier = Modifier
-                                .width(70.dp)
-                                .height(30.dp)
-                                .clickable { /* 매일알림 클릭 이벤트 */ }
-                                .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "매일 알림",
-                                fontFamily = customfont,
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                        }
-                        Text(
-                            text = "|",
-                            fontFamily = customfont,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                        Box(
-                            modifier = Modifier
-                                .width(70.dp)
-                                .height(30.dp)
-                                .clickable { /* 1일마다 클릭 이벤트 */ }
-                                .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "1일 마다",
-                                fontFamily = customfont,
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                        }
-                        Text(
-                            text = "|",
-                            fontFamily = customfont,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                        Box(
-                            modifier = Modifier
-                                .width(70.dp)
-                                .height(30.dp)
-                                .clickable { /* 1주마다 클릭 이벤트 */ }
-                                .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "1주 마다",
-                                fontFamily = customfont,
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                        }
-                        Text(
-                            text = "|",
-                            fontFamily = customfont,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                        Box(
-                            modifier = Modifier
-                                .width(70.dp)
-                                .height(30.dp)
-                                .clickable { /* 1년마다 클릭 이벤트 */ }
-                                .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = "1년 마다",
-                                fontFamily = customfont,
-                                color = Color.White,
-                                fontSize = 12.sp
-                            )
-                        }
-                    }
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.Transparent),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        MultiGalleryPickerButton { uris ->
-                            selectedImageUris = uris // 선택된 이미지들의 URI 리스트 저장
+                        // 사용자 입력 필드
+                        BasicTextField(
+                            value = userInput,
+                            onValueChange = { userInput = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(400.dp)
+                                .border(
+                                    width = 2.dp,
+                                    color = Color.Gray,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                                .padding(8.dp),
+                            textStyle = TextStyle(
+                                color = Color.White,
+                                fontSize = 20.sp
+                            ),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done
+                            ),
+                            decorationBox = { innerTextField ->
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.TopStart
+                                ) {
+                                    if (userInput.isEmpty()) {
+                                        Text(
+                                            text = "이번 여정은 별이 빛나는 것처럼\n무척이나 아름다웠어...",
+                                            style = TextStyle(
+                                                color = colorResource(R.color.letter_daisy),
+                                                fontSize = 15.sp,
+                                                fontFamily = customfont
+                                            )
+                                        )
+                                    }
+                                    innerTextField()
+                                }
+                            }
+                        )
+                        if (selectedImageUris.isNotEmpty()) {
+                            LazyColumn {
+                                items(selectedImageUris) { uri ->
+                                    Image(
+                                        painter = rememberAsyncImagePainter(model = uri),
+                                        contentDescription = "Selected Image",
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .padding(8.dp)
+                                    )
+                                }
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.height(108.dp))
                         }
 
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color.Transparent),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Period",
+                                fontFamily = customfont,
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
 
-                        Box(
-                            modifier = Modifier
-                                .width(70.dp)
-                                .height(30.dp)
-                                .clickable { /*모두공개*/ }
-                                .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(30.dp)
+                                    .clickable { /* 매일알림 클릭 이벤트 */ }
+                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "매일 알림",
+                                    fontFamily = customfont,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
                             Text(
-                                text = "모두 공개",
+                                text = "|",
                                 fontFamily = customfont,
                                 color = Color.White,
                                 fontSize = 12.sp
                             )
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(30.dp)
+                                    .clickable { /* 1일마다 클릭 이벤트 */ }
+                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "1일 마다",
+                                    fontFamily = customfont,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            Text(
+                                text = "|",
+                                fontFamily = customfont,
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(30.dp)
+                                    .clickable { /* 1주마다 클릭 이벤트 */ }
+                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "1주 마다",
+                                    fontFamily = customfont,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
+                            Text(
+                                text = "|",
+                                fontFamily = customfont,
+                                color = Color.White,
+                                fontSize = 12.sp
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(30.dp)
+                                    .clickable { /* 1년마다 클릭 이벤트 */ }
+                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "1년 마다",
+                                    fontFamily = customfont,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
                         }
-                        Text(
-                            text = "|",
-                            fontFamily = customfont,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                        Box(
+
+                        Row(
                             modifier = Modifier
-                                .width(70.dp)
-                                .height(30.dp)
-                                .clickable { /*친구공개*/ }
-                                .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
+                                .fillMaxWidth()
+                                .background(Color.Transparent),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            MultiGalleryPickerButton { uris ->
+                                selectedImageUris = uris // 선택된 이미지들의 URI 리스트 저장
+                            }
+
+
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(30.dp)
+                                    .clickable { /*모두공개*/ }
+                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "모두 공개",
+                                    fontFamily = customfont,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
                             Text(
-                                text = "친구 공개",
+                                text = "|",
                                 fontFamily = customfont,
                                 color = Color.White,
                                 fontSize = 12.sp
                             )
-                        }
-                        Text(
-                            text = "|",
-                            fontFamily = customfont,
-                            color = Color.White,
-                            fontSize = 12.sp
-                        )
-                        Box(
-                            modifier = Modifier
-                                .width(70.dp)
-                                .height(30.dp)
-                                .clickable { /*나만보기*/ }
-                                .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                .padding(horizontal = 4.dp, vertical = 2.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(30.dp)
+                                    .clickable { /*친구공개*/ }
+                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "친구 공개",
+                                    fontFamily = customfont,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
                             Text(
-                                text = "나만 보기",
+                                text = "|",
                                 fontFamily = customfont,
                                 color = Color.White,
                                 fontSize = 12.sp
                             )
+                            Box(
+                                modifier = Modifier
+                                    .width(70.dp)
+                                    .height(30.dp)
+                                    .clickable { /*나만보기*/ }
+                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "나만 보기",
+                                    fontFamily = customfont,
+                                    color = Color.White,
+                                    fontSize = 12.sp
+                                )
+                            }
                         }
                     }
                 }
+
             }
 
         }
-
     }
 }
 

@@ -3,7 +3,6 @@ package com.example.diaryprogram.page
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,8 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.diaryprogram.R
-import com.example.diaryprogram.data.MarkerData
-import com.example.diaryprogram.viewmodel.LocationViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -31,8 +28,7 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun SearchLocation(initialPosition: LatLng, viewModel: LocationViewModel, // ViewModel 주입
-                   onBack: () -> Unit) {
+fun SearchLocation(initialPosition: LatLng, onBack: (LatLng) -> Unit) {
     val context = LocalContext.current
     var zoom by remember { mutableFloatStateOf(17f) }
     val cameraPositionState = rememberCameraPositionState {
@@ -66,9 +62,7 @@ fun SearchLocation(initialPosition: LatLng, viewModel: LocationViewModel, // Vie
 
         IconButton(
             onClick = {
-                markerPosition.let { position ->
-                    viewModel.setSelectedLocation(markerPosition) // ViewModel에 위치 저장
-                    onBack()                 }
+                onBack(markerPosition)
             },
             modifier = Modifier
                 .width(40.dp)

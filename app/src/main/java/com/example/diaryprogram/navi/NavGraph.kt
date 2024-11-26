@@ -11,8 +11,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -25,11 +23,9 @@ import com.example.diaryprogram.page.LoginPage
 import com.example.diaryprogram.page.MainPage
 import com.example.diaryprogram.page.MapPage
 import com.example.diaryprogram.page.ProfilePage
-import com.example.diaryprogram.page.SearchLocation
 import com.example.diaryprogram.page.SettingPage
 import com.example.diaryprogram.page.SubscribePage
 import com.example.diaryprogram.page.WritePage
-import com.example.diaryprogram.viewmodel.LocationViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
@@ -131,12 +127,6 @@ fun NavGraph(navController: NavHostController) {
             FollowProfilePage(navController,onBack = {navController.popBackStack()})
         }
 
-        //위치 정하는 페이지
-        composable(route="searchLocation") {
-            val viewModel: LocationViewModel = viewModel()
-            SearchLocation(currentLocation, viewModel = viewModel,
-                onBack = {navController.popBackStack()})
-        }
     }
 }
 
