@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.android.maps.compose)
     implementation(libs.core.ktx)
     implementation(libs.androidx.core)
+    implementation(libs.coil.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -3,6 +3,7 @@ package com.example.diaryprogram.page
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.diaryprogram.R
 import com.example.diaryprogram.data.MarkerData
+import com.example.diaryprogram.viewmodel.LocationViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -29,10 +31,10 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
-fun SearchLocation(initialPosition: LatLng) {
+fun SearchLocation(initialPosition: LatLng, viewModel: LocationViewModel, // ViewModel 주입
+                   onBack: () -> Unit) {
     val context = LocalContext.current
     var zoom by remember { mutableFloatStateOf(17f) }
-    var markers by remember { mutableStateOf(listOf<MarkerData>()) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(initialPosition, zoom)
     } // 현재 위치를 초기값으로
@@ -61,18 +63,24 @@ fun SearchLocation(initialPosition: LatLng) {
                 )
             }
         }
+
         IconButton(
-            onClick = { /*위치반환*/ },
+            onClick = {
+                markerPosition.let { position ->
+                    viewModel.setSelectedLocation(markerPosition) // ViewModel에 위치 저장
+                    onBack()                 }
+            },
             modifier = Modifier
-                .width(50.dp)
-                .height(100.dp)
+                .width(40.dp)
+                .height(40.dp)
                 .align(Alignment.TopEnd)
-                .padding(top = 10.dp)
+                .padding(top = 20.dp)
                 .border(16.dp, color = androidx.compose.ui.graphics.Color.Transparent)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.blckcheck),
-                contentDescription = "Back Button"
+                contentDescription = "Back Button",
+                modifier = Modifier.width(40.dp).height(40.dp)
             )
         }
     }

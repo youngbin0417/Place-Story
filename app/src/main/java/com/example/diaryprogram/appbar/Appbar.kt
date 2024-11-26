@@ -75,7 +75,7 @@ fun AppBar(
         if (option==4){
             AppBarItem(
                 iconResId = R.drawable.selectedbuttonfollowers,
-                onClick = { navHostController.navigate("browseFollow") }
+                onClick = { navHostController.navigate("browseFollows") }
             )
 
         }

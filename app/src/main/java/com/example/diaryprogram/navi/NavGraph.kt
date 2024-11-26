@@ -11,6 +11,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -27,6 +29,7 @@ import com.example.diaryprogram.page.SearchLocation
 import com.example.diaryprogram.page.SettingPage
 import com.example.diaryprogram.page.SubscribePage
 import com.example.diaryprogram.page.WritePage
+import com.example.diaryprogram.viewmodel.LocationViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
@@ -41,7 +44,7 @@ fun NavGraph(navController: NavHostController) {
         mutableStateOf(LatLng(0.0, 0.0))
     }
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "write") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)
@@ -93,7 +96,13 @@ fun NavGraph(navController: NavHostController) {
             BrowsePage(navController)
         }
 
+        // 팔로우 개인 조회
         composable(route = "browseFollow") {
+            BrowsePage(navController)
+        }
+
+        // 팔로우 리스트 조회
+        composable(route="browseFollows") {
             BrowsePage(navController)
         }
 
@@ -119,12 +128,14 @@ fun NavGraph(navController: NavHostController) {
         }
         // 팔로워 프로필 상세 보기
         composable(route = "followingProfile") {
-            FollowProfilePage(navController)
+            FollowProfilePage(navController,onBack = {navController.popBackStack()})
         }
 
         //위치 정하는 페이지
         composable(route="searchLocation") {
-            SearchLocation(currentLocation)
+            val viewModel: LocationViewModel = viewModel()
+            SearchLocation(currentLocation, viewModel = viewModel,
+                onBack = {navController.popBackStack()})
         }
     }
 }

@@ -46,10 +46,7 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            onMapClick = { latLng ->
-                // 클릭한 위치로 카메라 이동
-                cameraPositionState.position = CameraPosition.fromLatLngZoom(latLng, zoom)
-            }
+
         ) {
             // marker 추가할것
 
