@@ -42,7 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.appbar.AppBar
-
+// 프론트 완료
 @Composable
 fun FollowProfilePage(navController: NavHostController, onBack: () -> Unit) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))

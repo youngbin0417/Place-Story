@@ -29,7 +29,7 @@ import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.UserApi.signIn
 import com.example.diaryprogram.data.LoginRequestDto
-
+//프론트 완료
 @Composable
 fun LoginPage(navHostController: NavHostController) {
     val context = LocalContext.current // Context 가져오기

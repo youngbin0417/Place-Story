@@ -31,7 +31,7 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
-
+// 프론트 완료
 @Composable
 fun MapPage(navHostController: NavHostController, initialPosition: LatLng) {
     val context = LocalContext.current

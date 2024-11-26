@@ -26,7 +26,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-
+// 완료
 @Composable
 fun SearchLocation(initialPosition: LatLng, onBack: (LatLng) -> Unit) {
     val context = LocalContext.current
