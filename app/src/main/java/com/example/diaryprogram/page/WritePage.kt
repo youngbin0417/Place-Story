@@ -53,7 +53,7 @@ import com.example.diaryprogram.R
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.google.android.gms.maps.model.LatLng
 import java.util.Calendar
-
+// 프론트 완료
 @Composable
 fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
     val context = LocalContext.current

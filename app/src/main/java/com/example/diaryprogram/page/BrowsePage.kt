@@ -24,7 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
-
+// 해야함
 @Composable
 fun BrowsePage(navHostController: NavHostController) {
     Column(
