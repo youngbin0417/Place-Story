@@ -41,7 +41,7 @@ fun NavGraph(navController: NavHostController) {
     }
     val userId: Long = 1L
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "main") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)

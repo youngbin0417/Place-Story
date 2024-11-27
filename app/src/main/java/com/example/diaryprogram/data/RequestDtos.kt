@@ -9,7 +9,8 @@ data class DiaryRequestDto(
     val title: String,
     val content: String,
     val date: LocalDate,
-    @SerializedName("status") val enums: DiaryStatus)
+    @SerializedName("status") val enums: DiaryStatus?
+)
 
 data class LoginRequestDto(
     val username: String, // id

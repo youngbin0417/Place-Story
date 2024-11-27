@@ -54,10 +54,8 @@ import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.createDiary
 import com.example.diaryprogram.data.DiaryRequestDto
 import com.example.diaryprogram.data.DiaryStatus
-import com.example.diaryprogram.data.DiaryStatusAdapter
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.google.android.gms.maps.model.LatLng
-import com.google.gson.GsonBuilder
 import java.time.LocalDate
 import java.util.Calendar
 // 프론트 완료
@@ -73,9 +71,9 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
     var title by remember { mutableStateOf("") }
     var userInput by remember { mutableStateOf("") }
     val customfont = FontFamily(Font(R.font.nanumbarunpenb))
-    var diary_location by remember { mutableStateOf(initialPosition) }
+    var diarylocation by remember { mutableStateOf(initialPosition) }
     var diaryPeriod by remember { mutableStateOf(0) }
-    var enums: DiaryStatus? by remember { mutableStateOf(null) }
+    var enums: DiaryStatus by remember { mutableStateOf(DiaryStatus.PUBLIC) }
     var showSearchLocation by remember { mutableStateOf(false) }
     var address by remember { mutableStateOf("주소를 가져오는 중...") }
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -92,9 +90,9 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
         else -> "ERROR"
     }
 
-    LaunchedEffect(diary_location) {
+    LaunchedEffect(diarylocation) {
         // 좌표가 변경될 때 동까지만 가져오기
-        address = getAddressFromLatLng(context, diary_location.latitude, diary_location.longitude)
+        address = getAddressFromLatLng(context, diarylocation.latitude, diarylocation.longitude)
     }
 
     if (showSearchLocation) {
@@ -102,7 +100,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
         SearchLocation(
             initialPosition = initialPosition,
             onBack = { position ->
-                diary_location = position // 선택된 위치 저장
+                diarylocation = position // 선택된 위치 저장
                 showSearchLocation = false // SearchLocation 닫기
             }
         )
@@ -149,14 +147,15 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                     IconButton(
                         onClick = {
                             createDiary(
-                                userId = 1,
-                                diaryRequestDto = DiaryRequestDto(
-                                    latitude = diary_location.latitude,
-                                    longitude = diary_location.longitude,
+                                userId = userId,
+                                diaryRequestDto =
+                                DiaryRequestDto(
+                                    latitude = diarylocation.latitude,
+                                    longitude = diarylocation.longitude,
                                     title = title,
                                     content = userInput,
                                     date = LocalDate.now(),
-                                    enums = DiaryStatus.PUBLIC
+                                    enums = enums
                                 ),
                                 imageUris = selectedImageUris,
                                 contentResolver = context.contentResolver,
@@ -309,6 +308,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 }
                             }
                         )
+
                         if (selectedImageUris.isNotEmpty()) {
                             LazyRow(
                                 modifier = Modifier
@@ -321,7 +321,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                         painter = rememberAsyncImagePainter(model = uri),
                                         contentDescription = "Selected Image",
                                         modifier = Modifier
-                                            .size(100.dp)
+                                            .size(80.dp)
                                     )
                                 }
                             }
