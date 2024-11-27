@@ -42,13 +42,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.appbar.AppBar
-// 프론트 완료
+// api 연동 해야함
 @Composable
-fun FollowProfilePage(navController: NavHostController, onBack: () -> Unit) {
+fun OtherProfilePage(navController: NavHostController, userIds: Long) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
-
-    // api 연동시에, 서버에서 받아와서 설정할 값
-    var isFollowing by rememberSaveable { mutableStateOf(false) }
+    // api 연동시에, userIds 통해서 서버에서 받아와서 설정할 값
+    var isFollowing by rememberSaveable { mutableStateOf(true) }
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -60,37 +59,24 @@ fun FollowProfilePage(navController: NavHostController, onBack: () -> Unit) {
             ) // 그라데이션 세팅
         )
     ) {
-        Row(
-            modifier = Modifier
-                .padding(top=20.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically // 세로 중앙 정렬
-        ) {
-            // 왼쪽 백버튼
-            IconButton(
-                onClick = { navController.popBackStack() },
-                modifier = Modifier.size(50.dp) // 버튼 크기 고정
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.whiteback),
-                    contentDescription = "백버튼"
-                )
-            }
-        }
         Column (modifier = Modifier.padding(30.dp)) {
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Row (
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Start
             ){
-                Text(
-                    text = "PLACE STORY",
-                    color = Color.White,
-                    fontSize = 25.sp,
-                    fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
-                )
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.size(50.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.whiteback),
+                        contentDescription = "백버튼",
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(30.dp))

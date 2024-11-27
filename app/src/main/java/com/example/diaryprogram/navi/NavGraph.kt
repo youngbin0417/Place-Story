@@ -17,11 +17,11 @@ import androidx.navigation.compose.composable
 import com.example.diaryprogram.page.BrowsePage
 import com.example.diaryprogram.page.DiaryPage
 import com.example.diaryprogram.page.FollowPage
-import com.example.diaryprogram.page.FollowProfilePage
 import com.example.diaryprogram.page.LoadingPage
 import com.example.diaryprogram.page.LoginPage
 import com.example.diaryprogram.page.MainPage
 import com.example.diaryprogram.page.MapPage
+import com.example.diaryprogram.page.OtherProfilePage
 import com.example.diaryprogram.page.ProfilePage
 import com.example.diaryprogram.page.SettingPage
 import com.example.diaryprogram.page.SubscribePage
@@ -122,9 +122,12 @@ fun NavGraph(navController: NavHostController) {
         composable(route = "following") {
             FollowPage(navController)
         }
-        // 팔로워 프로필 상세 보기
-        composable(route = "followingProfile") {
-            FollowProfilePage(navController,onBack = {navController.popBackStack()})
+
+        composable("other_profile_page/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")?.toLong()
+            if (userId != null) {
+                OtherProfilePage(navController = navController, userIds = userId)
+            }
         }
 
     }

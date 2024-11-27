@@ -51,7 +51,9 @@ data class FollowListResponseDto(
 ) {
     data class FollowInfo(
         val userIds: Long,
-        val followNames: String
+        val followNames: String,
+        val profileImage: Image?,
+        val isFollowing: Boolean
     )
 }
 

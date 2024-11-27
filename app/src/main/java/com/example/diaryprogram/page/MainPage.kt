@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,7 +38,7 @@ import com.google.maps.android.compose.rememberCameraPositionState
 @Composable
 fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
     Box(modifier = Modifier
-        .size(200.dp)
+        .fillMaxSize()
         .background(
             Brush.linearGradient(
                 colors = listOf(Color(0xFF070301), Color(0xFF886B5F)), // 시작과 끝 색상

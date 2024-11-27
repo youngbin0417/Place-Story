@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,7 +43,7 @@ import com.example.diaryprogram.appbar.AppBar
 fun ProfilePage(navHostController: NavHostController) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
     Box(modifier = Modifier
-        .size(200.dp)
+        .fillMaxSize()
         .background(
             Brush.linearGradient(
                 colors = listOf(Color(0xFF070301), Color(0xFF886B5F)),
@@ -51,29 +52,45 @@ fun ProfilePage(navHostController: NavHostController) {
             ) // 그라데이션 세팅
         )
     ) {
-        Column (modifier = Modifier.padding(30.dp)) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Row (
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ){
-                Text(
-                    text = "PLACE STORY",
-                    color = Color.White,
-                    fontSize = 25.sp,
-                    fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
+        Column {
+            Spacer(modifier = Modifier.height(30.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            IconButton(
+                onClick = { navHostController.popBackStack() },
+                modifier = Modifier.size(50.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.whiteback),
+                    contentDescription = "백버튼",
+                    modifier = Modifier.size(50.dp)
                 )
             }
+            Spacer(modifier = Modifier.width(80.dp))
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Text(
+                text = "PLACE STORY",
+                color = Color.White,
+                fontSize = 25.sp,
+                fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
+            )
+
+        }
+    }
+        Column (modifier = Modifier.padding(30.dp)) {
+
+            Spacer(modifier = Modifier.height(100.dp))
 
             Box(modifier = Modifier
                 .width(361.dp)
                 .height(443.dp)
                 .clip(RoundedCornerShape(24.dp))
                 .background(color = colorResource(id = R.color.light_daisy))
+                .align(Alignment.CenterHorizontally)
             ) {
                 Column(modifier = Modifier.padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -96,7 +113,8 @@ fun ProfilePage(navHostController: NavHostController) {
                     Text(
                         text = "사용자의 이름",
                         color = Color.White,
-                        fontFamily = customfont
+                        fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                        fontSize = 20.sp
                     )
 
                     Spacer(modifier = Modifier.height(6.dp))
