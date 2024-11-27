@@ -39,8 +39,8 @@ import com.example.diaryprogram.R
 import com.example.diaryprogram.data.FollowListResponseDto
 
 @Composable
-fun profileBox(navController: NavHostController, followinfo: FollowListResponseDto.FollowInfo) {
-    var isFollowing by rememberSaveable { mutableStateOf(followinfo.isFollowing) }
+fun profileBox(navController: NavHostController, followinfo:FollowListResponseDto) {
+    var isFollowing by rememberSaveable { mutableStateOf(true) }
     Box(modifier = Modifier
         .width(360.dp).height(90.dp)
         .clickable(onClick = {
@@ -86,7 +86,9 @@ fun profileBox(navController: NavHostController, followinfo: FollowListResponseD
 
             if (isFollowing) {
                 Button(
-                    onClick = { isFollowing = false },
+                    onClick = { isFollowing = false
+                              //unfollowing 함수
+                        },
                     modifier = Modifier.width(90.dp).height(45.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(R.color.dark_daisy)

@@ -46,14 +46,14 @@ interface ApiService {
         @Query("diaryStatus") diaryStatus: DiaryStatus,
         @Query("page") page: Int,
         @Query("size") size: Int
-    ): Call<PaginatedResponseDto<DiariesResponseDto>>
+    ): Call<PaginatedResponseDto<DiaryResponseDto>>
 
     // 6. Get Public Diaries
     @GET("diaries")
     fun getPublicDiaries(
         @Query("page") page: Int,
         @Query("size") size: Int
-    ): Call<PaginatedResponseDto<DiariesResponseDto>>
+    ): Call<PaginatedResponseDto<DiaryResponseDto>>
 
     // 7. Get Public Diary Details
     @GET("diaries/{diaryId}")
@@ -71,17 +71,16 @@ interface ApiService {
 
     // 10. Get User Profile
     @GET("users/{userId}/profile")
-    fun getUserProfile(
+    suspend fun getUserProfile(
         @Path("userId") userId: Long
-    ): Call<UserProfileResponseDto>
+    ): UserProfileResponseDto
 
     // 11. Get Following List
     @GET("users/{userId}/follows")
-    fun getFollowingList(
-        @Path("userId") userId: Long,
-        @Query("page") page: Int,
-        @Query("size") size: Int
-    ): Call<PaginatedResponseDto<FollowListResponseDto>>
+    suspend fun getFollowingList(
+        @Path("userId") userId: Long
+    ): List<FollowListResponseDto>
+
 
     // 12. Follow User
     @POST("users/{userId}/follows/{followingUserId}")

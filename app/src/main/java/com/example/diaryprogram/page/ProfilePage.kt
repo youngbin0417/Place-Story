@@ -2,7 +2,6 @@ package com.example.diaryprogram.page
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +22,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,12 +40,23 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient.apiService
+import com.example.diaryprogram.api.ApiService
 import com.example.diaryprogram.appbar.AppBar
+import com.example.diaryprogram.data.UserProfileResponseDto
+
 // 프론트 완료
 @Composable
-fun ProfilePage(navHostController: NavHostController) {
+fun ProfilePage(navHostController: NavHostController, userId: Long) {
+    var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
+
+    LaunchedEffect(userId) {
+        userProfile = loadUserProfile(apiService, userId)
+    }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .background(
@@ -98,24 +113,31 @@ fun ProfilePage(navHostController: NavHostController) {
                     Spacer(modifier = Modifier.height(20.dp))
                     Row (modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center){
-                        Image( // api 연동 필요 -> 기본일때 해당 사진, 아니면 서버에서 받은 사진
+                        userProfile?.profileImage?.let { image ->
+                            Image(
+                                painter = rememberAsyncImagePainter(image.url),
+                                contentDescription = "User Profile Image",
+                                modifier = Modifier.size(100.dp)
+                                    .clip(CircleShape)
+                            )
+                        } ?: Image(
                             painter = painterResource(id = R.drawable.profile),
-                            contentDescription = "프로필 사진",
-                            modifier = Modifier
-                                .size(100.dp)
+                            contentDescription = "Default Profile Icon",
+                            modifier = Modifier.size(100.dp)
                                 .clip(CircleShape)
-                                .border(2.dp, Color.Transparent, CircleShape)
                         )
                     }
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    Text(
-                        text = "사용자의 이름",
-                        color = Color.White,
-                        fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                        fontSize = 20.sp
-                    )
+                    userProfile?.let {
+                        Text(
+                            text = it.name,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            fontSize = 20.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(6.dp))
                     HorizontalDivider(
@@ -249,5 +271,17 @@ fun ProfilePage(navHostController: NavHostController) {
             navHostController = navHostController,
             option=5
         )
+    }
+}
+
+suspend fun loadUserProfile(
+    apiService: ApiService,
+    userId: Long
+): UserProfileResponseDto? {
+    return try {
+        apiService.getUserProfile(userId) // Retrofit suspend 함수 호출
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null // 오류 발생 시 null 반환
     }
 }

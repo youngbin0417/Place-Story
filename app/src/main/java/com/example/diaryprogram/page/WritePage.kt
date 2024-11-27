@@ -1,6 +1,7 @@
 package com.example.diaryprogram.page
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -50,12 +51,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.DiaryApi.createDiary
+import com.example.diaryprogram.data.DiaryRequestDto
+import com.example.diaryprogram.data.DiaryStatus
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.google.android.gms.maps.model.LatLng
+import java.time.LocalDate
 import java.util.Calendar
 // 프론트 완료
 @Composable
-fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
+fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
+              userId: Long) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
     val year = calendar.get(Calendar.YEAR)
@@ -66,10 +72,12 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
     var userInput by remember { mutableStateOf("") }
     val customfont = FontFamily(Font(R.font.nanumbarunpenb))
     var diary_location by remember { mutableStateOf(initialPosition) }
-    var diaryPeriod by remember { mutableStateOf("") }
+    var diaryPeriod by remember { mutableStateOf(0) }
+    var enums by remember { mutableStateOf(null) }
     var showSearchLocation by remember { mutableStateOf(false) }
     var address by remember { mutableStateOf("주소를 가져오는 중...") }
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var selectedEnum by remember { mutableStateOf(0) }
 
     val dayOfWeekString = when(dayOfWeek) {
         Calendar.SUNDAY -> "SUN"
@@ -137,7 +145,29 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
 
                     // 오른쪽 등록 버튼
                     IconButton(
-                        onClick = { navHostController.navigate("main") },
+                        onClick = {
+                            createDiary(
+                                userId = 1,
+                                diaryRequestDto = DiaryRequestDto(
+                                    latitude = diary_location.latitude,
+                                    longitude = diary_location.longitude,
+                                    title = title,
+                                    content = userInput,
+                                    date = LocalDate.now(),
+                                    enums = DiaryStatus.PUBLIC
+                                ),
+                                imageUris = selectedImageUris,
+                                contentResolver = context.contentResolver,
+                                onSuccess = { response ->
+                                    Toast.makeText(context, "Diary created successfully!", Toast.LENGTH_SHORT).show()
+                                },
+                                onError = { errorMessage ->
+                                    Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+
+                            navHostController.navigate("main")
+                        },
                         modifier = Modifier.size(50.dp)
                     ) {
                         Image(
@@ -316,9 +346,13 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(30.dp)
-                                    .clickable { /* 매일알림 클릭 이벤트 */ }
-                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
-                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                    .clickable { /* 매일알림 클릭 이벤트 */
+                                        diaryPeriod=1
+                                    }
+                                    .background(
+                                        color = if (diaryPeriod == 1) colorResource(R.color.box_daisy) else Color.Transparent,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )                                    .padding(horizontal = 4.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
@@ -338,8 +372,13 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(30.dp)
-                                    .clickable { /* 1일마다 클릭 이벤트 */ }
-                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .clickable { /* 1일마다 클릭 이벤트 */
+                                        diaryPeriod=2
+                                    }
+                                    .background(
+                                        color = if (diaryPeriod == 2) colorResource(R.color.box_daisy) else Color.Transparent,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )
                                     .padding(horizontal = 4.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -360,8 +399,13 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(30.dp)
-                                    .clickable { /* 1주마다 클릭 이벤트 */ }
-                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .clickable { /* 1주마다 클릭 이벤트 */
+                                        diaryPeriod=3
+                                    }
+                                    .background(
+                                        color = if (diaryPeriod == 3) colorResource(R.color.box_daisy) else Color.Transparent,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )
                                     .padding(horizontal = 4.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -382,8 +426,13 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(30.dp)
-                                    .clickable { /* 1년마다 클릭 이벤트 */ }
-                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .clickable { /* 1년마다 클릭 이벤트 */
+                                        diaryPeriod=4
+                                    }
+                                    .background(
+                                        color = if (diaryPeriod == 4) colorResource(R.color.box_daisy) else Color.Transparent,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )
                                     .padding(horizontal = 4.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -409,13 +458,17 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                 selectedImageUris = uris // 선택된 이미지들의 URI 리스트 저장
                             }
 
-
                             Box(
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(30.dp)
-                                    .clickable { /*모두공개*/ }
-                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .clickable { /*모두공개*/
+                                        selectedEnum=1
+                                    }
+                                    .background(
+                                        color = if (selectedEnum == 1) colorResource(R.color.box_daisy) else Color.Transparent,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )
                                     .padding(horizontal = 4.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -426,6 +479,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                     fontSize = 12.sp
                                 )
                             }
+
                             Text(
                                 text = "|",
                                 fontFamily = customfont,
@@ -436,8 +490,13 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(30.dp)
-                                    .clickable { /*친구공개*/ }
-                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .clickable { /*친구공개*/
+                                        selectedEnum=2
+                                    }
+                                    .background(
+                                        color = if (selectedEnum == 2) colorResource(R.color.box_daisy) else Color.Transparent,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )
                                     .padding(horizontal = 4.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -458,8 +517,13 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng) {
                                 modifier = Modifier
                                     .width(70.dp)
                                     .height(30.dp)
-                                    .clickable { /*나만보기*/ }
-                                    .background(Color.Transparent, shape = RoundedCornerShape(5.dp))
+                                    .clickable { /*나만보기*/
+                                        selectedEnum=3
+                                    }
+                                    .background(
+                                        color = if (selectedEnum == 3) colorResource(R.color.box_daisy) else Color.Transparent,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )
                                     .padding(horizontal = 4.dp, vertical = 2.dp),
                                 contentAlignment = Alignment.Center
                             ) {

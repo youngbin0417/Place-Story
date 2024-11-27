@@ -35,18 +35,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient.apiService
+import com.example.diaryprogram.api.ApiService
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.profileBox
 import com.example.diaryprogram.data.FollowListResponseDto
+import com.google.ai.client.generativeai.type.content
 
 //api 연동 해야함
 @Composable
-fun FollowPage(navHostController: NavHostController) {
-    var followlist by remember { mutableStateOf<FollowListResponseDto?>(null) }
+fun FollowPage(navHostController: NavHostController, userId: Long) {
+    var followlist by remember { mutableStateOf<List<FollowListResponseDto>>(emptyList()) }
 
     // 데이터 로드
-    LaunchedEffect(Unit) {
-        followlist = loadFollowList() // 데이터를 비동기로 로드
+    LaunchedEffect(userId) {
+        followlist = loadFollowList(apiService, userId)
     }
 
     Box(
@@ -91,15 +94,13 @@ fun FollowPage(navHostController: NavHostController) {
             Spacer(modifier = Modifier.height(30.dp))
 
             // LazyColumn으로 팔로우 리스트 표시
-            if (followlist == null) {
-                LoadingPage()
-            } else if (followlist!!.followInfos.isEmpty()) {
+            if (followlist.isEmpty()) {
                 // 리스트가 비어있을 때
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),
-                    contentAlignment = Alignment.Center
+
                 ) {
                     Text(
                         text = "아직 팔로우한 친구가 없어요.\n다른 사람의 공개 일기를 보러 가볼까요?",
@@ -115,7 +116,7 @@ fun FollowPage(navHostController: NavHostController) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(followlist!!.followInfos) { followInfo ->
+                    items(followlist) { followInfo ->
                         profileBox(navHostController,followInfo)
                     }
                 }
@@ -133,23 +134,16 @@ fun FollowPage(navHostController: NavHostController) {
     }
 }
 
-// 예제 데이터 로드 함수
-suspend fun loadFollowList(): FollowListResponseDto {
-    // 서버 또는 로컬에서 데이터를 가져오는 비동기 로직 구현
-    return FollowListResponseDto(
-        followInfos = listOf(
-            FollowListResponseDto.FollowInfo(
-                userIds = 1L,
-                followNames = "홍길동",
-                profileImage = null,
-                isFollowing = true
-            ),
-            FollowListResponseDto.FollowInfo(
-                userIds = 2L,
-                followNames = "김철수",
-                profileImage = null,
-                isFollowing = false
-            )
-        )
-    )
+suspend fun loadFollowList(
+    apiService: ApiService,
+    userId: Long
+): List<FollowListResponseDto> {
+    return try {
+        apiService.getFollowingList(userId)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        emptyList() // 오류 발생 시 빈 리스트 반환
+    }
 }
+
+

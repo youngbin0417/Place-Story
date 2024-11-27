@@ -1,5 +1,6 @@
 package com.example.diaryprogram.page
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.UserApi.signIn
 import com.example.diaryprogram.data.LoginRequestDto
 //프론트 완료
@@ -72,12 +74,21 @@ fun LoginPage(navHostController: NavHostController) {
 
                 Button(
                     onClick = {
-                        val loginRequestDto = LoginRequestDto(id, pw)
-                        signIn(context, loginRequestDto)
-                        // 서버 완료전이니 그냥 넘어가게 함.
+                        val loginRequest = LoginRequestDto(username = id, password = pw)
+                        signIn(
+                            apiService = apiService,
+                            loginRequestDto = loginRequest,
+                            onSuccess = { response ->
+                                Toast.makeText(context, "Login Successful!", Toast.LENGTH_SHORT)
+                                    .show()
+                            },
+                            onError = { errorMessage ->
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+                            }
+                        )
                         navHostController.navigate("main")
                     },
-                    colors = ButtonDefaults.buttonColors(
+                        colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(id = R.color.daisy), // 버튼 배경색
                         contentColor = Color.White   // 버튼 텍스트 색
                     ),

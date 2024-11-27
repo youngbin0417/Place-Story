@@ -15,7 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.diaryprogram.page.BrowsePage
-import com.example.diaryprogram.page.DiaryPage
+import com.example.diaryprogram.page.EditDiary
 import com.example.diaryprogram.page.FollowPage
 import com.example.diaryprogram.page.LoadingPage
 import com.example.diaryprogram.page.LoginPage
@@ -39,6 +39,7 @@ fun NavGraph(navController: NavHostController) {
     var currentLocation by remember {
         mutableStateOf(LatLng(0.0, 0.0))
     }
+    val userId: Long = 1L
 
     NavHost(navController = navController, startDestination = "login") {
         //로그인 페이지
@@ -79,48 +80,39 @@ fun NavGraph(navController: NavHostController) {
 
         //설정 페이지
         composable(route="profile") {
-            ProfilePage(navController)
+            ProfilePage(navController,userId)
         }
 
         //일기 작성 페이지
         composable(route="write") {
-            WritePage(navController,currentLocation)
+            WritePage(navController,currentLocation, userId)
         }
 
         // 일기 조회 페이지
         composable(route = "browseMine") {
-            BrowsePage(navController)
+            BrowsePage(navController,userId,"PRIVATE")
         }
 
         // 팔로우 개인 조회
         composable(route = "browseFollow") {
-            BrowsePage(navController)
-        }
-
-        // 팔로우 리스트 조회
-        composable(route="browseFollows") {
-            BrowsePage(navController)
+            BrowsePage(navController,userId,"FOLLOW")
         }
 
         composable(route = "browsePublic") {
-            BrowsePage(navController)
+            BrowsePage(navController,userId,"PUBLIC")
         }
 
-        //일기 상세 조회 페이지
-        composable(route = "browseDetail") {
-            DiaryPage(navController)
-        }
         // 프로필 편집 페이지
         composable(route = "setting") {
-            SettingPage(navController)
+            SettingPage(navController,userId)
         }
         // 구독 페이지
         composable(route = "subscribe") {
-            SubscribePage(navController)
-        }
-        // 팔로잉 프로필 목록 보기
+            SubscribePage(navController,userId)
+        } // 구현 X
+
         composable(route = "following") {
-            FollowPage(navController)
+            FollowPage(navController,userId)
         }
 
         composable("other_profile_page/{userId}") { backStackEntry ->

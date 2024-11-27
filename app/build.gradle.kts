@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.androidx.core)
     implementation(libs.coil.compose)
+    implementation(libs.generativeai)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

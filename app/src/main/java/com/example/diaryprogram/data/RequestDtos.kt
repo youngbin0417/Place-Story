@@ -12,12 +12,12 @@ data class DiaryRequestDto(
 )
 
 data class LoginRequestDto(
-    val username: String,
+    val username: String, // id
     val password: String
 )
 
 data class SignUpRequestDto(
-    val username: String,
+    val username: String, // id
     val password: String,
     val name: String
 )
