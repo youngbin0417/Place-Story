@@ -1,5 +1,6 @@
 package com.example.diaryprogram.data
 
+import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
 
 data class DiaryRequestDto(
@@ -8,8 +9,7 @@ data class DiaryRequestDto(
     val title: String,
     val content: String,
     val date: LocalDate,
-    val enums: DiaryStatus
-)
+    @SerializedName("status") val enums: DiaryStatus)
 
 data class LoginRequestDto(
     val username: String, // id
