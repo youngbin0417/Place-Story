@@ -44,6 +44,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.ApiService
+import com.example.diaryprogram.api.UserApi.loadUserProfile
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserProfileResponseDto
 
@@ -274,14 +275,3 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
     }
 }
 
-suspend fun loadUserProfile(
-    apiService: ApiService,
-    userId: Long
-): UserProfileResponseDto? {
-    return try {
-        apiService.getUserProfile(userId) // Retrofit suspend 함수 호출
-    } catch (e: Exception) {
-        e.printStackTrace()
-        null // 오류 발생 시 null 반환
-    }
-}

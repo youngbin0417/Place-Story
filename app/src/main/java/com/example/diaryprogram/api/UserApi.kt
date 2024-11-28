@@ -1,6 +1,7 @@
 package com.example.diaryprogram.api
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import com.example.diaryprogram.data.*
 import retrofit2.Call
@@ -51,6 +52,18 @@ object UserApi {
                 println("Network error: $errorMessage")
             }
         })
+    }
+
+    suspend fun loadUserProfile(
+        apiService: ApiService,
+        userId: Long
+    ): UserProfileResponseDto? {
+        return try {
+            apiService.getUserProfile(userId) // Retrofit suspend 함수 호출
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null // 오류 발생 시 null 반환
+        }
     }
 
 

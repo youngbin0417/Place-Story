@@ -71,15 +71,15 @@ interface ApiService {
 
     // 10. Get User Profile
     @GET("users/{userId}/profile")
-    suspend fun getUserProfile(
+    fun getUserProfile(
         @Path("userId") userId: Long
-    ): UserProfileResponseDto
+    ): Call<UserProfileResponseDto>
 
     // 11. Get Following List
     @GET("users/{userId}/follows")
-    suspend fun getFollowingList(
+    fun getFollowingList(
         @Path("userId") userId: Long
-    ): List<FollowListResponseDto>
+    ): Call<List<FollowListResponseDto>>
 
 
     // 12. Follow User
