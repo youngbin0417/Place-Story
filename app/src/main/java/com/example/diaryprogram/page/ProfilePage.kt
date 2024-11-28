@@ -22,6 +22,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,8 +55,11 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
     var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
 
-    LaunchedEffect(userId) {
-        userProfile = loadUserProfile(apiService, userId)
+    DisposableEffect(userId) {
+        loadUserProfile(apiService, userId) { profile ->
+            userProfile = profile
+        }
+        onDispose { }
     }
 
     Box(modifier = Modifier
@@ -170,7 +174,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                                 )
 
                                 Text(
-                                    text = "123", // api 연동 필요
+                                    text = "${userProfile?.totalLikesCount}", // api 연동 필요
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont
@@ -204,7 +208,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                                 )
 
                                 Text(
-                                    text = "123", // api 연동 필요
+                                    text = "${userProfile?.totalDiaryCount}", // api 연동 필요
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont
@@ -234,7 +238,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                                     fontFamily = customfont
                                 )
                                 Text(
-                                    text = "123", // API 연동 필요
+                                    text = "${userProfile?.totalFollowCount}", // API 연동 필요
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont

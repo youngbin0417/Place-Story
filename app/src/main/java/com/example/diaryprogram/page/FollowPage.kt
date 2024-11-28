@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +38,7 @@ import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.ApiService
+import com.example.diaryprogram.api.UserApi.loadFollowList
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.profileBox
 import com.example.diaryprogram.data.FollowListResponseDto
@@ -45,12 +47,15 @@ import com.google.ai.client.generativeai.type.content
 //api 연동 해야함
 @Composable
 fun FollowPage(navHostController: NavHostController, userId: Long) {
-    var followlist by remember { mutableStateOf<List<FollowListResponseDto>>(emptyList()) }
+    var followList by remember { mutableStateOf<List<FollowListResponseDto>>(emptyList()) }
 
-    // 데이터 로드
-    LaunchedEffect(userId) {
-        followlist = loadFollowList(apiService, userId)
+    DisposableEffect(userId) {
+        loadFollowList(apiService, userId) { loadedList ->
+            followList = loadedList
+        }
+        onDispose { }
     }
+
 
     Box(
         modifier = Modifier
@@ -94,7 +99,7 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
             Spacer(modifier = Modifier.height(30.dp))
 
             // LazyColumn으로 팔로우 리스트 표시
-            if (followlist.isEmpty()) {
+            if (followList.isEmpty()) {
                 // 리스트가 비어있을 때
                 Box(
                     modifier = Modifier
@@ -116,7 +121,7 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    items(followlist) { followInfo ->
+                    items(followList) { followInfo ->
                         profileBox(navHostController,followInfo)
                     }
                 }
@@ -134,16 +139,5 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
     }
 }
 
-suspend fun loadFollowList(
-    apiService: ApiService,
-    userId: Long
-): List<FollowListResponseDto> {
-    return try {
-        apiService.getFollowingList(userId)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        emptyList() // 오류 발생 시 빈 리스트 반환
-    }
-}
 
 

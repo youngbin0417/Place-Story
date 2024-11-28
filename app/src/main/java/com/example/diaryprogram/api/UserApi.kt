@@ -54,17 +54,64 @@ object UserApi {
         })
     }
 
-    suspend fun loadUserProfile(
+    fun loadUserProfile(
         apiService: ApiService,
-        userId: Long
-    ): UserProfileResponseDto? {
-        return try {
-            apiService.getUserProfile(userId) // Retrofit suspend 함수 호출
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null // 오류 발생 시 null 반환
-        }
+        userId: Long,
+        callback: (UserProfileResponseDto?) -> Unit
+    ) {
+        apiService.getUserProfile(userId).enqueue(object : Callback<UserProfileResponseDto> {
+            override fun onResponse(
+                call: Call<UserProfileResponseDto>,
+                response: Response<UserProfileResponseDto>
+            ) {
+                if (response.isSuccessful) {
+                    val userProfile = response.body()
+                    println("User profile loaded successfully: $userProfile")
+                    callback(userProfile)
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                    println("Error loading user profile: $errorMessage")
+                    callback(null)
+                }
+            }
+
+            override fun onFailure(call: Call<UserProfileResponseDto>, t: Throwable) {
+                println("Failed to load user profile: ${t.message}")
+                callback(null)
+            }
+        })
     }
+
+    fun loadFollowList(
+        apiService: ApiService,
+        userId: Long,
+        callback: (List<FollowListResponseDto>) -> Unit
+    ) {
+        apiService.getFollowingList(userId).enqueue(object : Callback<List<FollowListResponseDto>> {
+            override fun onResponse(
+                call: Call<List<FollowListResponseDto>>,
+                response: Response<List<FollowListResponseDto>>
+            ) {
+                if (response.isSuccessful) {
+                    val followList = response.body() ?: emptyList()
+                    println("Following list loaded successfully: $followList")
+                    callback(followList)
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                    println("Error loading following list: $errorMessage")
+                    callback(emptyList())
+                }
+            }
+
+            override fun onFailure(call: Call<List<FollowListResponseDto>>, t: Throwable) {
+                println("Failed to load following list: ${t.message}")
+                callback(emptyList())
+            }
+        })
+    }
+
+
+
 
 
 }
