@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -39,42 +37,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
+import com.example.diaryprogram.appbar.AppBar
+import com.google.android.gms.maps.model.LatLng
 import java.util.Calendar
 
 //해야함
 @Composable
-fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long) {
-    val context = LocalContext.current
-    val calendar = Calendar.getInstance() // 서버로 받아옴
-    val year = calendar.get(Calendar.YEAR)
-    val month = calendar.get(Calendar.MONTH) + 1
-    val day = calendar.get(Calendar.DAY_OF_MONTH)
-    val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-    var title by remember { mutableStateOf("") } // 서버로 받아옴
-    val userInput by remember { mutableStateOf("") } //서버로 받아옴
-    val customfont = FontFamily(Font(R.font.nanumbarunpenb))
-    //val diary_location by remember { mutableStateOf(38.00,38.00) } // 서버로 받아옴
-    var address by remember { mutableStateOf("주소를 가져오는 중...") }
-    val enums by remember { mutableStateOf("PRIVATE") }// 서버로 받아옴
-    val selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) } // 서버로 받아옴
+fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Long*/) {
 
-    val dayOfWeekString = when(dayOfWeek) {
-        Calendar.SUNDAY -> "SUN"
-        Calendar.MONDAY -> "MON"
-        Calendar.TUESDAY -> "TUE"
-        Calendar.WEDNESDAY -> "WED"
-        Calendar.THURSDAY -> "THU"
-        Calendar.FRIDAY -> "FRI"
-        Calendar.SATURDAY -> "SAT"
-        else -> "ERROR"
-    }
+    val option = 1 // api에서 받아올거임
+    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     /*LaunchedEffect(diary_location) {
         // 좌표가 변경될 때 동까지만 가져오기
@@ -96,43 +74,12 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long)
                 modifier = Modifier.fillMaxSize()
             ) {
                 Spacer(modifier = Modifier.height(30.dp))
-                if(enums=="PRIVATE"){
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        IconButton(
-                            onClick = { navHostController.popBackStack() },
-                            modifier = Modifier.size(50.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.whiteback),
-                                contentDescription = "백버튼"
-                            )
-                        }
-                        IconButton(
-                            onClick = { navHostController.navigate("edit/{$diaryID}") },
-                            modifier = Modifier.size(50.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.editor),
-                                contentDescription = "수정",
-                                modifier = Modifier.size(50.dp)
-                            )
-                        }
 
-                    }
-                }
-                else{
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Start
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
                         onClick = { navHostController.popBackStack() },
@@ -143,97 +90,57 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long)
                             contentDescription = "백버튼"
                         )
                     }
-
                 }
-            }
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .height(675.dp)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(color = colorResource(R.color.dark_daisy))
-                ) {
+                ){
+
                     Column(
                         modifier = Modifier
                             .padding(20.dp)
-                    ) {
-                        // 제목 입력 필드
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.Transparent
-                                ),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Text(
-                                text = title,
-                                style = TextStyle(
-                                    color = colorResource(R.color.letter_daisy),
-                                    fontSize = 20.sp,
-                                    fontFamily = customfont
-                                ),
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-
-
+                    ){
+                        Text(
+                            text = "제목", // api 연동
+                            textAlign = TextAlign.Start,
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            color = Color.White,
+                            modifier = Modifier.height(40.dp)
+                        )
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
 
                         Text(
-                            text = "${year}/${month}/${day} $dayOfWeekString",
-                            textAlign = TextAlign.Center,
+                            text = "날짜",
+                            textAlign = TextAlign.Start,
                             fontSize = 18.sp,
-                            fontFamily = customfont,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                             color = Color.White
                         )
-
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth().height(24.dp),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "위치: $address",
-                                color = Color.White,
-                                fontSize = 13.sp,
-                                fontFamily = customfont
-                            )
-                        }
-
+                        Text(
+                            text = "주소",
+                            textAlign = TextAlign.Start,
+                            fontSize = 18.sp,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            color = Color.White
+                        )
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
 
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(400.dp)
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.Gray,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .padding(8.dp),
-                            contentAlignment = Alignment.TopStart
-                        ) {
-                            Text(
-                                text = userInput,
-                                style = TextStyle(
-                                    color = Color.White,
-                                    fontSize = 20.sp
-                                ),
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-
+                        Text(
+                            text = "....", // api 연동 후, 받아올 값
+                            textAlign = TextAlign.Start,
+                            fontSize = 18.sp,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            color = Color.White
+                        )
+                        // 이미지 받아와서 보여주게 api 연동
                         if (selectedImageUris.isNotEmpty()) {
                             LazyRow(
                                 modifier = Modifier
@@ -246,7 +153,7 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long)
                                         painter = rememberAsyncImagePainter(model = uri),
                                         contentDescription = "Selected Image",
                                         modifier = Modifier
-                                            .size(100.dp)
+                                            .size(80.dp)
                                     )
                                 }
                             }
@@ -254,13 +161,18 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long)
                             Spacer(modifier = Modifier.height(108.dp))
                         }
 
-
-
                     }
                 }
 
+
             }
 
+            AppBar(modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 40.dp),
+                navHostController = navHostController,
+                option=option// 이후 api 연동해서 마무리
+            )
         }
     }
 

@@ -182,7 +182,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
 
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .height(760.dp)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(color = colorResource(R.color.dark_daisy))
@@ -207,7 +207,8 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                             ),
                             textStyle = TextStyle(
                                 color = Color.White,
-                                fontSize = 20.sp
+                                fontSize = 20.sp,
+                                fontFamily = customfont
                             ),
                             decorationBox = { innerTextField ->
                                 Box(
@@ -259,7 +260,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 modifier = Modifier.size(24.dp)
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.locationicon),
+                                    painter = painterResource(id = R.drawable.emptylocationicon),
                                     contentDescription = "위치 버튼"
                                 )
                             }
@@ -284,7 +285,8 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 .padding(8.dp),
                             textStyle = TextStyle(
                                 color = Color.White,
-                                fontSize = 20.sp
+                                fontSize = 20.sp,
+                                fontFamily = customfont
                             ),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done

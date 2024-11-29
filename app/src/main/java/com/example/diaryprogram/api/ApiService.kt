@@ -15,12 +15,13 @@ interface ApiService {
         @Part images: List<MultipartBody.Part>
     ): Call<ResponseDto>
 
-    // 2. Get User Diary
+    // 2. Get User Diary // 유저 아이디의 일기 조회
     @GET("users/{userId}/diaries/{diaryId}")
     fun getUserDiary(
         @Path("userId") userId: Long,
         @Path("diaryId") diaryId: Long
     ): Call<UserDiaryResponseDto>
+
 
     // 3. Update Diary
     @Multipart

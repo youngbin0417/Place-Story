@@ -14,8 +14,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
-import com.example.diaryprogram.page.BrowsePage
-import com.example.diaryprogram.page.EditDiary
+import com.example.diaryprogram.page.BrowseMineDiaryPage
+import com.example.diaryprogram.page.DiaryPage
 import com.example.diaryprogram.page.FollowPage
 import com.example.diaryprogram.page.LoadingPage
 import com.example.diaryprogram.page.LoginPage
@@ -39,9 +39,9 @@ fun NavGraph(navController: NavHostController) {
     var currentLocation by remember {
         mutableStateOf(LatLng(0.0, 0.0))
     }
-    val userId: Long = 1L
+    val userId: Long = 4
 
-    NavHost(navController = navController, startDestination = "main") {
+    NavHost(navController = navController, startDestination = "login") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)
@@ -90,16 +90,20 @@ fun NavGraph(navController: NavHostController) {
 
         // 일기 조회 페이지
         composable(route = "browseMine") {
-            BrowsePage(navController,userId,"PRIVATE")
+            BrowseMineDiaryPage(navController,userId)
         }
 
         // 팔로우 개인 조회
         composable(route = "browseFollow") {
-            BrowsePage(navController,userId,"FOLLOW")
+            BrowseMineDiaryPage(navController,userId)
         }
 
         composable(route = "browsePublic") {
-            BrowsePage(navController,userId,"PUBLIC")
+            BrowseMineDiaryPage(navController,userId)
+        }
+
+        composable(route = "diary") {
+            DiaryPage(navController, userId)
         }
 
         // 프로필 편집 페이지

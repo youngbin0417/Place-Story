@@ -104,6 +104,73 @@ object DiaryApi {
         }
     }
 
+    fun likeDiary(
+        apiService: ApiService,
+        userId: Long,
+        diaryId: Long,
+    ) {
+        apiService.likeDiary(userId, diaryId).enqueue(object : Callback<ResponseDto> {
+            override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
+                if (response.isSuccessful) {
+                    println("Diary liked successfully: ${response.body()}")
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Unknown error"
+                    println("Failed to like diary: $errorMessage")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
+                println("Error occurred while liking diary: ${t.message}")
+            }
+        })
+    }
+
+    fun fetchAllDiaries(
+        userId: Long,
+        diaryStatus: DiaryStatus,
+        page: Int = 0,
+        size: Int = 10,
+        onSuccess: (PaginatedResponseDto<DiaryResponseDto>) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        val call = ApiClient.apiService.getAllDiaries(userId, diaryStatus, page, size)
+
+        call.enqueue(object : Callback<PaginatedResponseDto<DiaryResponseDto>> {
+            override fun onResponse(
+                call: Call<PaginatedResponseDto<DiaryResponseDto>>,
+                response: Response<PaginatedResponseDto<DiaryResponseDto>>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        println("Successfully loaded diaries: ${it.content.size} entries")
+                        onSuccess(it)
+                    } ?: run {
+                        println("Response was successful but body is null")
+                        onFailure(Throwable("Response body is null"))
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "No error body"
+                    println("Failed to load diaries: ${response.code()} - ${response.message()}")
+                    println("Error Body: $errorBody")
+                    onFailure(Throwable("Error: ${response.code()} - ${response.message()}\n$errorBody"))
+                }
+            }
+
+            override fun onFailure(call: Call<PaginatedResponseDto<DiaryResponseDto>>, t: Throwable) {
+                println("Failed to make API call.")
+                println("Request URL: ${call.request().url}")
+                println("Request Headers: ${call.request().headers}")
+                println("Error Message: ${t.message}")
+                println("Error Cause: ${t.cause}")
+                onFailure(t)
+            }
+        })
+    }
+
+
+
+
+
 
 
 }

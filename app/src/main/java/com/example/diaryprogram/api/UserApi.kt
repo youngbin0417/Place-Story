@@ -39,6 +39,8 @@ object UserApi {
                 if (response.isSuccessful) {
                     onSuccess(response.body())
                     println("Sign-in successful: ${response.body()?.statusMessage}")
+                    println("ID: ${loginRequestDto.username}")
+                    println("Password: ${loginRequestDto.password}")
                 } else {
                     val errorMessage = response.errorBody()?.string() ?: "Unknown error"
                     onError("Sign-in failed: $errorMessage")

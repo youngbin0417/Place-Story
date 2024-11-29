@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,17 +15,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -35,25 +30,38 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
-import com.example.diaryprogram.api.ApiService
+import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
 import com.example.diaryprogram.appbar.AppBar
+import com.example.diaryprogram.component.DiaryBox
+import com.example.diaryprogram.data.DiaryResponseDto
+import com.example.diaryprogram.data.DiaryStatus
 
 // 해야함
 @Composable
-fun BrowsePage(navHostController: NavHostController, userId: Long,enums: String) {
-    val option = when (enums) {
-        "PRIVATE" -> 2
-        "FOLLOWER" -> 4
-        else -> 3
-    }
+fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
+    val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
+    val isLoading = remember { mutableStateOf(true) }
+
 
     LaunchedEffect(Unit) {
-
+        isLoading.value = true
+        fetchAllDiaries(
+            userId = userId,
+            diaryStatus = DiaryStatus.PRIVATE, // DiaryStatus는 적절한 Enum/클래스여야 함
+            page = 0,
+            size = 10,
+            onSuccess = { response ->
+                diaryListState.value = response.content
+                isLoading.value = false
+            },
+            onFailure = { error ->
+                println("Failed to fetch diaries: ${error.message}")
+                isLoading.value = false
+            }
+        )
     }
     Box(
         modifier = Modifier
@@ -87,25 +95,47 @@ fun BrowsePage(navHostController: NavHostController, userId: Long,enums: String)
                 }
                 Spacer(modifier = Modifier.width(110.dp))
                 Text(
-                    text = when (enums) {
-                        "PRIVATE" -> "나의 일기"
-                        "FOLLOWER" -> "친구 일기"
-                        else -> "공개 일기"
-                    }
+                    text = "나의 일기",
+                    fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                    color = Color.White
                 )
 
             }
             Spacer(modifier = Modifier.height(30.dp))
-
-
-
+// 다이어리 목록 표시
+            if (isLoading.value) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    items(diaryListState.value) { diary ->
+                        DiaryBox(
+                            navController = navHostController,
+                            userId = userId,
+                            diaryInfo = diary
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                }
+            }
         }
+
+
         AppBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 40.dp),
             navHostController = navHostController,
-            option = option
+            option = 2
         )
     }
 }
