@@ -39,7 +39,7 @@ fun NavGraph(navController: NavHostController) {
     var currentLocation by remember {
         mutableStateOf(LatLng(0.0, 0.0))
     }
-    val userId: Long = 4
+    val userId: Long = 1
 
     NavHost(navController = navController, startDestination = "login") {
         //로그인 페이지
