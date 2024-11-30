@@ -163,10 +163,16 @@ object DiaryApi {
                         onFailure(Throwable("Response body is null"))
                     }
                 } else {
-                    val errorBody = response.errorBody()?.string() ?: "No error body"
-                    println("Failed to load diaries: ${response.code()} - ${response.message()}")
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    val statusCode = response.code()
+                    val responseHeaders = response.headers()
+                    val requestUrl = call.request().url
+                    val requestMethod = call.request().method
+                    println("HTTP Code: $statusCode")
                     println("Error Body: $errorBody")
-                    onFailure(Throwable("Error: ${response.code()} - ${response.message()}\n$errorBody"))
+                    println("Response Headers: $responseHeaders")
+                    println("Request URL: $requestUrl")
+                    println("Request Method: $requestMethod")
                 }
             }
 
@@ -180,10 +186,6 @@ object DiaryApi {
             }
         })
     }
-
-
-
-
 
 
 

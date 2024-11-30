@@ -1,5 +1,6 @@
 package com.example.diaryprogram.page
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -50,19 +51,24 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
         isLoading.value = true
         fetchAllDiaries(
             userId = userId,
-            diaryStatus = DiaryStatus.PRIVATE, // DiaryStatus는 적절한 Enum/클래스여야 함
+            diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 10,
             onSuccess = { response ->
+                Log.d("ResponseCheck", "Content size: ${response.content.size}")
+                Log.d("ResponseCheck", "Content data: ${response.content}")
                 diaryListState.value = response.content
-                isLoading.value = false
+                //isLoading.value = false // 로딩 상태 업데이트
             },
             onFailure = { error ->
-                println("Failed to fetch diaries: ${error.message}")
+                Log.e("BrowseMineDiaryPage", "Failed to fetch diaries: ${error.message}")
+                Log.e("JSONMapping", "Failed to map JSON: ${error.message}")
                 isLoading.value = false
             }
         )
     }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()

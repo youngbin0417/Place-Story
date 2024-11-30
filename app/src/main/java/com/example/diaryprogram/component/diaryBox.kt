@@ -44,8 +44,8 @@ import java.time.LocalDate
 //api 확인해야함
 @Composable
 fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryResponseDto) {
-    val date: LocalDate = diaryInfo.date
-    val formattedDate = "${date.year}/${date.monthValue}/${date.dayOfMonth}"
+    val year = diaryInfo.date?.year ?: "Unknown Year"
+    val formattedDate = diaryInfo.date?.toString() ?: "Unknown Date"
     var isClicked by remember {mutableStateOf(false)}
 
     Box(modifier = Modifier
@@ -73,9 +73,9 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                 )
             }
             else{
-                val firstImage = diaryInfo.diaryImages.first()
+                val firstImage = diaryInfo.diaryImages.first().url
                 Image(
-                    painter = rememberAsyncImagePainter(model = firstImage.url), // Use Coil to load URL images
+                    painter = rememberAsyncImagePainter(model = firstImage), // Use Coil to load URL images
                     contentDescription = "${diaryInfo.diaryIds}'s diary picture",
                     modifier = Modifier
                         .size(50.dp)

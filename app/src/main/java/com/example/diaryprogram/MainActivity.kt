@@ -1,7 +1,10 @@
 package com.example.diaryprogram
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -40,79 +43,126 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun PermissionRequestAndServiceStart(
-    ) {
+    fun PermissionRequestAndServiceStart() {
         val context = LocalContext.current
         val navController = rememberNavController()
 
-        val permissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
-        ) { permissions ->
-            permissions.forEach { (permission, granted) ->
-                Log.d("PermissionCheck", "$permission granted: $granted")
-            }
-
-            val allGranted = permissions.values.all { it }
-            if (allGranted) {
-                Toast.makeText(context, "All permissions are granted", Toast.LENGTH_SHORT).show()
-                Log.d("PermissionCheck", "All permissions granted. Starting foreground service.")
+        // 알림 권한 요청
+        val notificationPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (granted) {
+                Log.d("PermissionCheck", "Notification permission granted.")
                 startMyForegroundServiceWithDelay()
             } else {
-                Toast.makeText(context, "Location permissions are required for this service", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "알림 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // 위치 및 Foreground Service 권한 요청
+        val locationPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            val allGranted = permissions.values.all { it }
+            if (allGranted) {
+                Log.d(
+                    "PermissionCheck",
+                    "All permissions granted. Requesting notification permission."
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    startMyForegroundServiceWithDelay()
+                }
+            } else {
+                Toast.makeText(context, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
                 Log.d("PermissionCheck", "One or more permissions were denied.")
             }
         }
 
+        // 권한 요청 및 Foreground Service 실행
         LaunchedEffect(Unit) {
             if (checkPermissions()) {
-                Log.d("PermissionCheck", "Permissions already granted. Starting foreground service.")
-                startMyForegroundServiceWithDelay()
+                Log.d(
+                    "PermissionCheck",
+                    "Permissions already granted. Starting foreground service."
+                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                } else {
+                    startMyForegroundServiceWithDelay()
+                }
             } else {
                 Log.d("PermissionCheck", "Requesting permissions.")
                 val permissionsToRequest = mutableListOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.FOREGROUND_SERVICE
+                    Manifest.permission.ACCESS_COARSE_LOCATION
                 )
-                permissionsToRequest.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
-                permissionLauncher.launch(permissionsToRequest.toTypedArray())
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    permissionsToRequest.add(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                }
+                locationPermissionLauncher.launch(permissionsToRequest.toTypedArray())
             }
         }
+
+        // 내비게이션 그래프 시작
         NavGraph(navController = navController)
     }
 
-    // 백그라운드
     private fun startMyForegroundServiceWithDelay() {
         Log.d("ServiceStart", "Preparing to start foreground service with delay.")
-        window.decorView.postDelayed({
-            startMyForegroundService()
-        }, 1000)  // 1초 지연
+
+        if (!isServiceRunning(MyForegroundService::class.java)) {
+            window.decorView.postDelayed({
+                startMyForegroundService()
+            }, 1000) // 1초 지연
+        } else {
+            Log.d("ServiceStart", "Service is already running. Skipping start.")
+        }
     }
 
     private fun startMyForegroundService() {
         val serviceIntent = Intent(this, MyForegroundService::class.java)
-        Log.d("ServiceStart", "Starting foreground service.")
-        startForegroundService(serviceIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            ContextCompat.startForegroundService(this, serviceIntent)
+        } else {
+            startService(serviceIntent)
+        }
     }
 
-    // 권한 체크용이라 신경쓸 것 없음
+
+
+    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        return manager.getRunningServices(Int.MAX_VALUE).any {
+            it.service.className == serviceClass.name
+        }
+    }
+
+    // 권한 확인
     private fun checkPermissions(): Boolean {
-        val fineLocationPermission = ContextCompat.checkSelfPermission(
+        val fineLocationGranted = ContextCompat.checkSelfPermission(
             this, Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PermissionChecker.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED
 
-        val coarseLocationPermission = ContextCompat.checkSelfPermission(
+        val coarseLocationGranted = ContextCompat.checkSelfPermission(
             this, Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PermissionChecker.PERMISSION_GRANTED
+        ) == PackageManager.PERMISSION_GRANTED
 
-        val foregroundServicePermission =
+        val notificationGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(
-                this, Manifest.permission.FOREGROUND_SERVICE
-            ) == PermissionChecker.PERMISSION_GRANTED
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        } else true
 
-        val allPermissionsGranted = fineLocationPermission && coarseLocationPermission && foregroundServicePermission
-        Log.d("PermissionCheck", "Foreground service permission: $foregroundServicePermission")
-        Log.d("PermissionCheck", "Location permissions (fine, coarse): ($fineLocationPermission, $coarseLocationPermission)")
-        return allPermissionsGranted
+        val backgroundLocationGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        } else true
+
+        return fineLocationGranted && coarseLocationGranted && notificationGranted && backgroundLocationGranted
     }
+
+
 }
