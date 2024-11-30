@@ -17,9 +17,9 @@ data class UserProfileResponseDto(
 )
 
 data class DiaryResponseDto(
-    val diaryIds: Long,
-    val diaryTitles: String,
+    val diaryId: Long,
     val name: String,
+    val diaryTitles: String,
     val likesCount: Int,
     val profileImage: Image?,
     val diaryImages: List<Image>,

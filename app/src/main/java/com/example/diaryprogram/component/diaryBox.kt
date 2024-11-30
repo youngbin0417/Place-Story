@@ -76,7 +76,7 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                 val firstImage = diaryInfo.diaryImages.first().url
                 Image(
                     painter = rememberAsyncImagePainter(model = firstImage), // Use Coil to load URL images
-                    contentDescription = "${diaryInfo.diaryIds}'s diary picture",
+                    contentDescription = "${diaryInfo.diaryId}'s diary picture",
                     modifier = Modifier
                         .size(50.dp)
                 )
@@ -125,7 +125,7 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                             likeDiary(
                                 apiService = apiService,
                                 userId = userId,
-                                diaryId = diaryInfo.diaryIds
+                                diaryId = diaryInfo.diaryId
                             )
                                   },
                         modifier = Modifier

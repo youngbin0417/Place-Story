@@ -53,7 +53,7 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
             userId = userId,
             diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
-            size = 10,
+            size = 5,
             onSuccess = { response ->
                 Log.d("ResponseCheck", "Content size: ${response.content.size}")
                 Log.d("ResponseCheck", "Content data: ${response.content}")
