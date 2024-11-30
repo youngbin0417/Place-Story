@@ -8,15 +8,21 @@ import com.google.gson.GsonBuilder
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import java.util.concurrent.TimeUnit
-
 object ApiClient {
     private const val BASE_URL = "http://35.216.42.166:8081/api/"
+
+    // HttpLoggingInterceptor 설정
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY // 요청 및 응답을 BODY로 출력
+    }
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(30, TimeUnit.SECONDS)
         .writeTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
+        .addInterceptor(loggingInterceptor)
         .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()

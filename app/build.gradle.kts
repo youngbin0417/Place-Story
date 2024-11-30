@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.diaryprogram"
-        minSdk = 35
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -50,7 +50,10 @@ android {
 }
 
 dependencies {
+    // OkHttp 및 로깅 인터셉터 추가
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
+    // Android 관련 라이브러리들
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -69,12 +72,18 @@ dependencies {
     implementation(libs.accompanist.permissions)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-    implementation(libs.okhttp)
+
+    // OkHttp 라이브러리 중복 제거
+    // implementation(libs.okhttp) 이미 추가됨
+
+    // 그 외 필요한 의존성들
     implementation(libs.android.maps.compose)
     implementation(libs.core.ktx)
     implementation(libs.androidx.core)
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+
+    // 테스트 의존성
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,5 +91,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
 }
