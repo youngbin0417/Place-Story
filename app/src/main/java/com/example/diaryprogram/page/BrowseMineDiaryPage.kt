@@ -121,17 +121,29 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .height(500.dp)
                         .padding(horizontal = 16.dp)
                 ) {
                     items(diaryListState.value) { diary ->
                         DiaryBox(
                             navController = navHostController,
                             userId = userId,
-                            diaryInfo = diary
+                            diaryInfo = diary,
+                            1
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
+            }
+            Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.Center
+            )
+            {
+                // page 버튼 생성
             }
         }
 
