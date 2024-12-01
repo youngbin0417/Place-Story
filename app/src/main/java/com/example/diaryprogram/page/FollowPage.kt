@@ -141,7 +141,7 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(followList) { followInfo ->
-                            profileBox(navHostController, followInfo)
+                            profileBox(navHostController, userId, followInfo)
                         }
                     }
 

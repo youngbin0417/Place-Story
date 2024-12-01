@@ -154,6 +154,19 @@ object DiaryApi {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         println("Successfully loaded diaries: ${it.content.size} entries")
+                        // 각 다이어리 내용 출력
+                        it.content.forEachIndexed { index, diary ->
+                            println("Diary #$index:")
+                            println("  ID: ${diary.diaryId}")
+                            println("  Title: ${diary.diaryTitles}")
+                            println("  Content: ${diary.name}")
+                            println("  Date: ${diary.date}")
+                            println("  Location: (${diary.latitude}, ${diary.longitude})")
+                            println("  profile Image: ${diary.profileImage}")
+                            println("  Images: ${diary.diaryImages}")
+
+                        }
+
                         onSuccess(it)
                     } ?: run {
                         println("Response was successful but body is null")
@@ -225,6 +238,43 @@ object DiaryApi {
                 println("Request Headers: ${call.request().headers}")
                 println("Error Message: ${t.message}")
                 println("Error Cause: ${t.cause}")
+                onFailure(t)
+            }
+        })
+    }
+
+
+    fun fetchUserDiary(
+        userId: Long,
+        diaryId: Long,
+        onSuccess: (UserDiaryResponseDto) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        val call = ApiClient.apiService.getUserDiary(userId, diaryId)
+
+        call.enqueue(object : Callback<UserDiaryResponseDto> {
+            override fun onResponse(
+                call: Call<UserDiaryResponseDto>,
+                response: Response<UserDiaryResponseDto>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { diary ->
+                        println("Diary fetched successfully: $diary")
+                        onSuccess(diary)
+                    } ?: run {
+                        println("Response is successful but body is null")
+                        onFailure(Throwable("Response body is null"))
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    val statusCode = response.code()
+                    println("Error fetching diary - HTTP Code: $statusCode, Error: $errorBody")
+                    onFailure(Throwable("Error: HTTP $statusCode"))
+                }
+            }
+
+            override fun onFailure(call: Call<UserDiaryResponseDto>, t: Throwable) {
+                println("API call failed: ${t.message}")
                 onFailure(t)
             }
         })

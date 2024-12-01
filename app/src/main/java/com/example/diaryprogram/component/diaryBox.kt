@@ -45,37 +45,43 @@ import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 
 
-
-//api 확인해야함
 @Composable
-fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryResponseDto, option: Int) {
+fun DiaryBox(
+    navController: NavHostController,
+    userId: Long,
+    diaryInfo: DiaryResponseDto,
+    option: Int,
+    onDiaryClick: (Long) -> Unit
+) {
     val context = LocalContext.current
     val formattedDate = diaryInfo.date?.toString() ?: "Unknown Date"
-    var isClicked by remember {mutableStateOf(false)}
+    var isClicked by remember { mutableStateOf(false) }
     var address by remember { mutableStateOf("...") }
-    var diarylocation by remember { mutableStateOf(LatLng(diaryInfo.latitude,diaryInfo.longitude)) }
-
-    LaunchedEffect(diarylocation) {
-        // 좌표가 변경될 때 동까지만 가져오기
-        address = getAddressFromLatLng(context, diarylocation.latitude, diarylocation.longitude)
+    var diarylocation by remember {
+        mutableStateOf(
+            LatLng(
+                diaryInfo.latitude ?: 0.0, // null 처리
+                diaryInfo.longitude ?: 0.0 // null 처리
+            )
+        )
     }
 
-    Box(modifier = Modifier
-        .width(360.dp)
-        .height(110.dp)
-        .clickable(onClick = {
-            if (option == 1) {
-                // 나의 일기 조회에서 넘어옴
-            }
-            else if (option==2){
-                // 팔로워 일기 조회에서 넘어옴
-            }
-            else if (option==3){
-                // 공개 일기 조회에서 넘어옴
-            }
-            // 해당 일기 상세보기
-        })
-    ){
+    LaunchedEffect(diarylocation) {
+        address = getAddressFromLatLng(
+            context,
+            diarylocation.latitude,
+            diarylocation.longitude
+        )
+    }
+
+    Box(
+        modifier = Modifier
+            .width(360.dp)
+            .height(110.dp)
+            .clickable(onClick = {
+                diaryInfo.diaryId?.let { onDiaryClick(it) } // diaryId null 체크
+            })
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,30 +90,29 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
-        ){
+        ) {
+            // 프로필 이미지 처리
             if (diaryInfo.profileImage?.url.isNullOrEmpty()) {
-                // profileImages가 null이거나 빈 리스트일 때 처리
                 Image(
-                    painter = painterResource(R.drawable.profile), // Use Coil to load URL images
+                    painter = painterResource(R.drawable.profile),
                     contentDescription = "no picture",
-                    modifier = Modifier
-                        .size(50.dp)
+                    modifier = Modifier.size(50.dp)
                 )
-            }
-            else{
-                val firstImage = diaryInfo.profileImage
+            } else {
+                val firstImage = diaryInfo.profileImage?.url ?: ""
                 Image(
-                    painter = rememberAsyncImagePainter(model = firstImage), // Use Coil to load URL images
+                    painter = rememberAsyncImagePainter(model = firstImage),
                     contentDescription = "${diaryInfo.diaryId}'s diary picture",
-                    modifier = Modifier
-                        .size(50.dp)
+                    modifier = Modifier.size(50.dp)
                 )
             }
+
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
             ) {
+                // 제목 null 처리
                 Text(
-                    text = diaryInfo.diaryTitles,
+                    text = diaryInfo.diaryTitles ?: "Untitled", // null 처리
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                     fontSize = 16.sp
                 )
@@ -116,7 +121,6 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenr)),
                     fontSize = 10.sp
                 )
-
                 Text(
                     text = formattedDate,
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenr)),
@@ -126,14 +130,14 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
 
             Column {
                 Image(
-                    painter = painterResource(R.drawable.profile), // 이미지 api 연동 필요
+                    painter = painterResource(R.drawable.profile),
                     contentDescription = "프로필",
                     modifier = Modifier
                         .size(20.dp)
                         .clip(CircleShape)
                 )
 
-                if (isClicked){
+                if (isClicked) {
                     Button(
                         onClick = { isClicked = false },
                         modifier = Modifier
@@ -145,31 +149,29 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                             contentDescription = "좋아요"
                         )
                     }
-                }
-                else{
+                } else {
                     Button(
                         onClick = {
                             isClicked = true
-                            likeDiary(
-                                apiService = apiService,
-                                userId = userId,
-                                diaryId = diaryInfo.diaryId
-                            )
-                                  },
+                            diaryInfo.diaryId?.let {
+                                likeDiary(
+                                    apiService = apiService,
+                                    userId = userId,
+                                    diaryId = it
+                                )
+                            }
+                        },
                         modifier = Modifier
                             .size(20.dp)
                             .clip(CircleShape)
-                    ){
+                    ) {
                         Image(
                             painter = painterResource(R.drawable.emptyheart),
                             contentDescription = "좋아요"
                         )
                     }
                 }
-
-
             }
-
         }
     }
 }

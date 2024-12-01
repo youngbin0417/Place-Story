@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
@@ -46,28 +47,26 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
 
-
-    LaunchedEffect(Unit) {
+    // 다이어리 데이터 로드
+    LaunchedEffect(key1 = userId) {
         isLoading.value = true
         fetchAllDiaries(
             userId = userId,
-            diaryStatus = DiaryStatus.PRIVATE,
+            diaryStatus = DiaryStatus.PUBLIC,
             page = 0,
             size = 5,
             onSuccess = { response ->
                 Log.d("ResponseCheck", "Content size: ${response.content.size}")
-                Log.d("ResponseCheck", "Content data: ${response.content}")
                 diaryListState.value = response.content
-                //isLoading.value = false // 로딩 상태 업데이트
+                isLoading.value = false
             },
             onFailure = { error ->
                 Log.e("BrowseMineDiaryPage", "Failed to fetch diaries: ${error.message}")
-                Log.e("JSONMapping", "Failed to map JSON: ${error.message}")
                 isLoading.value = false
             }
         )
-    }
 
+    }
 
     Box(
         modifier = Modifier
@@ -80,8 +79,8 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                 )
             )
     ) {
-        Column {
-            Spacer(modifier = Modifier.height(30.dp))
+        Column(modifier = Modifier.fillMaxSize()) {
+            // 헤더
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -95,7 +94,7 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.whiteback),
-                        contentDescription = "백버튼",
+                        contentDescription = "뒤로가기 버튼",
                         modifier = Modifier.size(50.dp)
                     )
                 }
@@ -103,51 +102,59 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                 Text(
                     text = "나의 일기",
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                    color = Color.White
+                    color = Color.White,
+                    fontSize = 20.sp
                 )
-
             }
+
             Spacer(modifier = Modifier.height(30.dp))
-// 다이어리 목록 표시
+
+            // 다이어리 목록
             if (isLoading.value) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = Color.White)
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(500.dp)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    items(diaryListState.value) { diary ->
-                        DiaryBox(
-                            navController = navHostController,
-                            userId = userId,
-                            diaryInfo = diary,
-                            1
+                if (diaryListState.value.isEmpty()) {
+                    // 다이어리가 없을 때
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "표시할 다이어리가 없습니다.",
+                            color = Color.White,
+                            fontSize = 16.sp
                         )
-                        Spacer(modifier = Modifier.height(10.dp))
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        items(diaryListState.value) { diary ->
+                            DiaryBox(
+                                navController = navHostController,
+                                userId = userId,
+                                diaryInfo = diary,
+                                1,
+                                onDiaryClick = { diaryId ->
+                                    navHostController.navigate("mydiary/$diaryId")
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.Center
-            )
-            {
-                // page 버튼 생성
-            }
         }
 
-
+        // 하단 앱 바
         AppBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

@@ -40,11 +40,11 @@ fun NavGraph(navController: NavHostController) {
     var currentLocation by remember {
         mutableStateOf(LatLng(0.0, 0.0))
     }
-    val userId: Long = 125L
+    val userId: Long = 2L
 
-    NavHost(navController = navController, startDestination = "mydiary") {
+    NavHost(navController = navController, startDestination = "login") {
         //로그인 페이지
-        composable(route = "profile") {
+        composable(route = "login") {
             LoginPage(navController)
         }
 
@@ -91,22 +91,36 @@ fun NavGraph(navController: NavHostController) {
 
         // 일기 조회 페이지
         composable(route = "browseMine") {
-            BrowseMineDiaryPage(navController,userId)
+            BrowseMineDiaryPage(navController, userId)
         }
+
+        composable(route = "mydiary/{diaryId}") { backStackEntry ->
+            val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
+            if (diaryId != null) {
+                MyDiaryPage(navController, userId, diaryId)
+            } else {
+                Log.e("NavigationError", "diaryId is null or invalid")
+            }
+        }
+
 
         // 팔로우 개인 조회
         composable(route = "browseFollow") {
-            BrowseMineDiaryPage(navController,userId)
+            //BrowseMineDiaryPage(navController,userId)
         }
 
         composable(route = "browsePublic") {
             BrowsePublicDiaryPage(navController,userId)
         }
 
-        composable(route = "mydiary") {
-            MyDiaryPage(navController, userId)
+        composable(route = "mydiary/{diaryId}") { backStackEntry ->
+            val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
+            if (diaryId != null) {
+                MyDiaryPage(navController, userId, diaryId)
+            } else {
+                Log.e("NavigationError", "diaryId is null or invalid")
+            }
         }
-
         // 프로필 편집 페이지
         composable(route = "setting") {
             SettingPage(navController,userId)
@@ -121,11 +135,15 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable("other_profile_page/{userId}") { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId")?.toLong()
-            if (userId != null) {
-                OtherProfilePage(navController = navController, userIds = userId)
+            val otheruserId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
+            if (otheruserId != null) {
+                OtherProfilePage(navController, userId, otheruserId)
+            } else {
+                // 예외 처리
+                navController.navigate("error_page")
             }
         }
+
 
     }
 }

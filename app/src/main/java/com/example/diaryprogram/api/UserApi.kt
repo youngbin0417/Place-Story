@@ -120,6 +120,41 @@ object UserApi {
         })
     }
 
+    fun followUser(userId: Long, followingUserId: Long) {
+        val call = ApiClient.apiService.followUser(userId, followingUserId)
+        call.enqueue(object : Callback<ResponseDto> {
+            override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
+                if (response.isSuccessful) {
+                    println("Follow successful: ${response.body()?.statusMessage}")
+                } else {
+                    println("Follow failed: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
+                println("Follow error: ${t.message}")
+            }
+        })
+    }
+
+    fun unfollowUser(userId: Long, followingUserId: Long) {
+        val call = ApiClient.apiService.unfollowUser(userId, followingUserId)
+        call.enqueue(object : Callback<ResponseDto> {
+            override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
+                if (response.isSuccessful) {
+                    println("Unfollow successful: ${response.body()?.statusMessage}")
+                } else {
+                    println("Unfollow failed: ${response.errorBody()?.string()}")
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
+                println("Unfollow error: ${t.message}")
+            }
+        })
+    }
+
+
 
 
 

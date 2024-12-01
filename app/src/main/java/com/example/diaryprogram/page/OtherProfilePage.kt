@@ -24,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,255 +42,233 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
+import com.example.diaryprogram.api.UserApi.followUser
 import com.example.diaryprogram.api.UserApi.loadUserProfile
+import com.example.diaryprogram.api.UserApi.unfollowUser
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserProfileResponseDto
 
+// api 연동 해야함
 @Composable
-fun OtherProfilePage(navController: NavHostController, userIds: Long) {
+fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Long) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
-
-    // 상태 변수: 서버 데이터 저장 및 UI 제어
     var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
     var isFollowing by rememberSaveable { mutableStateOf(true) }
-    var isLoading by remember { mutableStateOf(true) }
 
-    // 서버에서 데이터 가져오기
-    LaunchedEffect(userIds) {
-        isLoading = true
-        loadUserProfile(apiService, userIds) { profile ->
+    DisposableEffect(otherId) {
+        loadUserProfile(apiService, otherId) { profile ->
             userProfile = profile
-            isLoading = false
         }
+        onDispose { }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(Color(0xFF070301), Color(0xFF886B5F)),
-                    start = Offset(0f, 0f),
-                    end = Offset(0f, 3000f)
-                )
-            )
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(
+            Brush.linearGradient(
+                colors = listOf(Color(0xFF070301), Color(0xFF886B5F)),
+                start = Offset(0f, 0f),
+                end = Offset(0f, 3000f)
+            ) // 그라데이션 세팅
+        )
     ) {
-        if (isLoading) {
-            // 로딩 중일 때
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+        Column {
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .padding((16.dp)),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
             ) {
-                Text(text = "로딩 중...", color = Color.White, fontSize = 18.sp)
+                IconButton(
+                    onClick = { navController.popBackStack() },
+                    modifier = Modifier.size(50.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.whiteback),
+                        contentDescription = "백버튼",
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
             }
-        } else {
-            userProfile?.let { profile ->
-                Column(modifier = Modifier.padding(30.dp)) {
+        }
+        Column(modifier = Modifier.padding(30.dp)) {
+
+            Spacer(modifier = Modifier.height(100.dp))
+
+            Box(modifier = Modifier
+                .width(361.dp)
+                .height(443.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(color = colorResource(id = R.color.light_daisy))
+            ) {
+                Column(modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row (modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center){
+                        Image( // api 연동 필요 -> 기본일때 해당 사진, 아니면 서버에서 받은 사진
+                            painter = painterResource(id = R.drawable.profile),
+                            contentDescription = "프로필 사진",
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape)
+                                .border(2.dp, Color.Transparent, CircleShape)
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    // 상단 백버튼
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        IconButton(
-                            onClick = { navController.popBackStack() },
-                            modifier = Modifier.size(50.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.whiteback),
-                                contentDescription = "백버튼",
-                                modifier = Modifier.size(50.dp)
-                            )
-                        }
+                    userProfile?.let {
+                        Text(
+                            text = it.name,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            fontSize = 20.sp
+                        )
                     }
 
-                    Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
+                    HorizontalDivider(
+                        color = Color.White,
+                        thickness = 1.dp
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                    Box(
-                        modifier = Modifier
-                            .width(361.dp)
-                            .height(443.dp)
-                            .clip(RoundedCornerShape(24.dp))
-                            .background(color = colorResource(id = R.color.light_daisy))
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                    Row {
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .width(70.dp)
+                                .height(70.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(color = colorResource(id = R.color.box_daisy))
                         ) {
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            // 프로필 이미지
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+
                                 Image(
-                                    painter = rememberAsyncImagePainter(profile.profileImage?.url),
-                                    contentDescription = "프로필 사진",
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .clip(CircleShape)
+                                    painter = painterResource(id = R.drawable.heart),
+                                    contentDescription = "총 좋아요",
+                                    modifier = Modifier.size(40.dp)
+                                )
+
+                                Text(
+                                    text = "${userProfile?.totalLikesCount ?: 0}", // api 연동 필요
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontFamily = customfont
                                 )
                             }
+                        }
 
-                            Spacer(modifier = Modifier.height(20.dp))
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .width(70.dp)
+                                .height(70.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(color = colorResource(id = R.color.box_daisy))
+                                .clickable { navController.navigate("browseFollow")}
+                        )
+                        {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "작성한 일기",
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontFamily = customfont
+                                )
 
-                            // 사용자 이름
-                            Text(
-                                text = profile.name,
-                                color = Color.White,
-                                fontFamily = customfont
-                            )
-
-                            Spacer(modifier = Modifier.height(6.dp))
-                            HorizontalDivider(color = Color.White, thickness = 1.dp)
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            // 좋아요, 일기 수, 팔로잉 수
-                            Row {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .width(70.dp)
-                                        .height(70.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(color = colorResource(id = R.color.box_daisy))
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.heart),
-                                            contentDescription = "총 좋아요",
-                                            modifier = Modifier.size(40.dp)
-                                        )
-                                        Text(
-                                            text = "${profile.totalLikesCount}",
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontFamily = customfont
-                                        )
-                                    }
-                                }
-
-                                Box(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .width(70.dp)
-                                        .height(70.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(color = colorResource(id = R.color.box_daisy))
-                                        .clickable { navController.navigate("browseFollow") }
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "작성한 일기",
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontFamily = customfont
-                                        )
-                                        Text(
-                                            text = "${profile.totalDiaryCount}",
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontFamily = customfont
-                                        )
-                                    }
-                                }
-
-                                Box(
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .width(70.dp)
-                                        .height(70.dp)
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .background(color = colorResource(id = R.color.box_daisy))
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxSize(),
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = "팔로잉",
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontFamily = customfont
-                                        )
-                                        Text(
-                                            text = "${profile.totalFollowCount}",
-                                            color = Color.White,
-                                            fontSize = 12.sp,
-                                            fontFamily = customfont
-                                        )
-                                    }
-                                }
+                                Text(
+                                    text = "${userProfile?.totalDiaryCount ?: 0}", // api 연동 필요
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontFamily = customfont
+                                )
                             }
-
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                            // 팔로우/언팔로우 버튼
-                            if (isFollowing) {
-                                Button(
-                                    onClick = {
-                                        isFollowing = false
-                                        // 언팔로우 API 호출
-                                    },
-                                    modifier = Modifier.width(300.dp).height(45.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = colorResource(R.color.dark_daisy)
-                                    )
-                                ) {
-                                    Text(text = "팔로잉", color = Color.White)
-                                }
-                            } else {
-                                Button(
-                                    onClick = {
-                                        isFollowing = true
-                                        // 팔로우 API 호출
-                                    },
-                                    modifier = Modifier.width(300.dp).height(45.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.White
-                                    )
-                                ) {
-                                    Text(text = "팔로우", color = colorResource(R.color.dark_daisy))
-                                }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .width(70.dp)
+                                .height(70.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(color = colorResource(id = R.color.box_daisy))
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center, // 수직 중앙 정렬
+                                horizontalAlignment = Alignment.CenterHorizontally // 수평 중앙 정렬
+                            ) {
+                                Text(
+                                    text = "팔로잉",
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontFamily = customfont
+                                )
+                                Text(
+                                    text = "${userProfile?.totalFollowCount ?:0}", // API 연동 필요
+                                    color = Color.White,
+                                    fontSize = 12.sp,
+                                    fontFamily = customfont
+                                )
                             }
                         }
                     }
-                }
-            } ?: run {
-                // 프로필 데이터를 불러오지 못했을 때
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "유저 정보를 불러오지 못했습니다.", color = Color.White, fontSize = 18.sp)
+                    Spacer(modifier = Modifier.height(20.dp))
+                    if (isFollowing){
+                        Button(onClick = { isFollowing=false
+                            // 언팔로우 api 함수
+                            unfollowUser(userId, otherId)
+                        },
+                            modifier = Modifier.width(300.dp).height(45.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.dark_daisy)
+                            )
+                        ) {
+                            Text(text = "팔로잉",
+                                color = Color.White)
+                        }
+                    }
+                    else {
+                        Button(
+                            onClick = { isFollowing=true
+                                // 팔로우 api 함수
+                                followUser(userId, otherId)
+                            },
+                            modifier = Modifier.width(300.dp).height(45.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.White // 버튼 배경색 설정
+                            )
+                        ) {
+                            Text(text = "팔로우",
+                                color = colorResource(R.color.dark_daisy)
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        // 하단 AppBar
-        AppBar(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 30.dp),
+        AppBar(modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(bottom = 30.dp),
             navHostController = navController,
-            option = 4
+            option=5
         )
     }
 }

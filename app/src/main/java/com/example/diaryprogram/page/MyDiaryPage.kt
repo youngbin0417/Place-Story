@@ -14,9 +14,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,9 +51,8 @@ import com.example.diaryprogram.appbar.AppBar
 
 //해야함
 @Composable
-fun MyDiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: Long, option: Int*/) {
+fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long) {
 
-    val option = 1 // 1일때 내 일기 조회중, 2일때 팔로워 일기 조회중, 3일때 공개 일기 조회중
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     /*LaunchedEffect(diary_location) {
@@ -89,6 +92,37 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: L
                             contentDescription = "백버튼"
                         )
                     }
+
+                    Button(
+                        onClick = {
+                            deleteDiary(
+                                userId = userID,
+                                diaryId = 52,
+                                onSuccess = { response ->
+                                    println("삭제 성공: $response")
+                                },
+                                onFailure = { throwable ->
+                                    println("삭제 실패: ${throwable.message}")
+                                }
+                            )
+                        },
+                        modifier = Modifier
+                            .width(70.dp)
+                            .height(30.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.new_red), // 버튼 배경색 설정
+                            contentColor = Color.White // 버튼 내용(텍스트) 색상 설정
+                        )
+                    ) {
+                        Text(
+                            text = "삭제",
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            fontSize = 11.sp,
+                            color = Color.White // 텍스트 색상 설정
+                        )
+                    }
+
+
                 }
 
                 Box(
@@ -116,16 +150,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: L
                             )
                             IconButton(
                                 onClick = { /* 수정 버튼 클릭 이벤트 */
-                                    deleteDiary(
-                                        userId = 125,
-                                        diaryId = 52,
-                                        onSuccess = { response ->
-                                            println("삭제 성공: $response")
-                                        },
-                                        onFailure = { throwable ->
-                                            println("삭제 실패: ${throwable.message}")
-                                        }
-                                    )
+
                                 },
                                 modifier = Modifier.size(30.dp)
                             ) {
@@ -208,7 +233,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: L
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 30.dp),
                 navHostController = navHostController,
-                option=option// 이후 api 연동해서 마무리
+                option=2// 이후 api 연동해서 마무리
             )
         }
     }

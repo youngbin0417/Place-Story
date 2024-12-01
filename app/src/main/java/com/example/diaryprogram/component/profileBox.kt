@@ -36,10 +36,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.UserApi.followUser
+import com.example.diaryprogram.api.UserApi.unfollowUser
 import com.example.diaryprogram.data.FollowListResponseDto
 
 @Composable
-fun profileBox(navController: NavHostController, followinfo:FollowListResponseDto) {
+fun profileBox(navController: NavHostController, user:Long, followinfo:FollowListResponseDto) {
     var isFollowing by rememberSaveable { mutableStateOf(true) }
     Box(modifier = Modifier
         .width(300.dp).height(80.dp)
@@ -86,7 +88,7 @@ fun profileBox(navController: NavHostController, followinfo:FollowListResponseDt
             if (isFollowing) {
                 Button(
                     onClick = { isFollowing = false
-                              //unfollowing 함수
+                              unfollowUser(user,followinfo.userIds)
                         },
                     modifier = Modifier.width(100.dp).height(45.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -102,7 +104,9 @@ fun profileBox(navController: NavHostController, followinfo:FollowListResponseDt
                 }
             } else {
                 Button(
-                    onClick = { isFollowing = true },
+                    onClick = { isFollowing = true
+                        followUser(user,followinfo.userIds)
+                    },
                     modifier = Modifier.width(100.dp).height(45.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White // 버튼 배경색 설정
