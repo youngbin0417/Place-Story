@@ -16,12 +16,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.page.BrowsePublicDiaryPage
-import com.example.diaryprogram.page.DiaryPage
 import com.example.diaryprogram.page.FollowPage
 import com.example.diaryprogram.page.LoadingPage
 import com.example.diaryprogram.page.LoginPage
 import com.example.diaryprogram.page.MainPage
 import com.example.diaryprogram.page.MapPage
+import com.example.diaryprogram.page.MyDiaryPage
 import com.example.diaryprogram.page.OtherProfilePage
 import com.example.diaryprogram.page.ProfilePage
 import com.example.diaryprogram.page.SettingPage
@@ -42,9 +42,9 @@ fun NavGraph(navController: NavHostController) {
     }
     val userId: Long = 125L
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = "mydiary") {
         //로그인 페이지
-        composable(route = "login") {
+        composable(route = "profile") {
             LoginPage(navController)
         }
 
@@ -103,8 +103,8 @@ fun NavGraph(navController: NavHostController) {
             BrowsePublicDiaryPage(navController,userId)
         }
 
-        composable(route = "diary") {
-            DiaryPage(navController, userId)
+        composable(route = "mydiary") {
+            MyDiaryPage(navController, userId)
         }
 
         // 프로필 편집 페이지

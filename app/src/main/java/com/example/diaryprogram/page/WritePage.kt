@@ -178,11 +178,11 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(5.dp))
 
                 Box(
                     modifier = Modifier
-                        .height(760.dp)
+                        .height(700.dp)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(color = colorResource(R.color.dark_daisy))
@@ -276,7 +276,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                             onValueChange = { userInput = it },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(400.dp)
+                                .height(350.dp)
                                 .border(
                                     width = 2.dp,
                                     color = Color.Gray,
@@ -328,7 +328,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 }
                             }
                         } else {
-                            Spacer(modifier = Modifier.height(108.dp))
+                            Spacer(modifier = Modifier.height(100.dp))
                         }
 
                         Row(
@@ -338,7 +338,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                             horizontalArrangement = Arrangement.SpaceEvenly,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Spacer(modifier = Modifier.width(10.dp))
+                            Spacer(modifier = Modifier.width(7.dp))
                             Text(
                                 text = "Period",
                                 fontFamily = customfont,
@@ -348,7 +348,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
 
                             Box(
                                 modifier = Modifier
-                                    .width(70.dp)
+                                    .width(60.dp)
                                     .height(30.dp)
                                     .clickable { /* 매일알림 클릭 이벤트 */
                                         diaryPeriod=1
@@ -374,7 +374,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                             )
                             Box(
                                 modifier = Modifier
-                                    .width(70.dp)
+                                    .width(60.dp)
                                     .height(30.dp)
                                     .clickable { /* 1일마다 클릭 이벤트 */
                                         diaryPeriod=2
@@ -401,7 +401,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                             )
                             Box(
                                 modifier = Modifier
-                                    .width(70.dp)
+                                    .width(60.dp)
                                     .height(30.dp)
                                     .clickable { /* 1주마다 클릭 이벤트 */
                                         diaryPeriod=3
@@ -428,7 +428,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                             )
                             Box(
                                 modifier = Modifier
-                                    .width(70.dp)
+                                    .width(60.dp)
                                     .height(30.dp)
                                     .clickable { /* 1년마다 클릭 이벤트 */
                                         diaryPeriod=4

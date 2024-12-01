@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,10 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -44,14 +43,12 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.appbar.AppBar
-import com.google.android.gms.maps.model.LatLng
-import java.util.Calendar
 
 //해야함
 @Composable
-fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Long*/) {
+fun MyDiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: Long, option: Int*/) {
 
-    val option = 1 // api에서 받아올거임
+    val option = 1 // 1일때 내 일기 조회중, 2일때 팔로워 일기 조회중, 3일때 공개 일기 조회중
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     /*LaunchedEffect(diary_location) {
@@ -79,7 +76,8 @@ fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Lon
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
                         onClick = { navHostController.popBackStack() },
@@ -95,7 +93,7 @@ fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Lon
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(675.dp)
+                        .height(575.dp)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(color = colorResource(R.color.dark_daisy))
@@ -105,14 +103,26 @@ fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Lon
                         modifier = Modifier
                             .padding(20.dp)
                     ){
-                        Text(
-                            text = "제목", // api 연동
-                            textAlign = TextAlign.Start,
-                            fontSize = 20.sp,
-                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                            color = Color.White,
-                            modifier = Modifier.height(40.dp)
-                        )
+                        Row (modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween){
+                            Text(
+                                text = "제목", // api 연동
+                                textAlign = TextAlign.Start,
+                                fontSize = 20.sp,
+                                fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                                color = Color.White,
+                                modifier = Modifier.height(40.dp)
+                            )
+                            IconButton(
+                                onClick = { /* 수정 버튼 클릭 이벤트 */ },
+                                modifier = Modifier.size(30.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.editor),
+                                    contentDescription = "수정 버튼"
+                                )
+                            }
+                        }
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
 
                         Text(
@@ -124,21 +134,36 @@ fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Lon
                         )
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
 
-                        Text(
-                            text = "주소",
-                            textAlign = TextAlign.Start,
-                            fontSize = 18.sp,
-                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                            color = Color.White
-                        )
+                        Row (modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically)
+                        {
+                            Text(
+                                text = "주소",
+                                textAlign = TextAlign.Start,
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                                color = Color.White
+                            )
+                            Icon(
+                                painter = painterResource(id = R.drawable.locationicon),
+                                contentDescription = "위치",
+                                modifier = Modifier.size(18.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
                             text = "....", // api 연동 후, 받아올 값
                             textAlign = TextAlign.Start,
                             fontSize = 18.sp,
                             fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                            color = Color.White
+                            color = Color.White,
+                            modifier = Modifier.border(1.dp, Color.White)
+                                .fillMaxWidth()
+                                .height(300.dp)
                         )
                         // 이미지 받아와서 보여주게 api 연동
                         if (selectedImageUris.isNotEmpty()) {
@@ -169,7 +194,7 @@ fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Lon
 
             AppBar(modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 40.dp),
+                .padding(bottom = 30.dp),
                 navHostController = navHostController,
                 option=option// 이후 api 연동해서 마무리
             )
