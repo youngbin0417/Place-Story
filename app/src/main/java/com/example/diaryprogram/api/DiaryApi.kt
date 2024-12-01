@@ -280,6 +280,64 @@ object DiaryApi {
         })
     }
 
+    fun fetchPublicDiaries(
+        page: Int = 0,
+        size: Int = 5,
+        onSuccess: (PaginatedResponseDto<DiaryResponseDto>) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        val call = ApiClient.apiService.getPublicDiaries(page, size)
+
+        call.enqueue(object : Callback<PaginatedResponseDto<DiaryResponseDto>> {
+            override fun onResponse(
+                call: Call<PaginatedResponseDto<DiaryResponseDto>>,
+                response: Response<PaginatedResponseDto<DiaryResponseDto>>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        println("Successfully loaded public diaries: ${it.content.size} entries")
+                        // 각 다이어리 내용 출력
+                        it.content.forEachIndexed { index, diary ->
+                            println("Diary #$index:")
+                            println("  ID: ${diary.diaryId}")
+                            println("  Title: ${diary.diaryTitles}")
+                            println("  Content: ${diary.name}")
+                            println("  Date: ${diary.date}")
+                            println("  Location: (${diary.latitude}, ${diary.longitude})")
+                            println("  Profile Image: ${diary.profileImage}")
+                            println("  Images: ${diary.diaryImages}")
+                        }
+
+                        onSuccess(it)
+                    } ?: run {
+                        println("Response was successful but body is null")
+                        onFailure(Throwable("Response body is null"))
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    val statusCode = response.code()
+                    val responseHeaders = response.headers()
+                    val requestUrl = call.request().url
+                    val requestMethod = call.request().method
+                    println("HTTP Code: $statusCode")
+                    println("Error Body: $errorBody")
+                    println("Response Headers: $responseHeaders")
+                    println("Request URL: $requestUrl")
+                    println("Request Method: $requestMethod")
+                    onFailure(Throwable("HTTP Error: $statusCode, Error Body: $errorBody"))
+                }
+            }
+
+            override fun onFailure(call: Call<PaginatedResponseDto<DiaryResponseDto>>, t: Throwable) {
+                println("Failed to make API call.")
+                println("Request URL: ${call.request().url}")
+                println("Request Headers: ${call.request().headers}")
+                println("Error Message: ${t.message}")
+                println("Error Cause: ${t.cause}")
+                onFailure(t)
+            }
+        })
+    }
 
 
 

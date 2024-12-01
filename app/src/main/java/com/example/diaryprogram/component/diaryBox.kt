@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -129,28 +130,21 @@ fun DiaryBox(
             }
 
             Column {
-                Image(
-                    painter = painterResource(R.drawable.profile),
-                    contentDescription = "프로필",
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clip(CircleShape)
-                )
 
                 if (isClicked) {
-                    Button(
+                    IconButton(
                         onClick = { isClicked = false },
                         modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
+                            .size(50.dp)
                     ) {
                         Image(
                             painter = painterResource(R.drawable.heart),
-                            contentDescription = "좋아요"
+                            contentDescription = "좋아요",
+                            modifier = Modifier.size(40.dp)
                         )
                     }
                 } else {
-                    Button(
+                    IconButton(
                         onClick = {
                             isClicked = true
                             diaryInfo.diaryId?.let {
@@ -162,15 +156,17 @@ fun DiaryBox(
                             }
                         },
                         modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
+                            .size(50.dp)
                     ) {
                         Image(
                             painter = painterResource(R.drawable.emptyheart),
-                            contentDescription = "좋아요"
+                            contentDescription = "좋아요",
+                            modifier = Modifier.size(40.dp)
+
                         )
                     }
                 }
+
             }
         }
     }

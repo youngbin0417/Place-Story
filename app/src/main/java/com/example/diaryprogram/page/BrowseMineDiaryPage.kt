@@ -21,8 +21,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -46,13 +48,15 @@ import com.example.diaryprogram.data.DiaryStatus
 fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
+    val totalPage = remember { mutableStateOf(0) }
+    var currentPage by remember { mutableStateOf(0) }
 
     // 다이어리 데이터 로드
     LaunchedEffect(key1 = userId) {
         isLoading.value = true
         fetchAllDiaries(
             userId = userId,
-            diaryStatus = DiaryStatus.PUBLIC,
+            diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 5,
             onSuccess = { response ->
