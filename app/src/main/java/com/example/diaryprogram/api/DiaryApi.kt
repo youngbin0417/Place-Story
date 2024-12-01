@@ -187,6 +187,51 @@ object DiaryApi {
         })
     }
 
+    fun deleteDiary(
+        userId: Long,
+        diaryId: Long,
+        onSuccess: (ResponseDto) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        val call = ApiClient.apiService.deleteDiary(userId, diaryId)
+
+        call.enqueue(object : Callback<ResponseDto> {
+            override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        println("Successfully deleted diary: ${it}")
+                        onSuccess(it)
+                    } ?: run {
+                        println("Response was successful but body is null")
+                        onFailure(Throwable("Response body is null"))
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    val statusCode = response.code()
+                    val responseHeaders = response.headers()
+                    val requestUrl = call.request().url
+                    val requestMethod = call.request().method
+                    println("HTTP Code: $statusCode")
+                    println("Error Body: $errorBody")
+                    println("Response Headers: $responseHeaders")
+                    println("Request URL: $requestUrl")
+                    println("Request Method: $requestMethod")
+                    onFailure(Throwable("Failed with HTTP status: $statusCode"))
+                }
+            }
+
+            override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
+                println("Failed to make API call.")
+                println("Request URL: ${call.request().url}")
+                println("Request Headers: ${call.request().headers}")
+                println("Error Message: ${t.message}")
+                println("Error Cause: ${t.cause}")
+                onFailure(t)
+            }
+        })
+    }
+
+
 
 
 }

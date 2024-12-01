@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.DiaryApi.deleteDiary
 import com.example.diaryprogram.appbar.AppBar
 
 //해야함
@@ -114,7 +115,18 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: L
                                 modifier = Modifier.height(40.dp)
                             )
                             IconButton(
-                                onClick = { /* 수정 버튼 클릭 이벤트 */ },
+                                onClick = { /* 수정 버튼 클릭 이벤트 */
+                                    deleteDiary(
+                                        userId = 125,
+                                        diaryId = 52,
+                                        onSuccess = { response ->
+                                            println("삭제 성공: $response")
+                                        },
+                                        onFailure = { throwable ->
+                                            println("삭제 실패: ${throwable.message}")
+                                        }
+                                    )
+                                },
                                 modifier = Modifier.size(30.dp)
                             ) {
                                 Image(
