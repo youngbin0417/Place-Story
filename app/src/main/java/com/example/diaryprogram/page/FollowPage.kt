@@ -92,7 +92,7 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                         modifier = Modifier.size(50.dp)
                     )
                 }
-                Spacer(modifier = Modifier.width(110.dp))
+                Spacer(modifier = Modifier.width(90.dp))
 
                 Text(
                     text = "팔로잉",
@@ -136,7 +136,8 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                     // 리스트가 있을 때 LazyColumn 표시
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxSize(),
+                            .width(300.dp)
+                            .align(Alignment.CenterHorizontally),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(followList) { followInfo ->
@@ -152,7 +153,7 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
         AppBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 40.dp),
+                .padding(bottom = 30.dp),
             navHostController = navHostController,
             option = 4
         )

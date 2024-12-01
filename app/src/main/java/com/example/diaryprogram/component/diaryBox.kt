@@ -63,17 +63,17 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ){
-            if (diaryInfo.diaryImages.isNullOrEmpty()) {
-                // diaryImages가 null이거나 빈 리스트일 때 처리
+            if (diaryInfo.profileImage?.url.isNullOrEmpty()) {
+                // profileImages가 null이거나 빈 리스트일 때 처리
                 Image(
-                    painter = painterResource(R.drawable.empty), // Use Coil to load URL images
+                    painter = painterResource(R.drawable.profile), // Use Coil to load URL images
                     contentDescription = "no picture",
                     modifier = Modifier
                         .size(50.dp)
                 )
             }
             else{
-                val firstImage = diaryInfo.diaryImages.first().url
+                val firstImage = diaryInfo.profileImage
                 Image(
                     painter = rememberAsyncImagePainter(model = firstImage), // Use Coil to load URL images
                     contentDescription = "${diaryInfo.diaryId}'s diary picture",
@@ -82,17 +82,23 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                 )
             }
             Column(
-                verticalArrangement = Arrangement.SpaceBetween
+                verticalArrangement = Arrangement.SpaceEvenly,
             ) {
                 Text(
                     text = diaryInfo.diaryTitles,
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                    fontSize = 18.sp
+                    fontSize = 16.sp
                 )
                 /*Text(
+                    text =,
+                    fontFamily = FontFamily(Font(R.font.nanumbarunpenr)),
+                    fontSize = 10.sp
+                )
+                */
+                /*Text(
                     text = formattedDate,
-                    fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                    fontSize = 12.sp
+                    fontFamily = FontFamily(Font(R.font.nanumbarunpenr)),
+                    fontSize = 10.sp
                 )*/
             }
 

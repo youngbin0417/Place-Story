@@ -2,6 +2,8 @@ package com.example.diaryprogram.page
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +22,14 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,15 +50,14 @@ import com.example.diaryprogram.api.UserApi.loadUserProfile
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserProfileResponseDto
 
-// api 연동 해야함
 @Composable
 fun OtherProfilePage(navController: NavHostController, userIds: Long) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
 
-    // 상태 변수: 서버에서 가져온 데이터 저장
+    // 상태 변수: 서버 데이터 저장 및 UI 제어
     var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
-    var isFollowing by rememberSaveable { mutableStateOf(true) } // 기존 코드 유지
-    var isLoading by remember { mutableStateOf(true) } // 로딩 상태
+    var isFollowing by rememberSaveable { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(true) }
 
     // 서버에서 데이터 가져오기
     LaunchedEffect(userIds) {
@@ -73,7 +80,7 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
             )
     ) {
         if (isLoading) {
-            // 로딩 중
+            // 로딩 중일 때
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -87,7 +94,9 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
 
                     // 상단 백버튼
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Start
                     ) {
@@ -150,8 +159,8 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                                 Box(
                                     modifier = Modifier
                                         .padding(8.dp)
-                                        .width(80.dp)
-                                        .height(80.dp)
+                                        .width(70.dp)
+                                        .height(70.dp)
                                         .clip(RoundedCornerShape(10.dp))
                                         .background(color = colorResource(id = R.color.box_daisy))
                                 ) {
@@ -177,10 +186,11 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                                 Box(
                                     modifier = Modifier
                                         .padding(8.dp)
-                                        .width(80.dp)
-                                        .height(80.dp)
+                                        .width(70.dp)
+                                        .height(70.dp)
                                         .clip(RoundedCornerShape(10.dp))
                                         .background(color = colorResource(id = R.color.box_daisy))
+                                        .clickable { navController.navigate("browseFollow") }
                                 ) {
                                     Column(
                                         modifier = Modifier.fillMaxSize(),
@@ -205,8 +215,8 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                                 Box(
                                     modifier = Modifier
                                         .padding(8.dp)
-                                        .width(80.dp)
-                                        .height(80.dp)
+                                        .width(70.dp)
+                                        .height(70.dp)
                                         .clip(RoundedCornerShape(10.dp))
                                         .background(color = colorResource(id = R.color.box_daisy))
                                 ) {
@@ -233,10 +243,13 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
 
                             Spacer(modifier = Modifier.height(20.dp))
 
-                            // 팔로우/팔로잉 버튼 (기존 코드 유지)
+                            // 팔로우/언팔로우 버튼
                             if (isFollowing) {
                                 Button(
-                                    onClick = { isFollowing = false },
+                                    onClick = {
+                                        isFollowing = false
+                                        // 언팔로우 API 호출
+                                    },
                                     modifier = Modifier.width(300.dp).height(45.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = colorResource(R.color.dark_daisy)
@@ -246,7 +259,10 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                                 }
                             } else {
                                 Button(
-                                    onClick = { isFollowing = true },
+                                    onClick = {
+                                        isFollowing = true
+                                        // 팔로우 API 호출
+                                    },
                                     modifier = Modifier.width(300.dp).height(45.dp),
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.White
@@ -259,15 +275,12 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                     }
                 }
             } ?: run {
+                // 프로필 데이터를 불러오지 못했을 때
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "유저 정보를 불러오지 못했습니다.",
-                        color = Color.White,
-                        fontSize = 18.sp
-                    )
+                    Text(text = "유저 정보를 불러오지 못했습니다.", color = Color.White, fontSize = 18.sp)
                 }
             }
         }
@@ -276,7 +289,7 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
         AppBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 40.dp),
+                .padding(bottom = 30.dp),
             navHostController = navController,
             option = 4
         )
