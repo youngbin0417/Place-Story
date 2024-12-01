@@ -26,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,18 +48,37 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.deleteDiary
+import com.example.diaryprogram.api.DiaryApi.fetchUserDiary
 import com.example.diaryprogram.appbar.AppBar
+import com.example.diaryprogram.data.UserDiaryResponseDto
 
 //해야함
 @Composable
 fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long) {
-
-    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var diaryDetails by remember { mutableStateOf<UserDiaryResponseDto?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
     /*LaunchedEffect(diary_location) {
         // 좌표가 변경될 때 동까지만 가져오기
         address = getAddressFromLatLng(context, diary_location.latitude, diary_location.longitude)
     }*/
+    DisposableEffect(diaryID) {
+        fetchUserDiary(
+            userId = userID,
+            diaryId = diaryID,
+            onSuccess = { diary ->
+                diaryDetails = diary
+                isLoading = false
+            },
+            onFailure = { throwable ->
+                errorMessage = throwable.message
+                isLoading = false
+            }
+        )
+        onDispose { }
+    }
+
 
         Box(
             modifier = Modifier
@@ -128,7 +148,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(575.dp)
+                        .height(600.dp)
                         .padding(16.dp)
                         .clip(RoundedCornerShape(24.dp))
                         .background(color = colorResource(R.color.dark_daisy))
@@ -141,16 +161,15 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                         Row (modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween){
                             Text(
-                                text = "제목", // api 연동
-                                textAlign = TextAlign.Start,
+                                text = diaryDetails?.title ?: "제목 없음",                                textAlign = TextAlign.Start,
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                                 color = Color.White,
                                 modifier = Modifier.height(40.dp)
                             )
                             IconButton(
-                                onClick = { /* 수정 버튼 클릭 이벤트 */
-
+                                onClick = {
+                                    ///수정 버튼 클릭 이벤트
                                 },
                                 modifier = Modifier.size(30.dp)
                             ) {
@@ -163,7 +182,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
 
                         Text(
-                            text = "날짜",
+                            text = "${diaryDetails?.date ?: "날짜 없음"}",
                             textAlign = TextAlign.Start,
                             fontSize = 18.sp,
                             fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
@@ -176,7 +195,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                             verticalAlignment = Alignment.CenterVertically)
                         {
                             Text(
-                                text = "주소",
+                                text = "주소: ${diaryDetails?.latitude}, ${diaryDetails?.longitude}",
                                 textAlign = TextAlign.Start,
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
@@ -193,29 +212,28 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "....", // api 연동 후, 받아올 값
+                            text = diaryDetails?.content ?: "내용 없음",
                             textAlign = TextAlign.Start,
                             fontSize = 18.sp,
                             fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                             color = Color.White,
-                            modifier = Modifier.border(1.dp, Color.White)
+                            modifier = Modifier
                                 .fillMaxWidth()
                                 .height(300.dp)
                         )
                         // 이미지 받아와서 보여주게 api 연동
-                        if (selectedImageUris.isNotEmpty()) {
+                        if (diaryDetails?.images?.isNotEmpty() == true) {
                             LazyRow(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp) // 이미지 간 간격 설정
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                items(selectedImageUris) { uri ->
+                                items(diaryDetails!!.images) { image ->
                                     Image(
-                                        painter = rememberAsyncImagePainter(model = uri),
-                                        contentDescription = "Selected Image",
-                                        modifier = Modifier
-                                            .size(80.dp)
+                                        painter = rememberAsyncImagePainter(model = image.url),
+                                        contentDescription = "Diary Image",
+                                        modifier = Modifier.size(80.dp)
                                     )
                                 }
                             }
