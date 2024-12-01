@@ -49,7 +49,7 @@ import java.util.Calendar
 
 //해야함
 @Composable
-fun DiaryPage(navHostController: NavHostController, userID: Long/*, diaryID: Long*/) {
+fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long) {
 
     val option = 1 // api에서 받아올거임
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }

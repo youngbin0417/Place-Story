@@ -136,7 +136,8 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                     // 리스트가 있을 때 LazyColumn 표시
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxSize(),
+                            .fillMaxSize()
+                            .align(Alignment.CenterHorizontally),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(followList) { followInfo ->

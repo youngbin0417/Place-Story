@@ -73,7 +73,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
         )
     ) {
         Column {
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier.fillMaxWidth()
                 .padding(16.dp),
@@ -90,15 +90,13 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                     modifier = Modifier.size(50.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(80.dp))
-
+            Spacer(modifier = Modifier.width(48.dp)) // 아이콘과 텍스트 간 여백 추가
             Text(
                 text = "PLACE STORY",
                 color = Color.White,
                 fontSize = 25.sp,
                 fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
             )
-
         }
     }
         Column (modifier = Modifier.padding(30.dp)) {
@@ -155,8 +153,8 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
-                                .width(80.dp)
-                                .height(80.dp)
+                                .width(70.dp)
+                                .height(70.dp)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
                         ) {
@@ -185,8 +183,8 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
-                                .width(80.dp)
-                                .height(80.dp)
+                                .width(70.dp)
+                                .height(70.dp)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
                                 .clickable {
@@ -218,8 +216,8 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
-                                .width(80.dp)
-                                .height(80.dp)
+                                .width(70.dp)
+                                .height(70.dp)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
                                 .clickable {
@@ -246,7 +244,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Button(onClick = {navHostController.navigate("setting")},
                         modifier = Modifier.width(300.dp).height(35.dp),
