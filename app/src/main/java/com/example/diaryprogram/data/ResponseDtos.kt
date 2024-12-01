@@ -20,10 +20,11 @@ data class DiaryResponseDto(
     val diaryId: Long,
     val name: String,
     val diaryTitles: String,
-    val likesCount: Int,
     val profileImage: Image?,
     val diaryImages: List<Image>,
-    val date: LocalDate
+    val date: LocalDate,
+    val latitude: Double,
+    val longitude: Double
 )
 
 data class DiaryDetailsResponseDto(

@@ -44,8 +44,8 @@ import java.time.LocalDate
 //api 확인해야함
 @Composable
 fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryResponseDto) {
-    val year = diaryInfo.date?.year ?: "Unknown Year"
-    val formattedDate = diaryInfo.date?.toString() ?: "Unknown Date"
+    //val year = diaryInfo.date?.year ?: "Unknown Year"
+    //val formattedDate = diaryInfo.date?.toString() ?: "Unknown Date"
     var isClicked by remember {mutableStateOf(false)}
 
     Box(modifier = Modifier
@@ -89,11 +89,11 @@ fun DiaryBox(navController: NavHostController,userId:Long, diaryInfo: DiaryRespo
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                     fontSize = 18.sp
                 )
-                Text(
+                /*Text(
                     text = formattedDate,
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                     fontSize = 12.sp
-                )
+                )*/
             }
 
             Column {

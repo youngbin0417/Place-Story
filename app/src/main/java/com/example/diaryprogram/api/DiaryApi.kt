@@ -143,7 +143,7 @@ object DiaryApi {
         userId: Long,
         diaryStatus: DiaryStatus,
         page: Int = 0,
-        size: Int = 10,
+        size: Int = 5,
         onSuccess: (PaginatedResponseDto<DiaryResponseDto>) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
