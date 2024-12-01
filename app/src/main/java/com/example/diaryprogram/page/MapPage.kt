@@ -58,9 +58,9 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
             diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 50,
-            onSuccess = { response ->
-                Log.d("ResponseCheck", "Content size: ${response.content.size}")
-                diaryList.value = response.content
+            onSuccess = { diaryListResponse, currentPage, totalPages ->
+                Log.d("ResponseCheck", "Content size: ${diaryListResponse.size}")
+                diaryList.value = diaryListResponse
             },
             onFailure = { error ->
                 Log.e("BrowseMineDiaryPage", "Failed to fetch diaries: ${error.message}")

@@ -19,12 +19,15 @@ data class UserProfileResponseDto(
 data class DiaryResponseDto(
     val diaryId: Long,
     val name: String,
-    val diaryTitles: String,
-    val profileImage: Image?,
-    val diaryImages: List<Image>,
+    val diaryTitle: String,
+    val profileImage: ImageResponseDto?,
     val date: LocalDate,
     val latitude: Double,
     val longitude: Double
+)
+data class ImageResponseDto(
+    val imageId: Long,
+    val url: String
 )
 
 data class DiaryDetailsResponseDto(
@@ -36,7 +39,7 @@ data class DiaryDetailsResponseDto(
     val date: LocalDate,
     val likesCount: Int,
     val diaryStatus: DiaryStatus,
-    val images: List<Image>
+    val images: List<ImageResponseDto>
 )
 
 data class UserDiaryResponseDto(
@@ -48,13 +51,13 @@ data class UserDiaryResponseDto(
     val date: LocalDate,
     val likesCount: Int,
     val diaryStatus: DiaryStatus,
-    val images: List<Image>
+    val images: List<ImageResponseDto>
 )
 
 data class FollowListResponseDto(
     val userIds: Long,
     val followNames: String,
-    val profileImage: Image?
+    val profileImage: ImageResponseDto?
 )
 
 data class PaginatedResponseDto<T>(
