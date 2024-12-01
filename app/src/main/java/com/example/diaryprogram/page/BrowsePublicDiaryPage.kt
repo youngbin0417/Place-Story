@@ -9,9 +9,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,21 +36,22 @@ import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.fetchPublicDiaries
 import com.example.diaryprogram.appbar.AppBar
+import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
-
 @Composable
 fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
 
+    // 데이터 로드
     LaunchedEffect(Unit) {
         isLoading.value = true
         fetchPublicDiaries(
             page = 0,
             size = 10,
-            onSuccess = { response ->
-                println("Fetched ${response.content.size} public diaries successfully.")
-                diaryListState.value = response.content // 다이어리 리스트 상태 업데이트
+            onSuccess = { content, _, _ ->
+                println("Fetched ${content.size} public diaries successfully.")
+                diaryListState.value = content // 다이어리 리스트 상태 업데이트
                 isLoading.value = false // 로딩 상태 해제
             },
             onFailure = { error ->
@@ -56,6 +61,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
         )
     }
 
+    // 화면 구성
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -68,6 +74,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            // 상단 바
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,7 +100,56 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                     fontSize = 20.sp
                 )
             }
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            // 데이터 상태에 따른 UI 처리
+            if (isLoading.value) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color.White)
+                }
+            } else {
+                if (diaryListState.value.isEmpty()) {
+                    // 데이터가 없을 때
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "표시할 공개 일기가 없습니다.",
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            fontSize = 16.sp
+                        )
+                    }
+                } else {
+                    // 데이터가 있을 때
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        // diaryListState.value가 List<DiaryResponseDto>인 경우 items 사용
+                        items(diaryListState.value) { diary ->
+                            DiaryBox(
+                                navController = navHostController,
+                                userId = userId,
+                                diaryInfo = diary,
+                                onDiaryClick = { diaryId ->
+                                    navHostController.navigate("publicdiary/$diaryId")
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+                    }
+                }
+            }
         }
+
+        // 하단 네비게이션 바
         AppBar(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

@@ -42,7 +42,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
-// 프론트 완료
 @Composable
 fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userId: Long) {
     val context = LocalContext.current
@@ -58,9 +57,9 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
             diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 50,
-            onSuccess = { response ->
-                Log.d("ResponseCheck", "Content size: ${response.content.size}")
-                diaryList.value = response.content
+            onSuccess = { diaryListResponse, currentPage, totalPages ->
+                Log.d("ResponseCheck", "Content size: ${diaryListResponse.size}")
+                diaryList.value = diaryListResponse
             },
             onFailure = { error ->
                 Log.e("BrowseMineDiaryPage", "Failed to fetch diaries: ${error.message}")
@@ -84,7 +83,7 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
 
-        ) {
+            ) {
             // marker 추가할것
             markerList.forEach { markerData ->
                 Marker(

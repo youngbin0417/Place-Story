@@ -1,6 +1,7 @@
 package com.example.diaryprogram.component
 
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -43,6 +44,10 @@ import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 
@@ -51,27 +56,18 @@ fun DiaryBox(
     navController: NavHostController,
     userId: Long,
     diaryInfo: DiaryResponseDto,
-    option: Int,
     onDiaryClick: (Long) -> Unit
 ) {
     val context = LocalContext.current
-    val formattedDate = diaryInfo.date?.toString() ?: "Unknown Date"
     var isClicked by remember { mutableStateOf(false) }
     var address by remember { mutableStateOf("...") }
-    var diarylocation by remember {
-        mutableStateOf(
-            LatLng(
-                diaryInfo.latitude ?: 0.0, // null 처리
-                diaryInfo.longitude ?: 0.0 // null 처리
-            )
-        )
-    }
 
-    LaunchedEffect(diarylocation) {
+
+    LaunchedEffect(diaryInfo) {
         address = getAddressFromLatLng(
             context,
-            diarylocation.latitude,
-            diarylocation.longitude
+            diaryInfo.latitude,
+            diaryInfo.longitude
         )
     }
 
@@ -114,7 +110,7 @@ fun DiaryBox(
             ) {
                 // 제목 null 처리
                 Text(
-                    text = diaryInfo.diaryTitles ?: "Untitled", // null 처리
+                    text = diaryInfo.diaryTitle ?: "Untitled", // null 처리
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                     fontSize = 16.sp
                 )
@@ -124,7 +120,7 @@ fun DiaryBox(
                     fontSize = 10.sp
                 )
                 Text(
-                    text = formattedDate,
+                    text = "${diaryInfo.date}" ?: "no date",
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenr)),
                     fontSize = 10.sp
                 )
@@ -134,7 +130,12 @@ fun DiaryBox(
 
                 if (isClicked) {
                     IconButton(
-                        onClick = { isClicked = false },
+                        onClick = {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(1000L) // 1초 대기
+                                isClicked = false // 상태 복구
+                            }
+                        },
                         modifier = Modifier
                             .size(50.dp)
                     ) {
@@ -147,12 +148,18 @@ fun DiaryBox(
                 } else {
                     IconButton(
                         onClick = {
-                            isClicked = true
-                            diaryInfo.diaryId?.let {
+                            diaryInfo.diaryId?.let { diaryId ->
                                 likeDiary(
                                     apiService = apiService,
                                     userId = userId,
-                                    diaryId = it
+                                    diaryId = diaryId,
+                                    onSuccess = {
+                                        isClicked = true // 성공 시 좋아요 상태로 전환
+                                    },
+                                    onFailure = { throwable ->
+                                        Toast.makeText(context, "좋아요 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
+                                        isClicked = false // 실패 시 상태 복구
+                                    }
                                 )
                             }
                         },
@@ -163,7 +170,6 @@ fun DiaryBox(
                             painter = painterResource(R.drawable.emptyheart),
                             contentDescription = "좋아요",
                             modifier = Modifier.size(40.dp)
-
                         )
                     }
                 }
