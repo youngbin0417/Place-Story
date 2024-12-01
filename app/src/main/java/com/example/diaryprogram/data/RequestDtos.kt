@@ -8,7 +8,7 @@ data class DiaryRequestDto(
     val title: String,
     val content: String,
     val date: LocalDate,
-    val enums: DiaryStatus?
+    val diaryStatus: DiaryStatus?
 )
 
 data class LoginRequestDto(

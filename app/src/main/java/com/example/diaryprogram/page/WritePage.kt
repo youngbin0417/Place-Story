@@ -73,7 +73,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
     val customfont = FontFamily(Font(R.font.nanumbarunpenb))
     var diarylocation by remember { mutableStateOf(initialPosition) }
     var diaryPeriod by remember { mutableStateOf(0) }
-    var enums: DiaryStatus by remember { mutableStateOf(DiaryStatus.PUBLIC) }
+    var diaryStatus by remember { mutableStateOf(DiaryStatus.PUBLIC) }
     var showSearchLocation by remember { mutableStateOf(false) }
     var address by remember { mutableStateOf("주소를 가져오는 중...") }
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -155,7 +155,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                     title = title,
                                     content = userInput,
                                     date = LocalDate.now(),
-                                    enums = enums
+                                    diaryStatus = diaryStatus,
                                 ),
                                 imageUris = selectedImageUris,
                                 contentResolver = context.contentResolver,
@@ -467,7 +467,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                     .width(70.dp)
                                     .height(30.dp)
                                     .clickable { /*모두공개*/
-                                        enums=DiaryStatus.PUBLIC
+                                        diaryStatus=DiaryStatus.PUBLIC
                                         selectedEnum=1
                                     }
                                     .background(
@@ -497,7 +497,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                     .height(30.dp)
                                     .clickable { /*친구공개*/
                                         selectedEnum=2
-                                        enums = DiaryStatus.FOLLOWER
+                                        diaryStatus = DiaryStatus.FOLLOWER
                                     }
                                     .background(
                                         color = if (selectedEnum == 2) colorResource(R.color.box_daisy) else Color.Transparent,
@@ -525,7 +525,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                     .height(30.dp)
                                     .clickable { /*나만보기*/
                                         selectedEnum=3
-                                        enums = DiaryStatus.PRIVATE
+                                        diaryStatus = DiaryStatus.PRIVATE
                                     }
                                     .background(
                                         color = if (selectedEnum == 3) colorResource(R.color.box_daisy) else Color.Transparent,
