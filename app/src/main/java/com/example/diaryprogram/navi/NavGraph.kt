@@ -76,7 +76,7 @@ fun NavGraph(navController: NavHostController) {
 
         //지도 페이지
         composable(route = "map") {
-            MapPage(navController, initialPosition = currentLocation)
+            MapPage(navController, initialPosition = currentLocation, userId)
         }
 
         //설정 페이지
@@ -135,6 +135,7 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable("other_profile_page/{userId}") { backStackEntry ->
+            val isfollowing:Boolean = true
             val otheruserId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
             if (otheruserId != null) {
                 OtherProfilePage(navController, userId, otheruserId)
