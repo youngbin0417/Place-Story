@@ -1,6 +1,7 @@
 package com.example.diaryprogram.api
 import com.example.diaryprogram.data.*
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -11,8 +12,8 @@ interface ApiService {
     @POST("users/{userId}/diaries")
     fun createDiary(
         @Path("userId") userId: Long,
-        @Part("diary") diary: DiaryRequestDto,
-        @Part images: List<MultipartBody.Part>
+        @Part("diary") diary: RequestBody, // JSON 형태로 전송
+        @Part images: List<MultipartBody.Part> // 이미지 파일
     ): Call<ResponseDto>
 
     // 2. Get User Diary // 유저 아이디의 일기 조회

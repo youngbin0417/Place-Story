@@ -6,6 +6,10 @@ import android.provider.OpenableColumns
 import com.example.diaryprogram.data.*
 import com.google.android.gms.common.internal.Objects
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.TypeAdapter
+import com.google.gson.stream.JsonReader
+import com.google.gson.stream.JsonWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +20,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.time.LocalDate
 
 // 다이어리 API
 object DiaryApi {
@@ -31,76 +36,61 @@ object DiaryApi {
     ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // 유효한 이미지 URI 필터링
-                val validImageUris = imageUris.filter { uri ->
-                    try {
-                        contentResolver.openInputStream(uri)?.close()
-                        true
-                    } catch (e: Exception) {
-                        println("Invalid URI: $uri - ${e.message}")
-                        false
-                    }
-                }
+                val gson = GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, object : TypeAdapter<LocalDate>() {
+                        override fun write(out: JsonWriter, value: LocalDate) {
+                            out.value(value.toString()) // LocalDate 직렬화
+                        }
 
-                if (validImageUris.isEmpty()) {
-                    withContext(Dispatchers.Main) {
-                        onError("No valid images selected for upload.")
-                    }
-                    return@launch
-                }
+                        override fun read(input: JsonReader): LocalDate {
+                            return LocalDate.parse(input.nextString()) // LocalDate 역직렬화
+                        }
+                    })
+                    .registerTypeAdapter(DiaryStatus::class.java, DiaryStatusAdapter()) // DiaryStatus 직렬화 어댑터
+                    .create()
+
+                // DiaryRequestDto를 JSON으로 변환
+                val diaryJson = gson.toJson(diaryRequestDto)
+                val diaryRequestBody = diaryJson.toRequestBody("application/json".toMediaTypeOrNull())
 
                 // 이미지 파일 준비
-                val imageParts = validImageUris.mapIndexed { index, uri ->
-                    val fileName = getFileNameFromUri(uri, contentResolver) ?: "image_$index.jpg"
+                val imageParts = imageUris.mapIndexed { index, uri ->
+                    val fileName = getFileNameFromUri(uri, contentResolver)?.let { extractedName ->
+                        val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+                        val extension = when (mimeType) {
+                            "image/jpeg" -> ".jpg"
+                            "image/png" -> ".png"
+                            "image/webp" -> ".webp"
+                            else -> ".jpg"
+                        }
+                        if (extractedName.contains(".")) extractedName else "$extractedName$extension"
+                    } ?: "image_$index.jpg"
+
                     val requestBody = contentResolver.openInputStream(uri)?.use {
                         it.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
                     } ?: throw IllegalArgumentException("Unable to read image data for URI: $uri")
+
                     MultipartBody.Part.createFormData("images", fileName, requestBody)
                 }
 
-                // 네트워크 요청
-                withContext(Dispatchers.Main) {
-                    println("Request Debug Info:")
-                    println("User ID: $userId")
-                    println("Diary Request DTO: $diaryRequestDto")
-                    println("Valid Image URIs: $validImageUris")
-                    println("Image Parts: $imageParts")
-                }
-
-                ApiClient.apiService.createDiary(userId, diaryRequestDto, imageParts)
+                // API 호출
+                ApiClient.apiService.createDiary(userId, diaryRequestBody, imageParts)
                     .enqueue(object : Callback<ResponseDto> {
-                        override fun onResponse(
-                            call: Call<ResponseDto>,
-                            response: Response<ResponseDto>
-                        ) {
+                        override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
                             if (response.isSuccessful) {
-                                println("Diary created successfully!")
                                 onSuccess(response.body())
                             } else {
                                 val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                                val statusCode = response.code()
-                                val responseHeaders = response.headers()
-                                val requestUrl = call.request().url
-                                val requestMethod = call.request().method
-                                println("HTTP Code: $statusCode")
-                                println("Error Body: $errorBody")
-                                println("Response Headers: $responseHeaders")
-                                println("Request URL: $requestUrl")
-                                println("Request Method: $requestMethod")
+                                onError("Error: $errorBody")
                             }
                         }
 
                         override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
-                            println("Network error while creating diary:")
-                            println("Message: ${t.message}")
                             onError("Network error: ${t.message}")
                         }
                     })
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    println("Unexpected exception occurred while creating diary:")
-                    println("Message: ${e.message}")
-                    e.printStackTrace()
                     onError("Unexpected error: ${e.message}")
                 }
             }
@@ -108,15 +98,22 @@ object DiaryApi {
     }
 
 
+    class DiaryStatusAdapter : TypeAdapter<DiaryStatus>() {
+        override fun write(out: JsonWriter, value: DiaryStatus) {
+            out.value(value.name) // Enum의 name을 JSON에 기록
+        }
 
-    // 파일 이름 추출 유틸 함수
+        override fun read(input: JsonReader): DiaryStatus {
+            return DiaryStatus.valueOf(input.nextString())
+        }
+    }
+
     private fun getFileNameFromUri(uri: Uri, contentResolver: ContentResolver): String? {
         return contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
             if (nameIndex != -1 && cursor.moveToFirst()) cursor.getString(nameIndex) else null
         }
     }
-
 
     fun likeDiary(
         apiService: ApiService,
@@ -187,6 +184,8 @@ object DiaryApi {
         })
     }
 
+
+
     fun deleteDiary(
         userId: Long,
         diaryId: Long,
@@ -230,6 +229,9 @@ object DiaryApi {
             }
         })
     }
+
+
+
 
 
 
