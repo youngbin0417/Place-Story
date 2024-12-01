@@ -242,7 +242,7 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
 
         AppBar(modifier = Modifier
             .align(Alignment.BottomCenter)
-            .padding(bottom = 40.dp),
+            .padding(bottom = 30.dp),
             navHostController = navController,
             option=4
         )

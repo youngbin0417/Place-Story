@@ -270,7 +270,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
 
         AppBar(modifier = Modifier
             .align(Alignment.BottomCenter)
-            .padding(bottom = 40.dp),
+            .padding(bottom = 30.dp),
             navHostController = navHostController,
             option=5
         )
