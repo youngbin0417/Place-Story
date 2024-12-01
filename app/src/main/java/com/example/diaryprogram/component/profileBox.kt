@@ -42,7 +42,7 @@ import com.example.diaryprogram.data.FollowListResponseDto
 fun profileBox(navController: NavHostController, followinfo:FollowListResponseDto) {
     var isFollowing by rememberSaveable { mutableStateOf(true) }
     Box(modifier = Modifier
-        .width(360.dp).height(90.dp)
+        .width(300.dp).height(80.dp)
         .clickable(onClick = {
             // 네비게이션 사용
             navController.navigate("other_profile_page/${followinfo.userIds}")
@@ -79,23 +79,23 @@ fun profileBox(navController: NavHostController, followinfo:FollowListResponseDt
             Text(
                 text = "${followinfo.followNames}",
                 fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                fontSize = 18.sp
+                fontSize = 16.sp
             )
 
-            Spacer(modifier = Modifier.padding(30.dp))
 
             if (isFollowing) {
                 Button(
                     onClick = { isFollowing = false
                               //unfollowing 함수
                         },
-                    modifier = Modifier.width(90.dp).height(45.dp),
+                    modifier = Modifier.width(100.dp).height(45.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(R.color.dark_daisy)
                     )
                 ) {
                     Text(
                         text = "팔로잉",
+                        fontSize = 12.sp,
                         color = Color.White,
                         fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
                     )
@@ -103,13 +103,14 @@ fun profileBox(navController: NavHostController, followinfo:FollowListResponseDt
             } else {
                 Button(
                     onClick = { isFollowing = true },
-                    modifier = Modifier.width(90.dp).height(45.dp),
+                    modifier = Modifier.width(100.dp).height(45.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White // 버튼 배경색 설정
                     )
                 ) {
                     Text(
                         text = "팔로우",
+                        fontSize = 12.sp,
                         color = colorResource(R.color.dark_daisy),
                         fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
                     )
