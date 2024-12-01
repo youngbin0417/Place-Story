@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,11 +32,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -47,12 +43,10 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.appbar.AppBar
-import com.google.android.gms.maps.model.LatLng
-import java.util.Calendar
 
 //해야함
 @Composable
-fun DiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: Long, option: Int*/) {
+fun MyDiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: Long, option: Int*/) {
 
     val option = 1 // 1일때 내 일기 조회중, 2일때 팔로워 일기 조회중, 3일때 공개 일기 조회중
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -159,13 +153,17 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, /*diaryID: Lon
                             )
                         }
                         HorizontalDivider(color = Color.White, thickness = 1.dp)
+                        Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
                             text = "....", // api 연동 후, 받아올 값
                             textAlign = TextAlign.Start,
                             fontSize = 18.sp,
                             fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                            color = Color.White
+                            color = Color.White,
+                            modifier = Modifier.border(1.dp, Color.White)
+                                .fillMaxWidth()
+                                .height(300.dp)
                         )
                         // 이미지 받아와서 보여주게 api 연동
                         if (selectedImageUris.isNotEmpty()) {

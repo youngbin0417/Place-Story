@@ -23,8 +23,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,13 +43,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient.apiService
+import com.example.diaryprogram.api.UserApi.loadUserProfile
 import com.example.diaryprogram.appbar.AppBar
+import com.example.diaryprogram.data.UserProfileResponseDto
+
 // api 연동 해야함
 @Composable
 fun OtherProfilePage(navController: NavHostController, userIds: Long) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
-    // api 연동시에, userIds 통해서 서버에서 받아와서 설정할 값
+    var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
     var isFollowing by rememberSaveable { mutableStateOf(true) }
+
+    DisposableEffect(userIds) {
+        loadUserProfile(apiService, userIds) { profile ->
+            userProfile = profile
+        }
+        onDispose { }
+    }
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -108,11 +121,14 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    Text(
-                        text = "사용자의 이름",
-                        color = Color.White,
-                        fontFamily = customfont
-                    )
+                    userProfile?.let {
+                        Text(
+                            text = it.name,
+                            color = Color.White,
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
+                            fontSize = 20.sp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(6.dp))
                     HorizontalDivider(
@@ -144,7 +160,7 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                                 )
 
                                 Text(
-                                    text = "123", // api 연동 필요
+                                    text = "${userProfile?.totalLikesCount}", // api 연동 필요
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont
@@ -176,7 +192,7 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                                 )
 
                                 Text(
-                                    text = "123", // api 연동 필요
+                                    text = "${userProfile?.totalDiaryCount}", // api 연동 필요
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont
@@ -203,7 +219,7 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                                     fontFamily = customfont
                                 )
                                 Text(
-                                    text = "123", // API 연동 필요
+                                    text = "${userProfile?.totalFollowCount}", // API 연동 필요
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont
@@ -213,7 +229,9 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     if (isFollowing){
-                        Button(onClick = { isFollowing=false },
+                        Button(onClick = { isFollowing=false
+                                         // 언팔로우 api 함수
+                                         },
                             modifier = Modifier.width(300.dp).height(45.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = colorResource(R.color.dark_daisy)
@@ -225,7 +243,9 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                     }
                     else {
                         Button(
-                            onClick = { isFollowing=true },
+                            onClick = { isFollowing=true
+                                      // 팔로우 api 함수
+                                      },
                             modifier = Modifier.width(300.dp).height(45.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.White // 버튼 배경색 설정
