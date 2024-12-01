@@ -18,11 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -35,16 +31,47 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
+import com.example.diaryprogram.data.DiaryStatus
 
 @Composable
 fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
-    val totalPage = remember { mutableStateOf(0) }
+    val totalPage = remember { mutableStateOf(1) } // 기본적으로 1페이지로 설정
     var currentPage by remember { mutableStateOf(0) }
+
+    // 데이터 로드
+    LaunchedEffect(currentPage) {
+        try {
+            isLoading.value = true
+            val response = ApiClient.apiService.getAllDiaries(
+                userId = userId,
+                diaryStatus = DiaryStatus.FOLLOWER, // FOLLOWER 상태 전달
+                page = currentPage,
+                size = 10 // 원하는 페이지 크기 설정
+            ).execute()
+
+            if (response.isSuccessful) {
+                val paginatedResponse = response.body()
+                if (paginatedResponse != null) {
+                    diaryListState.value = diaryListState.value + paginatedResponse.content
+                    totalPage.value = paginatedResponse.totalPages
+                } else {
+                    println("Response body is null")
+                }
+            } else {
+                println("Error: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            println("Exception: ${e.message}")
+        } finally {
+            isLoading.value = false
+        }
+    }
 
     Box(
         modifier = Modifier

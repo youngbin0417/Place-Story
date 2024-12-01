@@ -114,7 +114,7 @@ fun DiaryBox(
             ) {
                 // 제목 null 처리
                 Text(
-                    text = diaryInfo.diaryTitles ?: "Untitled", // null 처리
+                    text = diaryInfo.diaryTitle ?: "Untitled", // null 처리
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                     fontSize = 16.sp
                 )

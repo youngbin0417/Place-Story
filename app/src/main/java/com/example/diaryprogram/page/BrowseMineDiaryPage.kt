@@ -59,9 +59,9 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
             diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 5,
-            onSuccess = { response ->
-                Log.d("ResponseCheck", "Content size: ${response.content.size}")
-                diaryListState.value = response.content
+            onSuccess = { content, currentPage, totalPages ->
+                Log.d("ResponseCheck", "Content size: ${content.size}")
+                diaryListState.value = content
                 isLoading.value = false
             },
             onFailure = { error ->
