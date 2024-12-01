@@ -59,14 +59,15 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
             ) // 그라데이션 세팅
         )
     ) {
-        Column (modifier = Modifier.padding(30.dp)) {
+        Column {
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row (
-                modifier = Modifier.fillMaxWidth(),
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                    .padding((16.dp)),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
-            ){
+            ) {
                 IconButton(
                     onClick = { navController.popBackStack() },
                     modifier = Modifier.size(50.dp)
@@ -78,8 +79,10 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                     )
                 }
             }
+        }
+        Column(modifier = Modifier.padding(30.dp)) {
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             Box(modifier = Modifier
                 .width(361.dp)
@@ -122,8 +125,8 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
-                                .width(80.dp)
-                                .height(80.dp)
+                                .width(70.dp)
+                                .height(70.dp)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
                         ) {
@@ -152,8 +155,8 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
-                                .width(80.dp)
-                                .height(80.dp)
+                                .width(70.dp)
+                                .height(70.dp)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
                                 .clickable { navController.navigate("browseFollow")}
@@ -183,8 +186,8 @@ fun OtherProfilePage(navController: NavHostController, userIds: Long) {
                         Box(
                             modifier = Modifier
                                 .padding(8.dp)
-                                .width(80.dp)
-                                .height(80.dp)
+                                .width(70.dp)
+                                .height(70.dp)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
                         ) {
