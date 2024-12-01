@@ -66,49 +66,30 @@ object UserApi {
                 call: Call<UserProfileResponseDto>,
                 response: Response<UserProfileResponseDto>
             ) {
-                if (response.body() == null || response.body().toString().isEmpty()) {
-                    println("Empty response body detected.")
-                    callback(null)
-                    return
-                }
                 if (response.isSuccessful) {
                     val userProfile = response.body()
-                    println("User profile loaded successfully: $userProfile")
-                    callback(userProfile)
+                    if (userProfile != null) {
+                        println("User profile loaded successfully: $userProfile")
+                        callback(userProfile)
+                    } else {
+                        println("Empty response body detected.")
+                        callback(null)
+                    }
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                    val statusCode = response.code()
-                    val responseHeaders = response.headers()
-                    val request = call.request()
-
-                    // 에러 디버깅 정보 출력
-                    println("Error loading user profile:")
-                    println("HTTP Code: $statusCode")
-                    println("Error Body: $errorBody")
-                    println("Response Headers: $responseHeaders")
-                    println("Request URL: ${request.url}")
-                    println("Request Method: ${request.method}")
-                    println("Request Headers: ${request.headers}")
+                    println("Error loading user profile: $errorBody")
+                    Log.e("API_ERROR", "Error: ${response.code()}, ${response.errorBody()?.string()}")
 
                     callback(null)
                 }
             }
 
             override fun onFailure(call: Call<UserProfileResponseDto>, t: Throwable) {
-                val request = call.request()
-
-                // 실패 디버깅 정보 출력
-                println("Failed to load user profile:")
-                println("Error Message: ${t.message}")
-                println("Error Cause: ${t.cause}")
-                println("Request URL: ${request.url}")
-                println("Request Method: ${request.method}")
-                println("Request Headers: ${request.headers}")
-
+                println("Failed to load user profile: ${t.message}")
+                Log.e("API_ERROR", "Request failed: ${t.message}")
                 callback(null)
             }
         })
-
     }
 
     fun loadFollowList(

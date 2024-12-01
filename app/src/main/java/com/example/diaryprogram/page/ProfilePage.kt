@@ -55,11 +55,11 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
     var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
 
-    DisposableEffect(userId) {
+    // LaunchedEffect를 사용하여 한 번만 API 호출 실행
+    LaunchedEffect(userId) {
         loadUserProfile(apiService, userId) { profile ->
             userProfile = profile
         }
-        onDispose { }
     }
 
     Box(modifier = Modifier
