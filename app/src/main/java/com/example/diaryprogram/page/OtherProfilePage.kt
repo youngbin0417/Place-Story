@@ -85,7 +85,7 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
             ) {
                 IconButton(
                     onClick = {
-                        navController.popBackStack()
+                        navController.navigate("following")
                     },
                     modifier = Modifier.size(50.dp)
                 ) {

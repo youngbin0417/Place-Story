@@ -130,6 +130,7 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                     ) {
                         Text(
                             text = "표시할 다이어리가 없습니다.",
+                            fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                             color = Color.White,
                             fontSize = 16.sp
                         )

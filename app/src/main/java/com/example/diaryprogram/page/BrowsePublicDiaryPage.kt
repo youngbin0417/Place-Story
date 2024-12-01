@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.fetchPublicDiaries
+import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.DiaryResponseDto
 
 @Composable
@@ -93,6 +94,12 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                 )
             }
         }
-
+        AppBar(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 30.dp),
+            navHostController = navHostController,
+            option = 3
+        )
     }
 }

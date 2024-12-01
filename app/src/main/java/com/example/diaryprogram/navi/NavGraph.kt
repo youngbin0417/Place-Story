@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import com.example.diaryprogram.page.BrowseFollowDiaryPage
 import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.page.BrowsePublicDiaryPage
 import com.example.diaryprogram.page.FollowPage
@@ -106,7 +107,7 @@ fun NavGraph(navController: NavHostController) {
 
         // 팔로우 개인 조회
         composable(route = "browseFollow") {
-            //BrowseMineDiaryPage(navController,userId)
+            BrowseFollowDiaryPage(navController,userId)
         }
 
         composable(route = "browsePublic") {
@@ -134,7 +135,7 @@ fun NavGraph(navController: NavHostController) {
             FollowPage(navController,userId)
         }
 
-        composable("other_profile_page/{userId}") { backStackEntry ->
+        composable("other_profile_page/{userId}/{isFollowing}") { backStackEntry ->
             val otheruserId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
             val isFollowing = backStackEntry.arguments?.getString("isFollowing")?.toBoolean() ?: false
 

@@ -339,6 +339,31 @@ object DiaryApi {
         })
     }
 
+    fun loadPublicDiaryDetails(
+        apiService: ApiService,
+        diaryId: Long,
+        onSuccess: (DiaryDetailsResponseDto) -> Unit,
+        onFailure: (Throwable) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = apiService.getPublicDiaryDetails(diaryId).execute()
+                if (response.isSuccessful && response.body() != null) {
+                    withContext(Dispatchers.Main) {
+                        onSuccess(response.body()!!)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onFailure(Exception("Failed to load diary details"))
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    onFailure(e)
+                }
+            }
+        }
+    }
 
 
 

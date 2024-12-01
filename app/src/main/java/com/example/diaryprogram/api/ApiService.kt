@@ -51,8 +51,6 @@ interface ApiService {
     ): Call<PaginatedResponseDto<DiaryResponseDto>>
 
     // 6. Get Public Diaries
-
-
     @GET("diaries")
     fun getPublicDiaries(
         @Query("page") page: Int,
