@@ -57,7 +57,7 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
             userId = userId,
             diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
-            size = 200,
+            size = 50,
             onSuccess = { response ->
                 Log.d("ResponseCheck", "Content size: ${response.content.size}")
                 diaryList.value = response.content
