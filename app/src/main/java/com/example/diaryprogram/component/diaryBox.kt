@@ -77,8 +77,9 @@ fun DiaryBox(
 
     Box(
         modifier = Modifier
+            .clip(RoundedCornerShape(24.dp))
             .width(360.dp)
-            .height(110.dp)
+            .height(100.dp)
             .clickable(onClick = {
                 diaryInfo.diaryId?.let { onDiaryClick(it) } // diaryId null 체크
             })

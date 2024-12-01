@@ -102,7 +102,7 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                         modifier = Modifier.size(50.dp)
                     )
                 }
-                Spacer(modifier = Modifier.width(110.dp))
+                Spacer(modifier = Modifier.width(80.dp))
                 Text(
                     text = "나의 일기",
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
