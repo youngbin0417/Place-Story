@@ -21,6 +21,7 @@ data class DiaryResponseDto(
     val name: String,
     val diaryTitles: String,
     val profileImage: Image?,
+    val diaryImages: List<Image>,
     val date: LocalDate,
     val latitude: Double,
     val longitude: Double
