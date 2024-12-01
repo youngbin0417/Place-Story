@@ -52,10 +52,10 @@ import com.example.diaryprogram.data.UserProfileResponseDto
 
 // api 연동 해야함
 @Composable
-fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Long) {
+fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Long, initialIsFollowing: Boolean) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
     var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
-    var isFollowing by rememberSaveable { mutableStateOf(true) }
+    var isFollowing by rememberSaveable { mutableStateOf(initialIsFollowing) }
 
     DisposableEffect(otherId) {
         loadUserProfile(apiService, otherId) { profile ->
@@ -84,7 +84,8 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                 horizontalArrangement = Arrangement.Start
             ) {
                 IconButton(
-                    onClick = { navController.navigate("following")
+                    onClick = {
+                        navController.popBackStack()
                     },
                     modifier = Modifier.size(50.dp)
                 ) {

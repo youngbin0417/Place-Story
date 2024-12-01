@@ -41,7 +41,8 @@ import com.example.diaryprogram.api.UserApi.unfollowUser
 import com.example.diaryprogram.data.FollowListResponseDto
 
 @Composable
-fun profileBox(navController: NavHostController, user:Long, followinfo:FollowListResponseDto) {
+fun profileBox(navController: NavHostController, user:Long, followinfo:FollowListResponseDto,
+               isFollowing: Boolean, onFollowChange: (Boolean) -> Unit) {
     var isFollowing by rememberSaveable { mutableStateOf(true) }
     Box(modifier = Modifier
         .width(300.dp).height(80.dp)
@@ -88,7 +89,8 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
             if (isFollowing) {
                 Button(
                     onClick = { isFollowing = false
-                              unfollowUser(user,followinfo.userIds)
+                        unfollowUser(user,followinfo.userIds)
+                        onFollowChange(false)
                         },
                     modifier = Modifier.width(100.dp).height(45.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -106,6 +108,7 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
                 Button(
                     onClick = { isFollowing = true
                         followUser(user,followinfo.userIds)
+                        onFollowChange(true)
                     },
                     modifier = Modifier.width(100.dp).height(45.dp),
                     colors = ButtonDefaults.buttonColors(

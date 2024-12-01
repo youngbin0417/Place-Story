@@ -33,6 +33,7 @@ import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
 import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.data.DiaryStatus
 import com.example.diaryprogram.data.MarkerData
+import com.example.diaryprogram.data.makeMarker
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
@@ -67,15 +68,10 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
         )
     }
 
-// Use derivedStateOf to dynamically compute markerList when diaryList changes
-    val markerList by remember {
+    // Dynamically compute markers
+    val markerList by remember(diaryList.value) {
         derivedStateOf {
-            diaryList.value.map { diary ->
-                MarkerData(
-                    location = LatLng(diary.latitude, diary.longitude),
-                    diaryId = diary.diaryId
-                )
-            }
+            makeMarker(diaryList.value)
         }
     }
 
@@ -94,7 +90,7 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
                 Marker(
                     state = rememberMarkerState(position = markerData.location),
                     title = "Diary ID: ${markerData.diaryId}",
-                    icon = getBitmapDescriptor(context, R.drawable.marker, 100),
+                    icon = getBitmapDescriptor(context, R.drawable.marker, 60),
                     alpha = 0.9f,
                     draggable = false,
                     onClick = {

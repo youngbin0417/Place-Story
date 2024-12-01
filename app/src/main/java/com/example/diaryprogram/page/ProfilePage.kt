@@ -118,8 +118,8 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                         horizontalArrangement = Arrangement.Center){
                         userProfile?.profileImage?.let { image ->
                             Image(
-                                painter = painterResource(id = R.drawable.profile),
-                                contentDescription = "Default Profile Icon",
+                                painter = rememberAsyncImagePainter(image.url),
+                                contentDescription = "User Profile Image",
                                 modifier = Modifier.size(100.dp)
                                     .clip(CircleShape)
                             )

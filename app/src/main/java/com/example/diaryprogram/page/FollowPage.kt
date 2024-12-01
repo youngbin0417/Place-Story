@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,6 +52,10 @@ import com.google.ai.client.generativeai.type.content
 fun FollowPage(navHostController: NavHostController, userId: Long) {
     var followList by remember { mutableStateOf<List<FollowListResponseDto>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
+    val followStates = remember { mutableStateMapOf<Long, Boolean>() }
+    followList.forEach {
+        followStates[it.userIds] = true // 초기값 설정 (팔로우 상태)
+    }
 
     DisposableEffect(userId) {
         isLoading = true
@@ -141,7 +146,18 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(followList) { followInfo ->
-                            profileBox(navHostController, userId, followInfo)
+                            val isFollowing = followStates[followInfo.userIds] ?: true
+                            profileBox(
+                                navHostController,
+                                userId,
+                                followInfo,
+                                isFollowing=isFollowing,
+                                onFollowChange = { newIsFollowing ->
+                                    // 리스트를 업데이트
+                                    followStates[followInfo.userIds] = newIsFollowing
+
+                                }
+                            )
                         }
                     }
 
