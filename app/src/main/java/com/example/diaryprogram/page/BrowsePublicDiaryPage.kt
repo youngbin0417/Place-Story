@@ -74,6 +74,8 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(20.dp))
+
             // 상단 바
             Row(
                 modifier = Modifier
@@ -101,7 +103,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // 데이터 상태에 따른 UI 처리
             if (isLoading.value) {

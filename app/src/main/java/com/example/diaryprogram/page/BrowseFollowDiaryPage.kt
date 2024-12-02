@@ -90,6 +90,7 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
             )
     ){
         Column(modifier = Modifier.fillMaxSize()){
+            Spacer(modifier = Modifier.height(20.dp))
 
             Row(
                 modifier = Modifier
@@ -116,7 +117,7 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
                     fontSize = 20.sp
                 )
             }
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             if (isLoading.value) {
                 Box(

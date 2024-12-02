@@ -83,6 +83,8 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(20.dp))
+
             // 헤더
             Row(
                 modifier = Modifier
@@ -110,7 +112,7 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // 다이어리 목록
             if (isLoading.value) {

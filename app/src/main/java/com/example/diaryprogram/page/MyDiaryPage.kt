@@ -235,7 +235,6 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(300.dp)
-                                .border(1.dp, Color.White)
                         )
                         // 이미지 받아와서 보여주게 api 연동
                         if (diaryDetails?.images?.isNotEmpty() == true) {
