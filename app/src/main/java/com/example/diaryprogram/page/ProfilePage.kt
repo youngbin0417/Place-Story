@@ -81,7 +81,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
             horizontalArrangement = Arrangement.Start
         ) {
             IconButton(
-                onClick = { navHostController.popBackStack() },
+                onClick = { navHostController.navigate("main") },
                 modifier = Modifier.size(50.dp)
             ) {
                 Image(
@@ -117,12 +117,22 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                     Row (modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center){
                         userProfile?.profileImage?.let { image ->
-                            Image(
-                                painter = rememberAsyncImagePainter(image.url),
-                                contentDescription = "User Profile Image",
-                                modifier = Modifier.size(100.dp)
-                                    .clip(CircleShape)
-                            )
+                            if (image.url == "default.jpg"){
+                                Image(
+                                    painter = painterResource(id = R.drawable.profile),
+                                    contentDescription = "Default Profile Icon",
+                                    modifier = Modifier.size(100.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
+                            else {
+                                Image(
+                                    painter = rememberAsyncImagePainter(image.url),
+                                    contentDescription = "User Profile Image",
+                                    modifier = Modifier.size(100.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
                         } ?: Image(
                             painter = painterResource(id = R.drawable.profile),
                             contentDescription = "Default Profile Icon",

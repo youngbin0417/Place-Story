@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.core.content.PermissionChecker
 import androidx.navigation.compose.rememberNavController
 import com.example.diaryprogram.navi.NavGraph
 import com.example.diaryprogram.ui.theme.DiaryProgramTheme

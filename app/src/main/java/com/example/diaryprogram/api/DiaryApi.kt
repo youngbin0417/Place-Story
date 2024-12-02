@@ -4,8 +4,6 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.example.diaryprogram.data.*
-import com.google.android.gms.common.internal.Objects
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
@@ -293,7 +291,7 @@ object DiaryApi {
     fun loadPublicDiaryDetails(
         apiService: ApiService,
         diaryId: Long,
-        onSuccess: (DiaryDetailsResponseDto) -> Unit,
+        onSuccess: (UserDiaryResponseDto) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {

@@ -56,7 +56,7 @@ fun DiaryBox(
     navController: NavHostController,
     userId: Long,
     diaryInfo: DiaryResponseDto,
-    onDiaryClick: (Long) -> Unit
+    onDiaryClick: (Long) -> Unit,
 ) {
     val context = LocalContext.current
     var isClicked by remember { mutableStateOf(false) }
@@ -76,9 +76,11 @@ fun DiaryBox(
             .clip(RoundedCornerShape(24.dp))
             .width(360.dp)
             .height(100.dp)
-            .clickable(onClick = {
-                diaryInfo.diaryId?.let { onDiaryClick(it) } // diaryId null 체크
-            })
+            .clickable(
+                onClick = {
+                    diaryInfo.diaryId?.let { onDiaryClick(it) } // diaryId null 체크
+                }
+            )
     ) {
         Row(
             modifier = Modifier
@@ -90,20 +92,33 @@ fun DiaryBox(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             // 프로필 이미지 처리
-            if (diaryInfo.profileImage?.url.isNullOrEmpty()) {
-                Image(
-                    painter = painterResource(R.drawable.profile),
-                    contentDescription = "no picture",
-                    modifier = Modifier.size(50.dp)
-                )
-            } else {
-                val firstImage = diaryInfo.profileImage?.url ?: ""
-                Image(
-                    painter = rememberAsyncImagePainter(model = firstImage),
-                    contentDescription = "${diaryInfo.diaryId}'s diary picture",
-                    modifier = Modifier.size(50.dp)
-                )
-            }
+
+            diaryInfo?.profileImage?.let { image ->
+                if (image.url == "default.jpg"){
+                    Image(
+                        painter = painterResource(id = R.drawable.profile),
+                        contentDescription = "Default Profile Icon",
+                        modifier = Modifier.size(60.dp)
+                            .clip(CircleShape)
+                            .clickable {
+                                //navController.navigate("other_profile_page/${diaryInfo.userIds}/${if (isFollowing) "true" else "false"}")
+                            }
+                    )
+                }
+                else {
+                    Image(
+                        painter = rememberAsyncImagePainter(image.url),
+                        contentDescription = "User Profile Image",
+                        modifier = Modifier.size(60.dp)
+                            .clip(CircleShape)
+                    )
+                }
+            } ?: Image(
+                painter = painterResource(id = R.drawable.profile),
+                contentDescription = "Default Profile Icon",
+                modifier = Modifier.size(60.dp)
+                    .clip(CircleShape)
+            )
 
             Column(
                 verticalArrangement = Arrangement.SpaceEvenly,
@@ -132,7 +147,6 @@ fun DiaryBox(
                     IconButton(
                         onClick = {
                             CoroutineScope(Dispatchers.Main).launch {
-                                delay(1000L) // 1초 대기
                                 isClicked = false // 상태 복구
                             }
                         },
@@ -173,6 +187,7 @@ fun DiaryBox(
                         )
                     }
                 }
+
 
             }
         }

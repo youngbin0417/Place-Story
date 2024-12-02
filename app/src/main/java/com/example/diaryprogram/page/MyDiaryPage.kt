@@ -145,15 +145,15 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                             .width(70.dp)
                             .height(30.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.new_red), // 버튼 배경색 설정
-                            contentColor = Color.White // 버튼 내용(텍스트) 색상 설정
+                            containerColor = colorResource(R.color.new_red),
+                            contentColor = Color.White
                         )
                     ) {
                         Text(
                             text = "삭제",
                             fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                             fontSize = 11.sp,
-                            color = Color.White // 텍스트 색상 설정
+                            color = Color.White
                         )
                     }
 
@@ -176,7 +176,8 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                         Row (modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween){
                             Text(
-                                text = diaryDetails?.title ?: "제목 없음",                                textAlign = TextAlign.Start,
+                                text = diaryDetails?.title ?: "제목 없음",
+                                textAlign = TextAlign.Start,
                                 fontSize = 20.sp,
                                 fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                                 color = Color.White,
@@ -241,7 +242,6 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                             LazyRow(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .border(1.dp, Color.White)
                                     .height(88.dp)
                                     .padding(4.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -310,7 +310,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 30.dp),
                 navHostController = navHostController,
-                option=2// 이후 api 연동해서 마무리
+                option=2
             )
         }
     }

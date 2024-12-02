@@ -132,6 +132,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .height(550.dp)
                             .padding(horizontal = 16.dp)
                     ) {
                         // diaryListState.value가 List<DiaryResponseDto>인 경우 items 사용
@@ -141,7 +142,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                                 userId = userId,
                                 diaryInfo = diary,
                                 onDiaryClick = { diaryId ->
-                                    navHostController.navigate("publicdiary/$diaryId")
+                                    navHostController.navigate("diary/$diaryId")
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))

@@ -33,6 +33,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,7 +74,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
     val customfont = FontFamily(Font(R.font.nanumbarunpenb))
     var diarylocation by remember { mutableStateOf(initialPosition) }
     var diaryPeriod by remember { mutableStateOf(0) }
-    var diaryStatus by remember { mutableStateOf(DiaryStatus.PUBLIC) }
+    var diaryStatus by rememberSaveable  { mutableStateOf(DiaryStatus.PRIVATE) }
     var showSearchLocation by remember { mutableStateOf(false) }
     var address by remember { mutableStateOf("주소를 가져오는 중...") }
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -146,6 +147,13 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                     // 오른쪽 등록 버튼
                     IconButton(
                         onClick = {
+                            if (title==""){
+                                Toast.makeText(context,"제목을 입력해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                            else if (userInput==""){
+                                Toast.makeText(context,"본문을 입력해주세요", Toast.LENGTH_SHORT).show()
+                            }
+                            else{
                             createDiary(
                                 userId = userId,
                                 diaryRequestDto =
@@ -155,7 +163,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                     title = title,
                                     content = userInput,
                                     date = LocalDate.now(),
-                                    diaryStatus = diaryStatus,
+                                    diaryStatus = diaryStatus
                                 ),
                                 imageUris = selectedImageUris,
                                 contentResolver = context.contentResolver,
@@ -166,8 +174,9 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                                 }
                             )
+                                navHostController.navigate("main")
 
-                            navHostController.navigate("main")
+                            }
                         },
                         modifier = Modifier.size(50.dp)
                     ) {
@@ -360,7 +369,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "매일 알림",
+                                    text = "항상 알림",
                                     fontFamily = customfont,
                                     color = Color.White,
                                     fontSize = 12.sp

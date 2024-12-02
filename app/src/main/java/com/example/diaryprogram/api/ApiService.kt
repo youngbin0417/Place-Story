@@ -61,7 +61,7 @@ interface ApiService {
     @GET("diaries/{diaryId}")
     fun getPublicDiaryDetails(
         @Path("diaryId") diaryId: Long
-    ): Call<DiaryDetailsResponseDto>
+    ): Call<UserDiaryResponseDto>
 
     // 8. Sign Up
     @POST("sign-up")
