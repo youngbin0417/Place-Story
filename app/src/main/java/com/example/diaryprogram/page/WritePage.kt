@@ -55,7 +55,9 @@ import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.createDiary
 import com.example.diaryprogram.data.DiaryRequestDto
 import com.example.diaryprogram.data.DiaryStatus
+import com.example.diaryprogram.geo.GeofenceHelper
 import com.example.diaryprogram.geo.getAddressFromLatLng
+import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
 import java.time.LocalDate
 import java.util.Calendar
@@ -79,6 +81,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
     var address by remember { mutableStateOf("주소를 가져오는 중...") }
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     var selectedEnum by remember { mutableStateOf(0) }
+    val geofenceHelper = GeofenceHelper(context) // GeofenceHelper 인스턴스 생성
 
     val dayOfWeekString = when(dayOfWeek) {
         Calendar.SUNDAY -> "SUN"
@@ -168,7 +171,33 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 imageUris = selectedImageUris,
                                 contentResolver = context.contentResolver,
                                 onSuccess = { response ->
+                                    val diaryId = response?.data // 서버에서 반환된 Diary ID 추출
+                                    if (diaryId != null) {
                                     Toast.makeText(context, "Diary created successfully!", Toast.LENGTH_SHORT).show()
+
+                                    // 지오펜싱 등록
+                                    if (geofenceHelper.hasLocationPermission()) {
+                                        geofenceHelper.addGeofence(
+                                            diaryId = diaryId,
+                                            latitude = diarylocation.latitude,
+                                            longitude = diarylocation.longitude,
+                                            radius = 1000f, // 반경 1km
+                                            expirationDuration = Geofence.NEVER_EXPIRE,
+                                            pendingIntent = geofenceHelper.getGeofencePendingIntent(context),
+                                            onCompleteListener = { task ->
+                                                if (task.isSuccessful) {
+                                                    Toast.makeText(context, "지오펜싱 등록 완료!", Toast.LENGTH_SHORT).show()
+                                                } else {
+                                                    Toast.makeText(context, "지오펜싱 등록 실패: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                                }
+                                            }
+                                        )
+                                    } else {
+                                        Toast.makeText(context, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+                                    }}else {
+                                        Toast.makeText(context, "Diary ID가 없습니다.", Toast.LENGTH_SHORT).show()
+                                    }
+
                                 },
                                 onError = { errorMessage ->
                                     Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
@@ -396,7 +425,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "1일 마다",
+                                    text = "1일 이후",
                                     fontFamily = customfont,
                                     color = Color.White,
                                     fontSize = 12.sp
@@ -423,7 +452,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "1주 마다",
+                                    text = "1주 이후",
                                     fontFamily = customfont,
                                     color = Color.White,
                                     fontSize = 12.sp
@@ -450,7 +479,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                 contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "1년 마다",
+                                    text = "1년 이후",
                                     fontFamily = customfont,
                                     color = Color.White,
                                     fontSize = 12.sp
