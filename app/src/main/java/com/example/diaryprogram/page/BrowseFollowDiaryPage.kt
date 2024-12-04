@@ -42,6 +42,7 @@ import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
+import com.example.diaryprogram.data.DiaryStatus
 
 @Composable
 fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
@@ -68,6 +69,35 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
             }
         )
 
+    }
+
+    // 데이터 로드
+    LaunchedEffect(currentPage) {
+        try {
+            isLoading.value = true
+            val response = ApiClient.apiService.getAllDiaries(
+                userId = userId,
+                diaryStatus = DiaryStatus.FOLLOWER, // FOLLOWER 상태 전달
+                page = currentPage,
+                size = 10 // 원하는 페이지 크기 설정
+            ).execute()
+
+            if (response.isSuccessful) {
+                val paginatedResponse = response.body()
+                if (paginatedResponse != null) {
+                    diaryListState.value = diaryListState.value + paginatedResponse.content
+                    totalPage.value = paginatedResponse.totalPages
+                } else {
+                    println("Response body is null")
+                }
+            } else {
+                println("Error: ${response.errorBody()?.string()}")
+            }
+        } catch (e: Exception) {
+            println("Exception: ${e.message}")
+        } finally {
+            isLoading.value = false
+        }
     }
 
     Box(
