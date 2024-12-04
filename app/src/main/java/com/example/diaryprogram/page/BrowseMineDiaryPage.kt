@@ -37,11 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
-import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
+import com.example.diaryprogram.api.DiaryApi.fetchMyDiaries
 import com.example.diaryprogram.appbar.AppBar
-import com.example.diaryprogram.component.DiaryBox
+import com.example.diaryprogram.component.myDiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
-import com.example.diaryprogram.data.DiaryStatus
 
 @Composable
 fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
@@ -53,9 +52,8 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
     // 다이어리 데이터 로드
     LaunchedEffect(key1 = userId) {
         isLoading.value = true
-        fetchAllDiaries(
+        fetchMyDiaries(
             userId = userId,
-            diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 5,
             onSuccess = { content, currentPage, totalPages ->
@@ -144,7 +142,7 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                             .padding(horizontal = 16.dp)
                     ) {
                         items(diaryListState.value) { diary ->
-                            DiaryBox(
+                            myDiaryBox(
                                 navController = navHostController,
                                 userId = userId,
                                 diaryInfo = diary,

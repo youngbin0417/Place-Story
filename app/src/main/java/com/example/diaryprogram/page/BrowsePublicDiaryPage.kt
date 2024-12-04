@@ -19,9 +19,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -34,10 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.DiaryApi.fetchPublicDiaries
+import com.example.diaryprogram.api.UserApi.loadFollowList
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
+import com.example.diaryprogram.data.FollowListResponseDto
+
 @Composable
 fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
@@ -47,6 +55,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
     LaunchedEffect(Unit) {
         isLoading.value = true
         fetchPublicDiaries(
+            userId=userId,
             page = 0,
             size = 10,
             onSuccess = { content, _, _ ->
@@ -141,8 +150,9 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                                 navController = navHostController,
                                 userId = userId,
                                 diaryInfo = diary,
+                                option = 1,
                                 onDiaryClick = { diaryId ->
-                                    navHostController.navigate("diary/$diaryId")
+                                    navHostController.navigate("publicdiary/$diaryId")
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))

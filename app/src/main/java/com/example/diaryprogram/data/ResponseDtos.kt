@@ -17,13 +17,15 @@ data class UserProfileResponseDto(
 )
 
 data class DiaryResponseDto(
+    val userId: Long,
     val diaryId: Long,
     val name: String,
     val diaryTitle: String,
-    val profileImage: ImageResponseDto?,
     val date: String,
+    val profileImage: ImageResponseDto?,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val isLiked: Boolean
 )
 
 data class ImageResponseDto(

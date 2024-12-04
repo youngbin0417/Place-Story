@@ -1,5 +1,6 @@
 package com.example.diaryprogram.page
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,46 +38,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
-import com.example.diaryprogram.api.ApiClient
+import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
-import com.example.diaryprogram.data.DiaryStatus
 
 @Composable
 fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
-    val totalPage = remember { mutableStateOf(1) } // 기본적으로 1페이지로 설정
-    var currentPage by remember { mutableStateOf(0) }
+    val totalPage by remember { mutableStateOf(0) } // 기본적으로 1페이지로 설정
+    var currentPage by rememberSaveable { mutableStateOf(0) }
 
-    // 데이터 로드
-    LaunchedEffect(currentPage) {
-        try {
-            isLoading.value = true
-            val response = ApiClient.apiService.getAllDiaries(
-                userId = userId,
-                diaryStatus = DiaryStatus.FOLLOWER, // FOLLOWER 상태 전달
-                page = currentPage,
-                size = 10 // 원하는 페이지 크기 설정
-            ).execute()
-
-            if (response.isSuccessful) {
-                val paginatedResponse = response.body()
-                if (paginatedResponse != null) {
-                    diaryListState.value = diaryListState.value + paginatedResponse.content
-                    totalPage.value = paginatedResponse.totalPages
-                } else {
-                    println("Response body is null")
-                }
-            } else {
-                println("Error: ${response.errorBody()?.string()}")
+    // 다이어리 데이터 로드
+    LaunchedEffect(key1 = userId) {
+        isLoading.value = true
+        fetchAllDiaries(
+            userId = userId,
+            page = 0,
+            size = 5,
+            onSuccess = { content, currentPage, totalPages ->
+                Log.d("ResponseCheck", "Content size: ${content.size}")
+                diaryListState.value = content
+                isLoading.value = false
+            },
+            onFailure = { error ->
+                Log.e("BrowseMineDiaryPage", "Failed to fetch diaries: ${error.message}")
+                isLoading.value = false
             }
-        } catch (e: Exception) {
-            println("Exception: ${e.message}")
-        } finally {
-            isLoading.value = false
-        }
+        )
+
     }
 
     Box(
@@ -153,8 +145,9 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
                                 navController = navHostController,
                                 userId = userId,
                                 diaryInfo = diary,
+                                option = 0,
                                 onDiaryClick = { diaryId ->
-                                    navHostController.navigate("mydiary/$diaryId")
+                                    navHostController.navigate("followdiary/$diaryId")
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))

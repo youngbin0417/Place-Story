@@ -81,7 +81,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
             horizontalArrangement = Arrangement.Start
         ) {
             IconButton(
-                onClick = { navHostController.navigate("main") },
+                onClick = { navHostController.popBackStack() },
                 modifier = Modifier.size(50.dp)
             ) {
                 Image(

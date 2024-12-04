@@ -139,10 +139,45 @@ object DiaryApi {
         })
     }
 
+    fun fetchMyDiaries(
+        userId: Long,
+        page: Int = 0,
+        size: Int = 5,
+        onSuccess: (List<DiaryResponseDto>, Int, Int) -> Unit, // 컨텐츠, 현재 페이지, 전체 페이지 전달
+        onFailure: (Throwable) -> Unit
+    ) {
+        val call = ApiClient.apiService.getMyDiaries(userId, page, size)
+
+        call.enqueue(object : Callback<PaginatedResponseDto<DiaryResponseDto>> {
+            override fun onResponse(
+                call: Call<PaginatedResponseDto<DiaryResponseDto>>,
+                response: Response<PaginatedResponseDto<DiaryResponseDto>>
+            ) {
+                if (response.isSuccessful) {
+                    val paginatedResponse = response.body()
+                    if (paginatedResponse != null) {
+                        val content = paginatedResponse.content
+                        val currentPage = paginatedResponse.currentPage
+                        val totalPages = paginatedResponse.totalPages
+                        onSuccess(content, currentPage, totalPages)
+                    } else {
+                        onFailure(Throwable("Response body is null"))
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    onFailure(Throwable("HTTP Error: $errorBody"))
+                }
+            }
+
+            override fun onFailure(call: Call<PaginatedResponseDto<DiaryResponseDto>>, t: Throwable) {
+                onFailure(t)
+            }
+        })
+    }
 
     fun fetchAllDiaries(
         userId: Long,
-        diaryStatus: DiaryStatus,
+        diaryStatus: DiaryStatus = DiaryStatus.FOLLOWER,
         page: Int = 0,
         size: Int = 5,
         onSuccess: (List<DiaryResponseDto>, Int, Int) -> Unit, // 컨텐츠, 현재 페이지, 전체 페이지 전달
@@ -261,12 +296,13 @@ object DiaryApi {
     }
 
     fun fetchPublicDiaries(
+        userId: Long,
         page: Int = 0,
         size: Int = 5,
         onSuccess: (List<DiaryResponseDto>, Int, Int) -> Unit, // 컨텐츠, 현재 페이지, 전체 페이지 전달
         onFailure: (Throwable) -> Unit
     ) {
-        val call = ApiClient.apiService.getPublicDiaries(page, size)
+        val call = ApiClient.apiService.getPublicDiaries(userId, page, size)
 
         call.enqueue(object : Callback<PaginatedResponseDto<DiaryResponseDto>> {
             override fun onResponse(

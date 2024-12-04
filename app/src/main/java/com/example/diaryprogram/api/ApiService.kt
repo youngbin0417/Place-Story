@@ -41,6 +41,13 @@ interface ApiService {
         @Path("diaryId") diaryId: Long
     ): Call<ResponseDto>
 
+    @GET("users/{userId}/my-diaries")
+    fun getMyDiaries(
+        @Path("userId") userId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): Call<PaginatedResponseDto<DiaryResponseDto>>
+
     // 5. Get All Diaries
     @GET("users/{userId}/diaries")
     fun getAllDiaries(
@@ -51,8 +58,9 @@ interface ApiService {
     ): Call<PaginatedResponseDto<DiaryResponseDto>>
 
     // 6. Get Public Diaries
-    @GET("diaries")
+    @GET("users/{userId}/public-diaries")
     fun getPublicDiaries(
+        @Path("userId") userId: Long,
         @Query("page") page: Int,
         @Query("size") size: Int
     ): Call<PaginatedResponseDto<DiaryResponseDto>>
@@ -104,4 +112,6 @@ interface ApiService {
         @Path("userId") userId: Long,
         @Path("diaryId") diaryId: Long
     ): Call<ResponseDto>
+
+    abstract fun getAllDiaries(userId: Long, diaryStatus: Int, page: Int): Call<PaginatedResponseDto<DiaryResponseDto>>
 }

@@ -46,7 +46,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
-import com.example.diaryprogram.api.DiaryApi.deleteDiary
 import com.example.diaryprogram.api.DiaryApi.fetchUserDiary
 import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.appbar.AppBar
@@ -55,13 +54,15 @@ import com.example.diaryprogram.geo.getAddressFromLatLng
 
 
 @Composable
-fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long) {
+fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long, option:Int) {
     val context = LocalContext.current
     var diaryDetails by remember { mutableStateOf<UserDiaryResponseDto?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var address by remember { mutableStateOf("") } // 주소 초기값은 빈 문자열로 설정
     var isLiked by remember { mutableStateOf(false) } // 좋아요 상태 관리
+    val appBarOption = if (option == 0) 4 else 3 // 조건에 따라 option 값 설정
+
 
 
     LaunchedEffect(diaryDetails) {
@@ -267,7 +268,7 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long)
             .align(Alignment.BottomCenter)
             .padding(bottom = 30.dp),
             navHostController = navHostController,
-            option=2// 이후 api 연동해서 마무리
+            option=appBarOption
         )
     }
 }

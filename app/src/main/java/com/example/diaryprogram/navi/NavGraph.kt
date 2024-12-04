@@ -115,23 +115,24 @@ fun NavGraph(navController: NavHostController) {
             BrowsePublicDiaryPage(navController,userId)
         }
 
-        composable(route = "diary/{diaryId}") { backStackEntry ->
+        composable(route = "publicdiary/{diaryId}") { backStackEntry ->
             val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
             if (diaryId != null) {
-                DiaryPage(navController, userId, diaryId)
+                DiaryPage(navController, userId, diaryId,1)
+            } else {
+                Log.e("NavigationError", "diaryId is null or invalid")
+            }
+        }
+        composable(route = "followdiary/{diaryId}") { backStackEntry ->
+            val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
+            if (diaryId != null) {
+                DiaryPage(navController, userId, diaryId,0)
             } else {
                 Log.e("NavigationError", "diaryId is null or invalid")
             }
         }
 
-        composable(route="diary/{diaryId}") { backStackEntry->
-            val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
-            if (diaryId != null) {
-                DiaryPage(navController, userId, diaryId)
-            } else {
-                Log.e("NavigationError", "diaryId is null or invalid")
-            }
-        }
+
         // 프로필 편집 페이지
         composable(route = "setting") {
             SettingPage(navController,userId)
