@@ -54,17 +54,15 @@ import java.time.LocalDate
 
 
 @Composable
-fun DiaryBox(
+fun myDiaryBox(
     navController: NavHostController,
     userId: Long,
     diaryInfo: DiaryResponseDto,
-    onDiaryClick: (Long) -> Unit,
-    option: Int
+    onDiaryClick: (Long) -> Unit
 ) {
     val context = LocalContext.current
     var isClicked by remember { mutableStateOf(false) }
     var address by remember { mutableStateOf("...") }
-    var isFollowing by remember { mutableStateOf(true) }
 
 
     LaunchedEffect(diaryInfo) {
@@ -98,35 +96,20 @@ fun DiaryBox(
             // 프로필 이미지 처리
 
             diaryInfo?.profileImage?.let { image ->
-                if (image.url == "default.jpg") {
+                if (image.url == "default.jpg"){
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "Default Profile Icon",
                         modifier = Modifier.size(60.dp)
                             .clip(CircleShape)
-                            .clickable {
-                                if (option == 0) {
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                                } else if (option == 1) {
-                                    isFollowing = false
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                                }
-                            }
                     )
-                } else {
+                }
+                else {
                     Image(
                         painter = rememberAsyncImagePainter(image.url),
                         contentDescription = "User Profile Image",
                         modifier = Modifier.size(60.dp)
                             .clip(CircleShape)
-                            .clickable {
-                                if (option == 0) {
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                                } else if (option == 1) {
-                                    isFollowing = false
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                                }
-                            }
                     )
                 }
             } ?: Image(
@@ -134,14 +117,6 @@ fun DiaryBox(
                 contentDescription = "Default Profile Icon",
                 modifier = Modifier.size(60.dp)
                     .clip(CircleShape)
-                    .clickable {
-                        if (option == 0) {
-                            navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                        } else if (option == 1) {
-                            isFollowing = false
-                            navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                        }
-                    }
             )
             Spacer(modifier = Modifier.width(16.dp))
 
@@ -166,68 +141,66 @@ fun DiaryBox(
                     fontSize = 10.sp
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Transparent)
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.Transparent)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.End
+        ) {
+            Column(
+                modifier = Modifier.align(Alignment.CenterVertically)
             ) {
-                Column {
 
-                    if (isClicked) {
-                        IconButton(
-                            onClick = {
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    isClicked = false // 상태 복구
-                                }
-                            },
-                            modifier = Modifier
-                                .size(50.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.heart),
-                                contentDescription = "좋아요",
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            onClick = {
-                                diaryInfo.diaryId?.let { diaryId ->
-                                    likeDiary(
-                                        apiService = apiService,
-                                        userId = userId,
-                                        diaryId = diaryId,
-                                        onSuccess = {
-                                            isClicked = true // 성공 시 좋아요 상태로 전환
-                                        },
-                                        onFailure = { throwable ->
-                                            Toast.makeText(
-                                                context,
-                                                "좋아요 실패: ${throwable.message}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                            isClicked = false // 실패 시 상태 복구
-                                        }
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                                .size(50.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.emptyheart),
-                                contentDescription = "좋아요",
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
+                if (isClicked) {
+                    IconButton(
+                        onClick = {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                isClicked = false // 상태 복구
+                            }
+                        },
+                        modifier = Modifier
+                            .size(50.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.heart),
+                            contentDescription = "좋아요",
+                            modifier = Modifier.size(40.dp)
+                        )
                     }
-
-
+                } else {
+                    IconButton(
+                        onClick = {
+                            diaryInfo.diaryId?.let { diaryId ->
+                                likeDiary(
+                                    apiService = apiService,
+                                    userId = userId,
+                                    diaryId = diaryId,
+                                    onSuccess = {
+                                        isClicked = true // 성공 시 좋아요 상태로 전환
+                                    },
+                                    onFailure = { throwable ->
+                                        Toast.makeText(context, "좋아요 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
+                                        isClicked = false // 실패 시 상태 복구
+                                    }
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .size(50.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.emptyheart),
+                            contentDescription = "좋아요",
+                            modifier = Modifier.size(40.dp)
+                        )
+                    }
                 }
+
+
             }
         }
     }

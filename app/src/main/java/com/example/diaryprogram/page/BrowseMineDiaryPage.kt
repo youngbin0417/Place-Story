@@ -37,13 +37,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
-import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
+import com.example.diaryprogram.api.DiaryApi.fetchMyDiaries
 import com.example.diaryprogram.appbar.AppBar
-import com.example.diaryprogram.component.DiaryBox
+import com.example.diaryprogram.component.myDiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
-import com.example.diaryprogram.data.DiaryStatus
 
-// 해야함
 @Composable
 fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
@@ -54,9 +52,8 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
     // 다이어리 데이터 로드
     LaunchedEffect(key1 = userId) {
         isLoading.value = true
-        fetchAllDiaries(
+        fetchMyDiaries(
             userId = userId,
-            diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 5,
             onSuccess = { content, currentPage, totalPages ->
@@ -84,6 +81,8 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(20.dp))
+
             // 헤더
             Row(
                 modifier = Modifier
@@ -111,7 +110,7 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             // 다이어리 목록
             if (isLoading.value) {
@@ -143,11 +142,10 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                             .padding(horizontal = 16.dp)
                     ) {
                         items(diaryListState.value) { diary ->
-                            DiaryBox(
+                            myDiaryBox(
                                 navController = navHostController,
                                 userId = userId,
                                 diaryInfo = diary,
-                                1,
                                 onDiaryClick = { diaryId ->
                                     navHostController.navigate("mydiary/$diaryId")
                                 }

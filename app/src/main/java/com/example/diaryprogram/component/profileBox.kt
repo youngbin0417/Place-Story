@@ -61,14 +61,26 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             if (followinfo.profileImage != null) {
-                Image(
-                    painter = rememberImagePainter(data = followinfo.profileImage.url), // Use Coil to load URL images
-                    contentDescription = "${followinfo.followNames}'s profile picture",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                )
+                if (followinfo.profileImage.url == "default.jpg"){
+                    Image(
+                        painter = painterResource(R.drawable.profile), // Use Coil to load URL images
+                        contentDescription = "${followinfo.followNames}'s profile picture",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
+                    )
+                }
+                else {
+                    Image(
+                        painter = rememberImagePainter(data = followinfo.profileImage.url), // Use Coil to load URL images
+                        contentDescription = "${followinfo.followNames}'s profile picture",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.surface)
+                    )
+                }
             } else {
                 Image(
                     painter = painterResource(R.drawable.profile), // Use Coil to load URL images

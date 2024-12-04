@@ -3,7 +3,8 @@ import java.time.LocalDate
 
 data class ResponseDto(
     val statusCode: String,
-    val statusMessage: String
+    val statusMessage: String,
+    val data: Long?
 )
 
 data class UserProfileResponseDto(
@@ -17,13 +18,20 @@ data class UserProfileResponseDto(
 )
 
 data class DiaryResponseDto(
+    val userId: Long,
     val diaryId: Long,
     val name: String,
     val diaryTitle: String,
+    val date: String,
     val profileImage: ImageResponseDto?,
-    val date: LocalDate,
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val isLiked: Boolean
+)
+
+data class ImageResponseDto(
+    val imageId: Long,
+    val url: String
 )
 data class ImageResponseDto(
     val imageId: Long,
@@ -36,7 +44,7 @@ data class DiaryDetailsResponseDto(
     val longitude: Double,
     val title: String,
     val content: String,
-    val date: LocalDate,
+    val date: String,
     val likesCount: Int,
     val diaryStatus: DiaryStatus,
     val images: List<ImageResponseDto>
@@ -48,7 +56,7 @@ data class UserDiaryResponseDto(
     val longitude: Double,
     val title: String,
     val content: String,
-    val date: LocalDate,
+    val date: String,
     val likesCount: Int,
     val diaryStatus: DiaryStatus,
     val images: List<ImageResponseDto>

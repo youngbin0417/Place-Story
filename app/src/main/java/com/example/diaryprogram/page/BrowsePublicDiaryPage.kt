@@ -2,16 +2,30 @@ package com.example.diaryprogram.page
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -24,10 +38,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.DiaryApi.fetchPublicDiaries
+import com.example.diaryprogram.api.UserApi.loadFollowList
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
+import com.example.diaryprogram.data.FollowListResponseDto
 
 @Composable
 fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
@@ -38,6 +55,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
     LaunchedEffect(Unit) {
         isLoading.value = true
         fetchPublicDiaries(
+            userId=userId,
             page = 0,
             size = 10,
             onSuccess = { content, _, _ ->
@@ -65,6 +83,8 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
             )
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(20.dp))
+
             // 상단 바
             Row(
                 modifier = Modifier
@@ -92,7 +112,8 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+
 
             // 데이터 상태에 따른 UI 처리
             if (isLoading.value) {
@@ -121,6 +142,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .height(550.dp)
                             .padding(horizontal = 16.dp)
                     ) {
                         // diaryListState.value가 List<DiaryResponseDto>인 경우 items 사용
@@ -129,7 +151,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                                 navController = navHostController,
                                 userId = userId,
                                 diaryInfo = diary,
-                                option = 2,
+                                option = 1,
                                 onDiaryClick = { diaryId ->
                                     navHostController.navigate("publicdiary/$diaryId")
                                 }

@@ -85,7 +85,7 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
             ) {
                 IconButton(
                     onClick = {
-                        navController.navigate("following")
+                        navController.popBackStack()
                     },
                     modifier = Modifier.size(50.dp)
                 ) {
@@ -164,7 +164,7 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                                 )
 
                                 Text(
-                                    text = "${userProfile?.totalLikesCount ?: 0}", // api 연동 필요
+                                    text = "${userProfile?.totalLikesCount ?: 0}",
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont
@@ -235,7 +235,7 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                     if (isFollowing){
                         Button(onClick = { isFollowing=false
                             // 언팔로우 api 함수
-                            unfollowUser(userId, otherId)
+                            //unfollowUser(userId, otherId)
                         },
                             modifier = Modifier.width(300.dp).height(45.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -270,7 +270,7 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
             .align(Alignment.BottomCenter)
             .padding(bottom = 30.dp),
             navHostController = navController,
-            option=5
+            option=4
         )
     }
 }
