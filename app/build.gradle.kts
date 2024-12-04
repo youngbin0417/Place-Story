@@ -82,6 +82,7 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.coil.compose)
     implementation(libs.generativeai)
+    implementation(libs.androidx.appcompat)
 
     // 테스트 의존성
     testImplementation(libs.junit)
