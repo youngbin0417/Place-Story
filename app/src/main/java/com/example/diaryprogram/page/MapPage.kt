@@ -42,7 +42,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
-// 프론트 완료
 @Composable
 fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userId: Long) {
     val context = LocalContext.current
@@ -84,7 +83,7 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
 
-        ) {
+            ) {
             // marker 추가할것
             markerList.forEach { markerData ->
                 Marker(

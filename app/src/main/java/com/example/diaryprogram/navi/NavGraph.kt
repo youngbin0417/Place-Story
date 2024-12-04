@@ -17,6 +17,7 @@ import androidx.navigation.compose.composable
 import com.example.diaryprogram.page.BrowseFollowDiaryPage
 import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.page.BrowsePublicDiaryPage
+import com.example.diaryprogram.page.DiaryPage
 import com.example.diaryprogram.page.FollowPage
 import com.example.diaryprogram.page.LoadingPage
 import com.example.diaryprogram.page.LoginPage
@@ -114,14 +115,24 @@ fun NavGraph(navController: NavHostController) {
             BrowsePublicDiaryPage(navController,userId)
         }
 
-        composable(route = "mydiary/{diaryId}") { backStackEntry ->
+        composable(route = "publicdiary/{diaryId}") { backStackEntry ->
             val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
             if (diaryId != null) {
-                MyDiaryPage(navController, userId, diaryId)
+                DiaryPage(navController, userId, diaryId,1)
             } else {
                 Log.e("NavigationError", "diaryId is null or invalid")
             }
         }
+        composable(route = "followdiary/{diaryId}") { backStackEntry ->
+            val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
+            if (diaryId != null) {
+                DiaryPage(navController, userId, diaryId,0)
+            } else {
+                Log.e("NavigationError", "diaryId is null or invalid")
+            }
+        }
+
+
         // 프로필 편집 페이지
         composable(route = "setting") {
             SettingPage(navController,userId)

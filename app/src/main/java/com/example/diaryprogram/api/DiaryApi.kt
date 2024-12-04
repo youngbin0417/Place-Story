@@ -4,8 +4,6 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.example.diaryprogram.data.*
-import com.google.android.gms.common.internal.Objects
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
@@ -118,26 +116,67 @@ object DiaryApi {
         apiService: ApiService,
         userId: Long,
         diaryId: Long,
+        onSuccess: () -> Unit,
+        onFailure: (Throwable) -> Unit
     ) {
         apiService.likeDiary(userId, diaryId).enqueue(object : Callback<ResponseDto> {
             override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
                 if (response.isSuccessful) {
                     println("Diary liked successfully: ${response.body()}")
+                    onSuccess() // 성공 시 콜백 호출
                 } else {
                     val errorMessage = response.errorBody()?.string() ?: "Unknown error"
                     println("Failed to like diary: $errorMessage")
+                    onFailure(Throwable(errorMessage)) // 실패 시 콜백 호출
                 }
             }
 
             override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
                 println("Error occurred while liking diary: ${t.message}")
+                onFailure(t) // 실패 시 콜백 호출
+            }
+        })
+    }
+
+    fun fetchMyDiaries(
+        userId: Long,
+        page: Int = 0,
+        size: Int = 5,
+        onSuccess: (List<DiaryResponseDto>, Int, Int) -> Unit, // 컨텐츠, 현재 페이지, 전체 페이지 전달
+        onFailure: (Throwable) -> Unit
+    ) {
+        val call = ApiClient.apiService.getMyDiaries(userId, page, size)
+
+        call.enqueue(object : Callback<PaginatedResponseDto<DiaryResponseDto>> {
+            override fun onResponse(
+                call: Call<PaginatedResponseDto<DiaryResponseDto>>,
+                response: Response<PaginatedResponseDto<DiaryResponseDto>>
+            ) {
+                if (response.isSuccessful) {
+                    val paginatedResponse = response.body()
+                    if (paginatedResponse != null) {
+                        val content = paginatedResponse.content
+                        val currentPage = paginatedResponse.currentPage
+                        val totalPages = paginatedResponse.totalPages
+                        onSuccess(content, currentPage, totalPages)
+                    } else {
+                        onFailure(Throwable("Response body is null"))
+                    }
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                    onFailure(Throwable("HTTP Error: $errorBody"))
+                }
+            }
+
+            override fun onFailure(call: Call<PaginatedResponseDto<DiaryResponseDto>>, t: Throwable) {
+                onFailure(t)
             }
         })
     }
 
     fun fetchAllDiaries(
         userId: Long,
-        diaryStatus: DiaryStatus,
+        diaryStatus: DiaryStatus = DiaryStatus.FOLLOWER,
         page: Int = 0,
         size: Int = 5,
         onSuccess: (List<DiaryResponseDto>, Int, Int) -> Unit, // 컨텐츠, 현재 페이지, 전체 페이지 전달
@@ -256,12 +295,13 @@ object DiaryApi {
     }
 
     fun fetchPublicDiaries(
+        userId: Long,
         page: Int = 0,
         size: Int = 5,
         onSuccess: (List<DiaryResponseDto>, Int, Int) -> Unit, // 컨텐츠, 현재 페이지, 전체 페이지 전달
         onFailure: (Throwable) -> Unit
     ) {
-        val call = ApiClient.apiService.getPublicDiaries(page, size)
+        val call = ApiClient.apiService.getPublicDiaries(userId, page, size)
 
         call.enqueue(object : Callback<PaginatedResponseDto<DiaryResponseDto>> {
             override fun onResponse(
@@ -286,7 +326,7 @@ object DiaryApi {
     fun loadPublicDiaryDetails(
         apiService: ApiService,
         diaryId: Long,
-        onSuccess: (DiaryDetailsResponseDto) -> Unit,
+        onSuccess: (UserDiaryResponseDto) -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
         CoroutineScope(Dispatchers.IO).launch {
