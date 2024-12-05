@@ -3,7 +3,8 @@ import java.time.LocalDate
 
 data class ResponseDto(
     val statusCode: String,
-    val statusMessage: String
+    val statusMessage: String,
+    val data: Long?
 )
 
 data class UserProfileResponseDto(
@@ -28,6 +29,10 @@ data class DiaryResponseDto(
     val isLiked: Boolean
 )
 
+data class ImageResponseDto(
+    val imageId: Long,
+    val url: String
+)
 data class ImageResponseDto(
     val imageId: Long,
     val url: String

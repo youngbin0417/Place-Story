@@ -114,6 +114,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
+
             // 데이터 상태에 따른 UI 처리
             if (isLoading.value) {
                 Box(

@@ -23,7 +23,6 @@ import java.time.LocalDate
 // 다이어리 API
 object DiaryApi {
 
-
     fun createDiary(
         userId: Long,
         diaryRequestDto: DiaryRequestDto,
