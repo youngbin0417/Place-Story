@@ -96,7 +96,7 @@ fun myDiaryBox(
             // 프로필 이미지 처리
 
             diaryInfo?.profileImage?.let { image ->
-                if (image.url == "default.jpg"){
+                if (image.url == "image"){
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "Default Profile Icon",

@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
+import com.example.diaryprogram.api.DiaryApi.fetchMyDiaries
 import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.data.DiaryStatus
 import com.example.diaryprogram.data.MarkerData
@@ -52,9 +53,8 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
     val diaryList = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
 
     LaunchedEffect(key1 = userId) {
-        fetchAllDiaries(
+        fetchMyDiaries(
             userId = userId,
-            diaryStatus = DiaryStatus.PRIVATE,
             page = 0,
             size = 50,
             onSuccess = { diaryListResponse, currentPage, totalPages ->
@@ -96,7 +96,7 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
                         navHostController.navigate("mydiary/${markerData.diaryId}")
                         true
                     },
-                    snippet = "Click for details",
+                    snippet = "Click for diary details",
                 )
             }
 

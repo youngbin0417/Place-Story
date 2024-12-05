@@ -42,6 +42,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.UserApi.followUser
@@ -113,13 +114,28 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                     Spacer(modifier = Modifier.height(20.dp))
                     Row (modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center){
-                        Image( // api 연동 필요 -> 기본일때 해당 사진, 아니면 서버에서 받은 사진
+                        userProfile?.profileImage?.let { image ->
+                            if (image.url == "default.jpg"){
+                                Image(
+                                    painter = painterResource(id = R.drawable.profile),
+                                    contentDescription = "Default Profile Icon",
+                                    modifier = Modifier.size(100.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
+                            else {
+                                Image(
+                                    painter = rememberAsyncImagePainter(image.url),
+                                    contentDescription = "User Profile Image",
+                                    modifier = Modifier.size(100.dp)
+                                        .clip(CircleShape)
+                                )
+                            }
+                        } ?: Image(
                             painter = painterResource(id = R.drawable.profile),
-                            contentDescription = "프로필 사진",
-                            modifier = Modifier
-                                .size(100.dp)
+                            contentDescription = "Default Profile Icon",
+                            modifier = Modifier.size(100.dp)
                                 .clip(CircleShape)
-                                .border(2.dp, Color.Transparent, CircleShape)
                         )
                     }
 

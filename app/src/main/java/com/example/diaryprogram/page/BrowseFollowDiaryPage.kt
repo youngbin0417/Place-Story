@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -31,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -38,7 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient
 import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
+import com.example.diaryprogram.api.DiaryApi.fetchMyDiaries
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
@@ -48,19 +53,21 @@ import com.example.diaryprogram.data.DiaryStatus
 fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
-    val totalPage by remember { mutableStateOf(0) } // 기본적으로 1페이지로 설정
-    var currentPage by rememberSaveable { mutableStateOf(0) }
+    val totalPage = remember { mutableStateOf(0) }
+    var currentPage by remember { mutableStateOf(0) }
 
     // 다이어리 데이터 로드
-    LaunchedEffect(key1 = userId) {
+    fun loadPage(page: Int) {
         isLoading.value = true
         fetchAllDiaries(
             userId = userId,
-            page = 0,
+            page = page,
             size = 5,
-            onSuccess = { content, currentPage, totalPages ->
-                Log.d("ResponseCheck", "Content size: ${content.size}")
+            onSuccess = { content, page, totalPages ->
+                Log.d("ResponseCheck", "Content size: ${content.size}, ${totalPages}, ${page}")
                 diaryListState.value = content
+                currentPage = page
+                totalPage.value = totalPages
                 isLoading.value = false
             },
             onFailure = { error ->
@@ -68,36 +75,11 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
                 isLoading.value = false
             }
         )
-
     }
 
-    // 데이터 로드
-    LaunchedEffect(currentPage) {
-        try {
-            isLoading.value = true
-            val response = ApiClient.apiService.getAllDiaries(
-                userId = userId,
-                diaryStatus = DiaryStatus.FOLLOWER, // FOLLOWER 상태 전달
-                page = currentPage,
-                size = 10 // 원하는 페이지 크기 설정
-            ).execute()
-
-            if (response.isSuccessful) {
-                val paginatedResponse = response.body()
-                if (paginatedResponse != null) {
-                    diaryListState.value = diaryListState.value + paginatedResponse.content
-                    totalPage.value = paginatedResponse.totalPages
-                } else {
-                    println("Response body is null")
-                }
-            } else {
-                println("Error: ${response.errorBody()?.string()}")
-            }
-        } catch (e: Exception) {
-            println("Exception: ${e.message}")
-        } finally {
-            isLoading.value = false
-        }
+    // 페이지 로드 초기화
+    LaunchedEffect(key1 = userId) {
+        loadPage(currentPage)
     }
 
     Box(
@@ -185,7 +167,35 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
                     }
                 }
             }
-
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 125.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                (0 until totalPage.value).forEach { page ->
+                    Button(
+                        onClick = {
+                            if (page != currentPage) {
+                                loadPage(page)
+                            }
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(30.dp), // 크기 조정
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (page == currentPage) Color.White else colorResource(R.color.letter_daisy),
+                            contentColor = if (page == currentPage) Color.Black else Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "${page + 1}", // 버튼에 페이지 번호 표시
+                            color = if (page == currentPage) Color.Black else Color.White,
+                            fontSize = 12.sp
+                        )
+                    }
+                }
+            }
         }
         AppBar(
             modifier = Modifier

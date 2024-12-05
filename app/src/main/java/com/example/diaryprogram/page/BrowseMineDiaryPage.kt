@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -50,15 +53,17 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
     var currentPage by remember { mutableStateOf(0) }
 
     // 다이어리 데이터 로드
-    LaunchedEffect(key1 = userId) {
+    fun loadPage(page: Int) {
         isLoading.value = true
         fetchMyDiaries(
             userId = userId,
-            page = 0,
+            page = page,
             size = 5,
-            onSuccess = { content, currentPage, totalPages ->
-                Log.d("ResponseCheck", "Content size: ${content.size}")
+            onSuccess = { content, page, totalPages ->
+                Log.d("ResponseCheck", "Content size: ${content.size}, ${totalPages}, ${page}")
                 diaryListState.value = content
+                currentPage = page
+                totalPage.value = totalPages
                 isLoading.value = false
             },
             onFailure = { error ->
@@ -66,8 +71,13 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                 isLoading.value = false
             }
         )
-
     }
+
+    // 페이지 로드 초기화
+    LaunchedEffect(key1 = userId) {
+        loadPage(currentPage)
+    }
+
 
     Box(
         modifier = Modifier
@@ -151,11 +161,45 @@ fun BrowseMineDiaryPage(navHostController: NavHostController, userId: Long) {
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))
+
                         }
+
+                    }
+
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 125.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                (0 until totalPage.value).forEach { page ->
+                    Button(
+                        onClick = {
+                            if (page != currentPage) {
+                                loadPage(page)
+                            }
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(30.dp), // 크기 조정
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (page == currentPage) Color.White else colorResource(R.color.letter_daisy),
+                            contentColor = if (page == currentPage) Color.Black else Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "${page + 1}", // 버튼에 페이지 번호 표시
+                            color = if (page == currentPage) Color.Black else Color.White,
+                            fontSize = 12.sp
+                        )
                     }
                 }
             }
+
         }
+
 
         // 하단 앱 바
         AppBar(

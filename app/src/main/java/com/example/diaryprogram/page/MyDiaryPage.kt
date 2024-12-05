@@ -59,7 +59,7 @@ import com.example.diaryprogram.geo.getAddressFromLatLng
 
 //해야함
 @Composable
-fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long) {
+fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long, geo:Int) {
     val context = LocalContext.current
     var diaryDetails by remember { mutableStateOf<UserDiaryResponseDto?>(null) }
     var isLoading by remember { mutableStateOf(true) }
@@ -118,7 +118,14 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     IconButton(
-                        onClick = { navHostController.popBackStack() },
+                        onClick = {
+                            if (geo==0) {
+                                navHostController.popBackStack()
+                            }
+                            else{
+                                navHostController.navigate("main")
+                            }
+                                  },
                         modifier = Modifier.size(50.dp)
                     ) {
                         Image(
