@@ -117,7 +117,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                     Row (modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center){
                         userProfile?.profileImage?.let { image ->
-                            if (image.url == "default.jpg"){
+                            if (image.url == "image"){
                                 Image(
                                     painter = painterResource(id = R.drawable.profile),
                                     contentDescription = "Default Profile Icon",

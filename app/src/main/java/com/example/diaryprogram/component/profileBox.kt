@@ -61,7 +61,7 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             if (followinfo.profileImage != null) {
-                if (followinfo.profileImage.url == "default.jpg"){
+                if (followinfo.profileImage.url == "image"){
                     Image(
                         painter = painterResource(R.drawable.profile), // Use Coil to load URL images
                         contentDescription = "${followinfo.followNames}'s profile picture",

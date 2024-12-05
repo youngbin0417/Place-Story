@@ -13,7 +13,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.diaryprogram.page.BrowseFollowDiaryPage
 import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.page.BrowsePublicDiaryPage
@@ -99,11 +101,24 @@ fun NavGraph(navController: NavHostController) {
         composable(route = "mydiary/{diaryId}") { backStackEntry ->
             val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
             if (diaryId != null) {
-                MyDiaryPage(navController, userId, diaryId)
+                MyDiaryPage(navController, userId, diaryId,0)
             } else {
                 Log.e("NavigationError", "diaryId is null or invalid")
             }
         }
+
+        composable(
+            route = "geodiary/{diaryId}",
+            arguments = listOf(navArgument("diaryId") { type = NavType.LongType }) // diaryId를 Long으로 처리
+        ) { backStackEntry ->
+            val diaryId = backStackEntry.arguments?.getLong("diaryId")
+            if (diaryId != null) {
+                MyDiaryPage(navController, userId, diaryId,1)
+            } else {
+                Log.e("NavigationError", "diaryId is null or invalid")
+            }
+        }
+
 
 
         // 팔로우 개인 조회
