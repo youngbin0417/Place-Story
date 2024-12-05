@@ -96,7 +96,7 @@ fun MapPage(navHostController: NavHostController, initialPosition: LatLng, userI
                         navHostController.navigate("mydiary/${markerData.diaryId}")
                         true
                     },
-                    snippet = "Click for details",
+                    snippet = "Click for diary details",
                 )
             }
 
