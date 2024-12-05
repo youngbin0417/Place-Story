@@ -48,8 +48,8 @@ class MainActivity : ComponentActivity() {
 
         // 알림 Intent로 전달된 경로 처리
         LaunchedEffect(navController) {
-            val routeFromNotification = intent.getStringExtra("navigateTo")
-            if (!routeFromNotification.isNullOrEmpty()) {
+            val routeFromNotification = (context as? MainActivity)?.intent?.getStringExtra("navigateTo")
+            if (!routeFromNotification.isNullOrEmpty() && navController.currentDestination?.route != routeFromNotification) {
                 navController.navigate(routeFromNotification) {
                     popUpTo("login") { inclusive = true } // 백스택 정리
                 }

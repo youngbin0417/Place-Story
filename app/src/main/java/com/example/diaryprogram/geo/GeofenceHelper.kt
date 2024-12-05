@@ -115,7 +115,7 @@ class GeofenceHelper(private val context: Context) {
      * @param context Context
      * @return 생성된 PendingIntent
      */
-    fun getGeofencePendingIntent(): PendingIntent {
+    fun getGeofencePendingIntent(context: Context): PendingIntent {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
         return PendingIntent.getBroadcast(
             context,

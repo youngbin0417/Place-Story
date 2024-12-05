@@ -1,6 +1,7 @@
 package com.example.diaryprogram.page
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -51,11 +52,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
+import com.com.example.diaryprogram.geo.GeofenceHelper
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.createDiary
 import com.example.diaryprogram.data.DiaryRequestDto
 import com.example.diaryprogram.data.DiaryStatus
-import com.example.diaryprogram.geo.GeofenceHelper
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.maps.model.LatLng
@@ -186,9 +187,9 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                             pendingIntent = geofenceHelper.getGeofencePendingIntent(context),
                                             onCompleteListener = { task ->
                                                 if (task.isSuccessful) {
-                                                    Toast.makeText(context, "지오펜싱 등록 완료!", Toast.LENGTH_SHORT).show()
+                                                    Log.d("GeofenceHelper", "지오펜싱 등록 성공")
                                                 } else {
-                                                    Toast.makeText(context, "지오펜싱 등록 실패: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
+                                                    Log.e("GeofenceHelper", "지오펜싱 등록 실패: ${task.exception}")
                                                 }
                                             }
                                         )

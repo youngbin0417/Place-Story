@@ -8,38 +8,35 @@ import com.example.diaryprogram.api.DiaryApi.fetchUserDiary
 import com.example.diaryprogram.notification.NotificationHelper
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
-
-class GeofenceBroadcastReceiver : BroadcastReceiver(){
+class GeofenceBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
-        if (geofencingEvent != null) {
-            if (geofencingEvent.hasError()) {
-                val errorMessage = geofencingEvent.errorCode
-                Log.e("GeofenceReceiver", "Error: $errorMessage")
-                return
-            }
+        if (geofencingEvent == null || geofencingEvent.hasError()) {
+            val errorMessage = geofencingEvent?.errorCode ?: "Unknown error"
+            Log.e("GeofenceReceiver", "Error: $errorMessage")
+            return
         }
 
-        val geofenceTransition = geofencingEvent?.geofenceTransition
+        val geofenceTransition = geofencingEvent.geofenceTransition
+        val triggeringGeofences = geofencingEvent.triggeringGeofences
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             Log.i("GeofenceReceiver", "Entered geofence area.")
-            // 알림을 띄우는 등의 작업 수행
-            // Geofence ID 추출
-            val triggeringGeofences = geofencingEvent.triggeringGeofences
-            if (!triggeringGeofences.isNullOrEmpty()) {
-                val geofenceId = triggeringGeofences[0].requestId // 첫 번째 Geofence ID 사용
+
+            triggeringGeofences?.forEach { geofence ->
+                val geofenceId = geofence.requestId
                 val diaryId = geofenceId.removePrefix("Diary_").toLongOrNull()
 
                 if (diaryId != null) {
-                    // 서버 API 호출
                     fetchDiaryAndShowNotification(context, userId = 2L, diaryId = diaryId)
                 } else {
-                    Log.e("GeofenceReceiver", "Invalid diary ID: $geofenceId")
+                    Log.e("GeofenceReceiver", "Invalid geofence ID: $geofenceId")
                 }
             }
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
             Log.i("GeofenceReceiver", "Exited geofence area.")
+        } else {
+            Log.e("GeofenceReceiver", "Unknown geofence transition type: $geofenceTransition")
         }
     }
 
@@ -52,7 +49,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
                 notificationHelper.showNotification(
                     title = "일기 알림",
                     message = "근처에서 작성한 일기가 있어요",
-                    diaryId = diaryId // 추가
+                    diaryId = diaryId
                 )
             },
             onFailure = { error ->
@@ -60,6 +57,4 @@ class GeofenceBroadcastReceiver : BroadcastReceiver(){
             }
         )
     }
-
 }
-

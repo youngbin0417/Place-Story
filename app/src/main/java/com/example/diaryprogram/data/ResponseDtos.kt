@@ -33,10 +33,6 @@ data class ImageResponseDto(
     val imageId: Long,
     val url: String
 )
-data class ImageResponseDto(
-    val imageId: Long,
-    val url: String
-)
 
 data class DiaryDetailsResponseDto(
     val name: String,

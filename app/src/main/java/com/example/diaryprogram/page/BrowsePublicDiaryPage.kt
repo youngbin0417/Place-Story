@@ -1,5 +1,6 @@
 package com.example.diaryprogram.page
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -31,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -39,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
+import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
 import com.example.diaryprogram.api.DiaryApi.fetchPublicDiaries
 import com.example.diaryprogram.api.UserApi.loadFollowList
 import com.example.diaryprogram.appbar.AppBar
@@ -50,24 +55,30 @@ import com.example.diaryprogram.data.FollowListResponseDto
 fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
     val diaryListState = remember { mutableStateOf<List<DiaryResponseDto>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
-
-    // 데이터 로드
-    LaunchedEffect(Unit) {
+    val totalPage = remember { mutableStateOf(0) }
+    var currentPage by remember { mutableStateOf(0) }
+    // 다이어리 데이터 로드
+    fun loadPage(page: Int) {
         isLoading.value = true
         fetchPublicDiaries(
-            userId=userId,
-            page = 0,
-            size = 10,
-            onSuccess = { content, _, _ ->
-                println("Fetched ${content.size} public diaries successfully.")
-                diaryListState.value = content // 다이어리 리스트 상태 업데이트
-                isLoading.value = false // 로딩 상태 해제
+            userId = userId,
+            page = page,
+            size = 5,
+            onSuccess = { content, page, totalPages ->
+                Log.d("ResponseCheck", "Content size: ${content.size}, ${totalPages}, ${page}")
+                diaryListState.value = content
+                currentPage = page
+                totalPage.value = totalPages
+                isLoading.value = false
             },
             onFailure = { error ->
-                println("Failed to fetch public diaries: ${error.message}")
-                isLoading.value = false // 로딩 상태 해제
+                Log.e("BrowseMineDiaryPage", "Failed to fetch diaries: ${error.message}")
+                isLoading.value = false
             }
         )
+    }
+    LaunchedEffect(key1 = userId) {
+        loadPage(currentPage)
     }
 
     // 화면 구성
@@ -158,6 +169,35 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                             )
                             Spacer(modifier = Modifier.height(10.dp))
                         }
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 125.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                (0 until totalPage.value).forEach { page ->
+                    Button(
+                        onClick = {
+                            if (page != currentPage) {
+                                loadPage(page)
+                            }
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 4.dp)
+                            .size(30.dp), // 크기 조정
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (page == currentPage) Color.White else colorResource(R.color.letter_daisy),
+                            contentColor = if (page == currentPage) Color.Black else Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "${page + 1}", // 버튼에 페이지 번호 표시
+                            color = if (page == currentPage) Color.Black else Color.White,
+                            fontSize = 12.sp
+                        )
                     }
                 }
             }
