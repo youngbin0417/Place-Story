@@ -3,7 +3,8 @@ import java.time.LocalDate
 
 data class ResponseDto(
     val statusCode: String,
-    val statusMessage: String
+    val statusMessage: String,
+    val data: Long?
 )
 
 data class UserProfileResponseDto(

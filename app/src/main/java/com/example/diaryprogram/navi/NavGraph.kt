@@ -36,14 +36,14 @@ import com.google.android.gms.maps.model.LatLng
  *  앱의 전반적인 흐름 통제함
  */
 @Composable
-fun NavGraph(navController: NavHostController) {
+fun NavGraph(navController: NavHostController, initialDiaryId: Long?) {
     val context = LocalContext.current
     var currentLocation by remember {
         mutableStateOf(LatLng(0.0, 0.0))
     }
     val userId: Long = 2L
 
-    NavHost(navController = navController, startDestination = "login") {
+    NavHost(navController = navController, startDestination = if (initialDiaryId != null) "mydiary/$initialDiaryId" else "login") {
         //로그인 페이지
         composable(route = "login") {
             LoginPage(navController)

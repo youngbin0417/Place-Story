@@ -14,6 +14,7 @@ import android.app.Notification
 import android.location.Location
 import android.os.Looper
 import android.util.Log
+import com.example.diaryprogram.geo.GeofenceManager
 import com.google.android.gms.location.*
 
 class MyForegroundService : Service() {
@@ -35,6 +36,7 @@ class MyForegroundService : Service() {
         var isForeground = false
     }
 
+    private lateinit var geofenceManager: GeofenceManager
     override fun onCreate() {
         super.onCreate()
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
@@ -56,6 +58,8 @@ class MyForegroundService : Service() {
 
         // 위치 요청 초기화
         createLocationRequest()
+        geofenceManager = GeofenceManager(this)
+        val geofence = geofenceManager.geofenceList["statue_of_liberty"]
     }
 
     @SuppressLint("MissingPermission")

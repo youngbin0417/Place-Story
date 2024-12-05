@@ -29,6 +29,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val diaryId = intent?.getStringExtra("diaryId")?.toLongOrNull()
+
 
         setContent {
             DiaryProgramTheme {
@@ -36,14 +38,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White
                 ) {
-                    PermissionRequestAndServiceStart()
+                    PermissionRequestAndServiceStart(diaryId)
                 }
             }
         }
     }
 
     @Composable
-    fun PermissionRequestAndServiceStart() {
+    fun PermissionRequestAndServiceStart(initialDiaryId: Long?) {
         val context = LocalContext.current
         val navController = rememberNavController()
 
@@ -106,7 +108,7 @@ class MainActivity : ComponentActivity() {
         }
 
         // 내비게이션 그래프 시작
-        NavGraph(navController = navController)
+        NavGraph(navController = navController, initialDiaryId = initialDiaryId)
     }
 
     private fun startMyForegroundServiceWithDelay() {
@@ -123,6 +125,8 @@ class MainActivity : ComponentActivity() {
 
     private fun startMyForegroundService() {
         val serviceIntent = Intent(this, MyForegroundService::class.java)
+        serviceIntent.putExtra("enableGeofencing", true) // 지오펜싱 활성화 플래그 전달
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ContextCompat.startForegroundService(this, serviceIntent)
         } else {
