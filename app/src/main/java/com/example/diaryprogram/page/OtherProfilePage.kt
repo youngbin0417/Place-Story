@@ -195,8 +195,11 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                                 .height(70.dp)
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
-                                .clickable { navController.navigate("browseFollow")}
-                        )
+                                .clickable {
+                                    userId?.let {
+                                        navController.navigate("browseUserDiaries/$it")
+                                    }
+                                },                        )
                         {
                             Column(
                                 modifier = Modifier

@@ -98,6 +98,13 @@ fun NavGraph(navController: NavHostController) {
             BrowseMineDiaryPage(navController, userId)
         }
 
+        composable(route = "browseUserDiaries/{userId}") { backStackEntry ->
+            val user = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
+            if (user != null) {
+                BrowseMineDiaryPage(navController, user)
+            }
+        }
+
         composable(route = "mydiary/{diaryId}") { backStackEntry ->
             val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
             if (diaryId != null) {
@@ -106,6 +113,7 @@ fun NavGraph(navController: NavHostController) {
                 Log.e("NavigationError", "diaryId is null or invalid")
             }
         }
+
 
         composable(
             route = "geodiary/{diaryId}",
