@@ -51,6 +51,7 @@ import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserDiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
+import com.example.diaryprogram.util.utils
 
 
 @Composable
@@ -199,17 +200,12 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
                         LazyRow(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .border(1.dp, Color.White)
                                 .height(88.dp)
                                 .padding(4.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(diaryDetails!!.images) { image ->
-                                Image(
-                                    painter = rememberAsyncImagePainter(model = image.url),
-                                    contentDescription = "Diary Image",
-                                    modifier = Modifier.size(80.dp)
-                                )
+                                utils.DisplayImage(base64String = image.url, size = 80.dp) // Base64 문자열을 DisplayImage 함수로 전달
                             }
                         }
                     } else {

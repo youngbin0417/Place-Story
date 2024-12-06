@@ -50,6 +50,7 @@ import com.example.diaryprogram.api.UserApi.loadUserProfile
 import com.example.diaryprogram.api.UserApi.unfollowUser
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserProfileResponseDto
+import com.example.diaryprogram.util.utils
 
 // api 연동 해야함
 @Composable
@@ -119,22 +120,23 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                                 Image(
                                     painter = painterResource(id = R.drawable.profile),
                                     contentDescription = "Default Profile Icon",
-                                    modifier = Modifier.size(100.dp)
+                                    modifier = Modifier
+                                        .size(100.dp)
                                         .clip(CircleShape)
                                 )
                             }
                             else {
-                                Image(
-                                    painter = rememberAsyncImagePainter(image.url),
-                                    contentDescription = "User Profile Image",
-                                    modifier = Modifier.size(100.dp)
-                                        .clip(CircleShape)
+                                // Base64 이미지를 디코딩하여 표시
+                                utils.DisplayImage(
+                                    base64String = image.url,
+                                    size = 100.dp
                                 )
                             }
                         } ?: Image(
                             painter = painterResource(id = R.drawable.profile),
                             contentDescription = "Default Profile Icon",
-                            modifier = Modifier.size(100.dp)
+                            modifier = Modifier
+                                .size(100.dp)
                                 .clip(CircleShape)
                         )
                     }

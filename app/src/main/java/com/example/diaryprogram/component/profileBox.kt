@@ -39,6 +39,7 @@ import com.example.diaryprogram.R
 import com.example.diaryprogram.api.UserApi.followUser
 import com.example.diaryprogram.api.UserApi.unfollowUser
 import com.example.diaryprogram.data.FollowListResponseDto
+import com.example.diaryprogram.util.utils
 
 @Composable
 fun profileBox(navController: NavHostController, user:Long, followinfo:FollowListResponseDto,
@@ -60,36 +61,21 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            if (followinfo.profileImage != null) {
-                if (followinfo.profileImage.url == "image"){
+            followinfo.profileImage?.let { image ->
+                if (image.url == "default.jpg") {
+                    // 기본 프로필 이미지
                     Image(
-                        painter = painterResource(R.drawable.profile), // Use Coil to load URL images
+                        painter = painterResource(id = R.drawable.profile),
                         contentDescription = "${followinfo.followNames}'s profile picture",
                         modifier = Modifier
                             .size(50.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surface)
                     )
+                } else {
+                    // URL로부터 이미지를 로드
+                    utils.DisplayImage(base64String = image.url, size = 50.dp)
                 }
-                else {
-                    Image(
-                        painter = rememberImagePainter(data = followinfo.profileImage.url), // Use Coil to load URL images
-                        contentDescription = "${followinfo.followNames}'s profile picture",
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surface)
-                    )
-                }
-            } else {
-                Image(
-                    painter = painterResource(R.drawable.profile), // Use Coil to load URL images
-                    contentDescription = "${followinfo.followNames}'s profile picture",
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                )
             }
             Text(
                 text = "${followinfo.followNames}",
