@@ -97,7 +97,9 @@ fun SettingPage(navHostController: NavHostController,userId:Long) {
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb))
                 )
                 IconButton(
-                    onClick = { /*프로필 업데이트 함수*/ },
+                    onClick = { /*프로필 업데이트 함수*/
+                        navHostController.navigate("profile")
+                    },
                     modifier = Modifier.size(50.dp)
                 ){
                     Image(

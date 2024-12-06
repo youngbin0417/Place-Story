@@ -14,6 +14,7 @@ import android.app.Notification
 import android.location.Location
 import android.os.Looper
 import android.util.Log
+import com.example.diaryprogram.notification.NotificationHelper
 import com.google.android.gms.location.*
 
 class MyForegroundService : Service() {
@@ -113,6 +114,26 @@ class MyForegroundService : Service() {
             .setOngoing(true)
             .build()
     }
+
+    override fun onLocationResult(locationResult: LocationResult) {
+        for (location in locationResult.locations) {
+            val distance = calculateDistance(location.latitude, location.longitude, targetLat, targetLng)
+            if (distance < 100) { // 100미터 이내
+                NotificationHelper(this@MyForegroundService).showNotification(
+                    title = "근처에 일기",
+                    message = "목표 위치에 근접했습니다.",
+                    diaryId = 0L
+                )
+            }
+        }
+    }
+
+    private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(lat1, lng1, lat2, lng2, results)
+        return results[0]
+    }
+
 }
 
 
