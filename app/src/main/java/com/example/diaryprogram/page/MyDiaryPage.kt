@@ -55,6 +55,7 @@ import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserDiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
+import com.example.diaryprogram.util.utils
 
 
 //해야함
@@ -254,11 +255,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
                                 items(diaryDetails!!.images) { image ->
-                                    Image(
-                                        painter = rememberAsyncImagePainter(model = image.url),
-                                        contentDescription = "Diary Image",
-                                        modifier = Modifier.size(80.dp)
-                                    )
+                                    utils.DisplayImage(base64String = image.url, size = 80.dp) // Base64 문자열을 DisplayImage 함수로 전달
                                 }
                             }
                         } else {
