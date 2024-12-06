@@ -48,6 +48,7 @@ import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.UserApi.loadUserProfile
 import com.example.diaryprogram.data.UserProfileResponseDto
+import com.example.diaryprogram.util.utils
 
 // 프로필 편집 화면으로 해야함
 @Composable
@@ -139,11 +140,9 @@ fun SettingPage(navHostController: NavHostController,userId:Long) {
                                 )
                             }
                             else {
-                                Image(
-                                    painter = rememberAsyncImagePainter(image.url),
-                                    contentDescription = "User Profile Image",
-                                    modifier = Modifier.size(100.dp)
-                                        .clip(CircleShape)
+                                utils.DisplayCircleImage(
+                                    base64String = image.url,
+                                    size = 100.dp
                                 )
                             }
                         } ?: Image(
