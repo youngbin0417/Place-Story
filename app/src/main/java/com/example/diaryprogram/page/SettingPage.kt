@@ -53,7 +53,6 @@ import com.example.diaryprogram.data.UserProfileResponseDto
 @Composable
 fun SettingPage(navHostController: NavHostController,userId:Long) {
     var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
-    val customfont = FontFamily(Font(R.font.nanumbarunpenr))
 
     // LaunchedEffect를 사용하여 한 번만 API 호출 실행
     LaunchedEffect(userId) {

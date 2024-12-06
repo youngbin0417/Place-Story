@@ -74,7 +74,7 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
                     )
                 } else {
                     // URL로부터 이미지를 로드
-                    utils.DisplayImage(base64String = image.url, size = 50.dp)
+                    utils.DisplayCircleImage(base64String = image.url, size = 50.dp)
                 }
             }
             Text(

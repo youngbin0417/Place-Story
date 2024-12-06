@@ -115,7 +115,7 @@ fun DiaryBox(
                             }
                     )
                 } else {
-                    utils.DisplayImage(base64String = image.url, size = 80.dp)
+                    utils.DisplayCircleImage(base64String = image.url, size = 80.dp)
                 }
             } ?: Image(
                 painter = painterResource(id = R.drawable.profile),

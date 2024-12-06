@@ -4,8 +4,10 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
@@ -32,6 +34,21 @@ object utils {
                 modifier = Modifier
                     .size(size),
                 contentScale = ContentScale.Fit // 이미지 크기 조정 방식
+
+            )
+        }
+    }
+    @Composable
+    fun DisplayCircleImage(base64String: String, size: Dp) {
+        val bitmap = base64ToImage(base64String)
+        bitmap?.let {
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = "Diary Image",
+                modifier = Modifier
+                    .size(size)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop // 이미지 크기 조정 방식
 
             )
         }

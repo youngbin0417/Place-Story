@@ -129,7 +129,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                             }
                             else {
                                 // Base64 이미지를 디코딩하여 표시
-                                utils.DisplayImage(
+                                utils.DisplayCircleImage(
                                     base64String = image.url,
                                     size = 100.dp
                                 )
