@@ -17,6 +17,8 @@ import android.util.Log
 import com.example.diaryprogram.notification.NotificationHelper
 import com.google.android.gms.location.*
 
+
+
 class MyForegroundService : Service() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -49,7 +51,7 @@ class MyForegroundService : Service() {
                 "Foreground Service Channel",
                 NotificationManager.IMPORTANCE_LOW
             ).apply {
-                description = "Place Story 위치 추적 서비스"
+                description = "Place Story 위치 서비스"
             }
             val manager = getSystemService(NotificationManager::class.java)
             manager?.createNotificationChannel(channel)
@@ -113,19 +115,6 @@ class MyForegroundService : Service() {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setOngoing(true)
             .build()
-    }
-
-    override fun onLocationResult(locationResult: LocationResult) {
-        for (location in locationResult.locations) {
-            val distance = calculateDistance(location.latitude, location.longitude, targetLat, targetLng)
-            if (distance < 100) { // 100미터 이내
-                NotificationHelper(this@MyForegroundService).showNotification(
-                    title = "근처에 일기",
-                    message = "목표 위치에 근접했습니다.",
-                    diaryId = 0L
-                )
-            }
-        }
     }
 
     private fun calculateDistance(lat1: Double, lng1: Double, lat2: Double, lng2: Double): Float {

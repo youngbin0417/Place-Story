@@ -6,12 +6,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.diaryprogram.MainActivity
 import com.example.diaryprogram.R
 
 class NotificationHelper(private val context: Context) {
     fun showNotification(title: String, message: String, diaryId: Long) {
+        Log.d("NotificationHelper", "Showing notification: $title - $message for diaryId: $diaryId")
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -42,6 +44,6 @@ class NotificationHelper(private val context: Context) {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 
-        notificationManager.notify(0, notification)
+        notificationManager.notify(diaryId.toInt(), notification)
     }
 }

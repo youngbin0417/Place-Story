@@ -182,7 +182,7 @@ fun WritePage(navHostController: NavHostController, initialPosition: LatLng,
                                             diaryId = diaryId,
                                             latitude = diarylocation.latitude,
                                             longitude = diarylocation.longitude,
-                                            radius = 1000f, // 반경 1km
+                                            radius = 100f, // 반경 1km
                                             expirationDuration = Geofence.NEVER_EXPIRE,
                                             pendingIntent = geofenceHelper.getGeofencePendingIntent(context),
                                             onCompleteListener = { task ->
