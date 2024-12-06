@@ -45,6 +45,7 @@ import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.example.diaryprogram.page.BrowseMineDiaryPage
+import com.example.diaryprogram.util.utils
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -96,7 +97,7 @@ fun myDiaryBox(
             // 프로필 이미지 처리
 
             diaryInfo?.profileImage?.let { image ->
-                if (image.url == "image"){
+                if (image.url == "default.jpg"){
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "Default Profile Icon",
@@ -105,12 +106,7 @@ fun myDiaryBox(
                     )
                 }
                 else {
-                    Image(
-                        painter = rememberAsyncImagePainter(image.url),
-                        contentDescription = "User Profile Image",
-                        modifier = Modifier.size(60.dp)
-                            .clip(CircleShape)
-                    )
+                    utils.DisplayImage(base64String = image.url, size = 80.dp)
                 }
             } ?: Image(
                 painter = painterResource(id = R.drawable.profile),

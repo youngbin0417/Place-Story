@@ -45,6 +45,7 @@ import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.example.diaryprogram.page.BrowseMineDiaryPage
+import com.example.diaryprogram.util.utils
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -114,20 +115,7 @@ fun DiaryBox(
                             }
                     )
                 } else {
-                    Image(
-                        painter = rememberAsyncImagePainter(image.url),
-                        contentDescription = "User Profile Image",
-                        modifier = Modifier.size(60.dp)
-                            .clip(CircleShape)
-                            .clickable {
-                                if (option == 0) {
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                                } else if (option == 1) {
-                                    isFollowing = false
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                                }
-                            }
-                    )
+                    utils.DisplayImage(base64String = image.url, size = 80.dp)
                 }
             } ?: Image(
                 painter = painterResource(id = R.drawable.profile),

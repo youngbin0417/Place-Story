@@ -48,6 +48,7 @@ import com.example.diaryprogram.api.ApiService
 import com.example.diaryprogram.api.UserApi.loadUserProfile
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserProfileResponseDto
+import com.example.diaryprogram.util.utils
 
 // 프론트 완료
 @Composable
@@ -117,26 +118,27 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                     Row (modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center){
                         userProfile?.profileImage?.let { image ->
-                            if (image.url == "image"){
+                            if (image.url == "default.jpg"){
                                 Image(
                                     painter = painterResource(id = R.drawable.profile),
                                     contentDescription = "Default Profile Icon",
-                                    modifier = Modifier.size(100.dp)
+                                    modifier = Modifier
+                                        .size(100.dp)
                                         .clip(CircleShape)
                                 )
                             }
                             else {
-                                Image(
-                                    painter = rememberAsyncImagePainter(image.url),
-                                    contentDescription = "User Profile Image",
-                                    modifier = Modifier.size(100.dp)
-                                        .clip(CircleShape)
+                                // Base64 이미지를 디코딩하여 표시
+                                utils.DisplayImage(
+                                    base64String = image.url,
+                                    size = 100.dp
                                 )
                             }
                         } ?: Image(
                             painter = painterResource(id = R.drawable.profile),
                             contentDescription = "Default Profile Icon",
-                            modifier = Modifier.size(100.dp)
+                            modifier = Modifier
+                                .size(100.dp)
                                 .clip(CircleShape)
                         )
                     }
