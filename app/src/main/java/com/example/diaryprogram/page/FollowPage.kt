@@ -145,14 +145,13 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                         items(followList) { followInfo ->
                             val isFollowing = followStates[followInfo.userIds] ?: true
                             profileBox(
-                                navHostController,
-                                userId,
-                                followInfo,
-                                isFollowing=isFollowing,
+                                navController = navHostController,
+                                user = userId,
+                                following = followInfo,
+                                isFollowing = isFollowing,
                                 onFollowChange = { newIsFollowing ->
                                     // 리스트를 업데이트
                                     followStates[followInfo.userIds] = newIsFollowing
-
                                 }
                             )
                         }

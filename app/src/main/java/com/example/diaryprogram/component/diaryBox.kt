@@ -35,7 +35,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
@@ -141,17 +143,29 @@ fun DiaryBox(
                 Text(
                     text = diaryInfo.diaryTitle ?: "Untitled", // null 처리
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .width(110.dp),
+                    maxLines = 1
                 )
                 Text(
                     text = address,
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenr)),
-                    fontSize = 10.sp
+                    fontSize = 10.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .width(110.dp),
+                    maxLines = 1
                 )
                 Text(
                     text = "${diaryInfo.date}" ?: "no date",
                     fontFamily = FontFamily(Font(R.font.nanumbarunpenr)),
-                    fontSize = 10.sp
+                    fontSize = 10.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .width(110.dp),
+                    maxLines = 1
                 )
             }
             Row(

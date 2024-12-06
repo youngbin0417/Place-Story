@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,10 +30,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.UserApi.followUser
 import com.example.diaryprogram.api.UserApi.unfollowUser
@@ -42,14 +41,14 @@ import com.example.diaryprogram.data.FollowListResponseDto
 import com.example.diaryprogram.util.utils
 
 @Composable
-fun profileBox(navController: NavHostController, user:Long, followinfo:FollowListResponseDto,
+fun profileBox(navController: NavHostController, user:Long, following:FollowListResponseDto,
                isFollowing: Boolean, onFollowChange: (Boolean) -> Unit) {
-    var isFollowing by rememberSaveable { mutableStateOf(true) }
+    var isFollow by rememberSaveable { mutableStateOf(true) }
     Box(modifier = Modifier
         .width(300.dp).height(80.dp)
         .clickable(onClick = {
             // 네비게이션 사용
-            navController.navigate("other_profile_page/${followinfo.userIds}/${if (isFollowing) "true" else "false"}")
+            navController.navigate("other_profile_page/${following.userIds}/${if (isFollowing) "true" else "false"}")
         })
     ) {
         Row(
@@ -61,12 +60,12 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            followinfo.profileImage?.let { image ->
+            following.profileImage?.let { image ->
                 if (image.url == "default.jpg") {
                     // 기본 프로필 이미지
                     Image(
                         painter = painterResource(id = R.drawable.profile),
-                        contentDescription = "${followinfo.followNames}'s profile picture",
+                        contentDescription = "${following.followNames}'s profile picture",
                         modifier = Modifier
                             .size(50.dp)
                             .clip(CircleShape)
@@ -78,16 +77,18 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
                 }
             }
             Text(
-                text = "${followinfo.followNames}",
+                text = "${following.followNames}",
                 fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
 
             if (isFollowing) {
                 Button(
-                    onClick = { isFollowing = false
-                        unfollowUser(user,followinfo.userIds)
+                    onClick = { isFollow = false
+                        unfollowUser(user,following.userIds)
                         onFollowChange(false)
                         },
                     modifier = Modifier.width(100.dp).height(45.dp),
@@ -104,8 +105,8 @@ fun profileBox(navController: NavHostController, user:Long, followinfo:FollowLis
                 }
             } else {
                 Button(
-                    onClick = { isFollowing = true
-                        followUser(user,followinfo.userIds)
+                    onClick = { isFollow = true
+                        followUser(user,following.userIds)
                         onFollowChange(true)
                     },
                     modifier = Modifier.width(100.dp).height(45.dp),

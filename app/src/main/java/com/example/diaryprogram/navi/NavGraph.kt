@@ -99,9 +99,9 @@ fun NavGraph(navController: NavHostController) {
         }
 
         composable(route = "browseUserDiaries/{userId}") { backStackEntry ->
-            val user = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
-            if (user != null) {
-                BrowseMineDiaryPage(navController, user)
+            val otheruserId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
+            if (otheruserId != null) {
+                BrowseMineDiaryPage(navController, otheruserId)
             }
         }
 
