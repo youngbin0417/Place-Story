@@ -1,5 +1,6 @@
 package com.example.diaryprogram.component
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -44,6 +45,8 @@ import com.example.diaryprogram.util.utils
 fun profileBox(navController: NavHostController, user:Long, following:FollowListResponseDto,
                isFollowing: Boolean, onFollowChange: (Boolean) -> Unit) {
     var isFollow by rememberSaveable { mutableStateOf(true) }
+    Log.d("ProfileBox", "Displaying profile for userId: ${following.userIds}, image URL: ${following.profileImage?.url}")
+
     Box(modifier = Modifier
         .width(300.dp).height(80.dp)
         .clickable(onClick = {
@@ -73,6 +76,7 @@ fun profileBox(navController: NavHostController, user:Long, following:FollowList
                     )
                 } else {
                     // URL로부터 이미지를 로드
+
                     utils.DisplayCircleImage(base64String = image.url, size = 50.dp)
                 }
             }

@@ -42,9 +42,8 @@ import com.example.diaryprogram.api.UserApi.loadFollowList
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.profileBox
 import com.example.diaryprogram.data.FollowListResponseDto
-import com.google.ai.client.generativeai.type.content
 
-//api 연동 해야함
+
 @Composable
 fun FollowPage(navHostController: NavHostController, userId: Long) {
     var followList by remember { mutableStateOf<List<FollowListResponseDto>>(emptyList()) }
