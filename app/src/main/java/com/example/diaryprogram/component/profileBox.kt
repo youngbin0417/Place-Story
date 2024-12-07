@@ -42,7 +42,7 @@ import com.example.diaryprogram.data.FollowListResponseDto
 import com.example.diaryprogram.util.utils
 
 @Composable
-fun profileBox(navController: NavHostController, user:Long, following:FollowListResponseDto,
+fun ProfileBox(navController: NavHostController, user:Long, following:FollowListResponseDto,
                isFollowing: Boolean, onFollowChange: (Boolean) -> Unit) {
     var isFollow by rememberSaveable { mutableStateOf(true) }
     Log.d("ProfileBox", "Displaying profile for userId: ${following.userIds}, image URL: ${following.profileImage?.url}")

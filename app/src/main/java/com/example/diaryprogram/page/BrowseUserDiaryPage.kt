@@ -38,13 +38,11 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.fetchMyDiaries
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
-import com.example.diaryprogram.component.myDiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
 
 @Composable

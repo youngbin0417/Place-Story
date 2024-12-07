@@ -40,7 +40,7 @@ import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.UserApi.loadFollowList
 import com.example.diaryprogram.appbar.AppBar
-import com.example.diaryprogram.component.profileBox
+import com.example.diaryprogram.component.ProfileBox
 import com.example.diaryprogram.data.FollowListResponseDto
 
 
@@ -143,7 +143,7 @@ fun FollowPage(navHostController: NavHostController, userId: Long) {
                     ) {
                         items(followList) { followInfo ->
                             val isFollowing = followStates[followInfo.userIds] ?: true
-                            profileBox(
+                            ProfileBox(
                                 navController = navHostController,
                                 user = userId,
                                 following = followInfo,

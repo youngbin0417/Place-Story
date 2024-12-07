@@ -5,16 +5,13 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
-
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.location.Location
 import android.os.Looper
 import android.util.Log
-import com.example.diaryprogram.notification.NotificationHelper
 import com.google.android.gms.location.*
 
 

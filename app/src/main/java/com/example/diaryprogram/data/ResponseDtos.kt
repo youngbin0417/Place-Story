@@ -34,18 +34,6 @@ data class ImageResponseDto(
     val url: String
 )
 
-data class DiaryDetailsResponseDto(
-    val name: String,
-    val latitude: Double,
-    val longitude: Double,
-    val title: String,
-    val content: String,
-    val date: String,
-    val likesCount: Int,
-    val diaryStatus: DiaryStatus,
-    val images: List<ImageResponseDto>
-)
-
 data class UserDiaryResponseDto(
     val name: String,
     val latitude: Double,

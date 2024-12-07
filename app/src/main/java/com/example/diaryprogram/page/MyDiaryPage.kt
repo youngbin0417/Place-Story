@@ -1,9 +1,7 @@
 package com.example.diaryprogram.page
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,12 +44,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
-import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.DiaryApi.deleteDiary
 import com.example.diaryprogram.api.DiaryApi.fetchUserDiary
-import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.data.UserDiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng

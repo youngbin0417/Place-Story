@@ -15,7 +15,6 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.GeofencingRequest.INITIAL_TRIGGER_ENTER
-import com.google.android.gms.location.GeofencingRequest.InitialTrigger
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnCompleteListener
 

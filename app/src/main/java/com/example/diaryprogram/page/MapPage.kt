@@ -29,11 +29,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
-import com.example.diaryprogram.api.DiaryApi.fetchAllDiaries
 import com.example.diaryprogram.api.DiaryApi.fetchMyDiaries
 import com.example.diaryprogram.data.DiaryResponseDto
-import com.example.diaryprogram.data.DiaryStatus
-import com.example.diaryprogram.data.MarkerData
 import com.example.diaryprogram.data.makeMarker
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory

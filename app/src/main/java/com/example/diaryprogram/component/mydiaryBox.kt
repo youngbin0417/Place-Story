@@ -1,7 +1,5 @@
 package com.example.diaryprogram.component
 
-import android.widget.ImageButton
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,20 +36,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
-import com.example.diaryprogram.api.ApiClient.apiService
-import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
-import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.util.utils
-import com.google.android.gms.maps.model.LatLng
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 
 @Composable
