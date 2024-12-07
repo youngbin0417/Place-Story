@@ -77,6 +77,12 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
         )
     }
 
+    fun updateDiaryLikeState(diaryId: Long, isLiked: Boolean) {
+        diaryListState.value = diaryListState.value.map { diary ->
+            if (diary.diaryId == diaryId) diary.copy(isLiked = isLiked) else diary
+        }
+    }
+
     // 페이지 로드 초기화
     LaunchedEffect(key1 = userId) {
         loadPage(currentPage)
@@ -206,3 +212,4 @@ fun BrowseFollowDiaryPage(navHostController: NavHostController, userId: Long) {
         )
     }
 }
+

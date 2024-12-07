@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,10 +69,9 @@ fun DiaryBox(
     option: Int
 ) {
     val context = LocalContext.current
-    var isClicked by remember { mutableStateOf(false) }
+    var isClicked by remember { mutableStateOf(true) }
     var address by remember { mutableStateOf("...") }
     var isFollowing by remember { mutableStateOf(true) }
-
 
     LaunchedEffect(diaryInfo) {
         address = getAddressFromLatLng(
@@ -79,7 +79,15 @@ fun DiaryBox(
             diaryInfo.latitude,
             diaryInfo.longitude
         )
+
+        isClicked=diaryInfo.isLiked
     }
+
+    LaunchedEffect(isClicked) {
+
+    }
+
+
 
     Box(
         modifier = Modifier
@@ -194,8 +202,22 @@ fun DiaryBox(
                     if (isClicked) {
                         IconButton(
                             onClick = {
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    isClicked = false // 상태 복구
+                                diaryInfo.diaryId?.let { diaryId ->
+                                    likeDiary(
+                                        apiService = apiService,
+                                        userId = userId,
+                                        diaryId = diaryId,
+                                        onSuccess = {
+                                            isClicked = false // 성공 시 좋아요 상태로 전환
+                                        },
+                                        onFailure = { throwable ->
+                                            Toast.makeText(
+                                                context,
+                                                "좋아요 실패: ${throwable.message}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    )
                                 }
                             },
                             modifier = Modifier
@@ -224,7 +246,6 @@ fun DiaryBox(
                                                 "좋아요 실패: ${throwable.message}",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                            isClicked = false // 실패 시 상태 복구
                                         }
                                     )
                                 }

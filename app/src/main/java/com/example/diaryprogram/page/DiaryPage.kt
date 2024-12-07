@@ -63,13 +63,14 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
     var address by remember { mutableStateOf("") } // 주소 초기값은 빈 문자열로 설정
     var isLiked by remember { mutableStateOf(false) } // 좋아요 상태 관리
     val appBarOption = if (option == 0) 4 else 3 // 조건에 따라 option 값 설정
-
+    var updatedLikesCount by remember { mutableStateOf(0) }
 
 
     LaunchedEffect(diaryDetails) {
         // diaryDetails가 null이 아닐 때만 주소 변환 로직 실행
         diaryDetails?.let { details ->
             address = getAddressFromLatLng(context, details.latitude, details.longitude)
+            updatedLikesCount=details.likesCount
         }
     }
 
@@ -89,6 +90,7 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
         )
         onDispose { }
     }
+
 
 
 
@@ -156,7 +158,7 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
                     HorizontalDivider(color = Color.White, thickness = 1.dp)
 
                     Text (
-                        text = "${diaryDetails?.date}" ?: "날짜 없음",
+                        text = "${diaryDetails?.date}",
                         textAlign = TextAlign.Start,
                         fontSize = 18.sp,
                         fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
@@ -218,21 +220,30 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
                         IconButton(
                             onClick = {
                                 if (isLiked) {
-                                    Toast.makeText(context, "이미 좋아요를 누르셨습니다.", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    isLiked = true // 좋아요 상태 변경
                                     likeDiary(
                                         apiService = apiService,
                                         userId = userID,
                                         diaryId = diaryID,
                                         onSuccess = {
-                                            diaryDetails = diaryDetails?.copy(
-                                                likesCount = diaryDetails!!.likesCount+1
-                                            )
+                                            updatedLikesCount -=1
+                                            isLiked=false
+                                        },
+                                        onFailure = { throwable ->
+                                            Toast.makeText(context, "좋아요 취소 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
+                                        }
+                                    )
+
+                                } else {
+                                    likeDiary(
+                                        apiService = apiService,
+                                        userId = userID,
+                                        diaryId = diaryID,
+                                        onSuccess = {
+                                            updatedLikesCount+=1
+                                            isLiked=true
                                         },
                                         onFailure = { throwable ->
                                             Toast.makeText(context, "좋아요 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
-                                            isLiked = false // 실패 시 상태 복구
                                         }
                                     )
                                 }
@@ -248,7 +259,7 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
                             )
                         }
                         Text(
-                            text = "${diaryDetails?.likesCount}명이 좋아요를 눌렀어요",
+                            text = "${updatedLikesCount}명이 좋아요를 눌렀어요",
                             fontSize = 14.sp,
                             fontFamily = FontFamily(Font(R.font.nanumbarunpenb)),
                             color = Color.White

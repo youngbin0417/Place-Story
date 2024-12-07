@@ -163,13 +163,9 @@ fun myDiaryBox(
             Column(
                 modifier = Modifier.align(Alignment.CenterVertically)
             ) {
-
-                if (isClicked) {
                     IconButton(
                         onClick = {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                isClicked = false // 상태 복구
-                            }
+
                         },
                         modifier = Modifier
                             .size(50.dp)
@@ -180,35 +176,6 @@ fun myDiaryBox(
                             modifier = Modifier.size(40.dp)
                         )
                     }
-                } else {
-                    IconButton(
-                        onClick = {
-                            diaryInfo.diaryId?.let { diaryId ->
-                                likeDiary(
-                                    apiService = apiService,
-                                    userId = userId,
-                                    diaryId = diaryId,
-                                    onSuccess = {
-                                        isClicked = true // 성공 시 좋아요 상태로 전환
-                                    },
-                                    onFailure = { throwable ->
-                                        Toast.makeText(context, "좋아요 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
-                                        isClicked = false // 실패 시 상태 복구
-                                    }
-                                )
-                            }
-                        },
-                        modifier = Modifier
-                            .size(50.dp)
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.emptyheart),
-                            contentDescription = "좋아요",
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-                }
-
 
             }
         }

@@ -153,7 +153,7 @@ fun BrowsePublicDiaryPage(navHostController: NavHostController, userId: Long) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(550.dp)
+                            .weight(1f)
                             .padding(horizontal = 16.dp)
                     ) {
                         // diaryListState.value가 List<DiaryResponseDto>인 경우 items 사용

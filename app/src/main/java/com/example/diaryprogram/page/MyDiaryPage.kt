@@ -266,32 +266,13 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             IconButton(
-                                onClick = {
-                                    if (isLiked) {
-                                        Toast.makeText(context, "이미 좋아요를 누르셨습니다.", Toast.LENGTH_SHORT).show()
-                                    } else {
-                                        isLiked = true // 좋아요 상태 변경
-                                        likeDiary(
-                                            apiService = apiService,
-                                            userId = userID,
-                                            diaryId = diaryID,
-                                            onSuccess = {
-                                                diaryDetails = diaryDetails?.copy(
-                                                    likesCount = diaryDetails!!.likesCount+1
-                                                )
-                                            },
-                                            onFailure = { throwable ->
-                                                Toast.makeText(context, "좋아요 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
-                                                isLiked = false // 실패 시 상태 복구
-                                            }
-                                        )
-                                    }
-                                },
+                                onClick = { // 자기꺼는 좋아요 못함
+                                     },
                                 modifier = Modifier.size(40.dp)
                             ) {
                                 Image(
                                     painter = painterResource(
-                                        id = if (isLiked) R.drawable.heart else R.drawable.emptyheart
+                                        id = if (isLiked) R.drawable.heart else R.drawable.heart
                                     ),
                                     contentDescription = "좋아요 버튼",
                                     modifier = Modifier.size(30.dp)
