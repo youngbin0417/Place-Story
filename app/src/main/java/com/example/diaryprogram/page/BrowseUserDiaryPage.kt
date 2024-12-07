@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,7 +41,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.diaryprogram.R
+import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.DiaryApi.fetchMyDiaries
+import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.appbar.AppBar
 import com.example.diaryprogram.component.DiaryBox
 import com.example.diaryprogram.data.DiaryResponseDto
@@ -51,6 +54,12 @@ fun BrowseUserDiaryPage(navHostController: NavHostController, userId: Long) {
     val isLoading = remember { mutableStateOf(true) }
     val totalPage = remember { mutableStateOf(0) }
     var currentPage by remember { mutableStateOf(0) }
+    val isLikedMap = remember { mutableStateMapOf<Long, Boolean>() }
+    diaryListState.value.forEach { diary ->
+        if (isLikedMap[diary.diaryId] == null) {
+            isLikedMap[diary.diaryId] = diary.isLiked
+        }
+    }
 
     // 다이어리 데이터 로드
     fun loadPage(page: Int) {
@@ -157,8 +166,26 @@ fun BrowseUserDiaryPage(navHostController: NavHostController, userId: Long) {
                                 userId = userId,
                                 diaryInfo = diary,
                                 option = 0,
-                                onDiaryClick = { diaryId ->
-                                    navHostController.navigate("followdiary/$diaryId")
+                                isClicked = isLikedMap[diary.diaryId] ?: false,
+                                onDiaryClick = { diaryId, isClicked ->
+                                    // isClicked 상태를 업데이트
+                                    isLikedMap[diaryId] = isClicked
+                                    // 네비게이션 시 isClicked 상태를 전달
+                                    navHostController.navigate("followdiary/$diaryId/$isClicked")
+                                },
+                                onLikeToggle = { diaryId, newIsLiked ->
+                                    // 다이어리의 좋아요 상태를 서버에 업데이트하고 Map을 업데이트
+                                    likeDiary(
+                                        apiService = apiService,
+                                        userId = userId,
+                                        diaryId = diaryId,
+                                        onSuccess = {
+                                            isLikedMap[diaryId] = newIsLiked
+                                        },
+                                        onFailure = { throwable ->
+
+                                        }
+                                    )
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))

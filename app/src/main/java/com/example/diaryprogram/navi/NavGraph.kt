@@ -19,6 +19,7 @@ import androidx.navigation.navArgument
 import com.example.diaryprogram.page.BrowseFollowDiaryPage
 import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.page.BrowsePublicDiaryPage
+import com.example.diaryprogram.page.BrowseUserDiaryPage
 import com.example.diaryprogram.page.DiaryPage
 import com.example.diaryprogram.page.FollowPage
 import com.example.diaryprogram.page.LoadingPage
@@ -101,7 +102,7 @@ fun NavGraph(navController: NavHostController) {
         composable(route = "browseUserDiaries/{userId}") { backStackEntry ->
             val otheruserId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
             if (otheruserId != null) {
-                BrowseMineDiaryPage(navController, otheruserId)
+                BrowseUserDiaryPage(navController, otheruserId)
             }
         }
 
@@ -138,18 +139,25 @@ fun NavGraph(navController: NavHostController) {
             BrowsePublicDiaryPage(navController,userId)
         }
 
-        composable(route = "publicdiary/{diaryId}") { backStackEntry ->
+        composable(route = "publicdiary/{diaryId}/{isClicked}") { backStackEntry ->
             val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
+            val isLiked = backStackEntry.arguments?.getString("isClicked")?.toBoolean()
             if (diaryId != null) {
-                DiaryPage(navController, userId, diaryId,1)
+                if (isLiked != null) {
+                    DiaryPage(navController, userId, diaryId,1,isLiked)
+                }
             } else {
                 Log.e("NavigationError", "diaryId is null or invalid")
             }
         }
-        composable(route = "followdiary/{diaryId}") { backStackEntry ->
+        composable(route = "followdiary/{diaryId}/{isClicked}") { backStackEntry ->
             val diaryId = backStackEntry.arguments?.getString("diaryId")?.toLongOrNull()
+            val isLiked = backStackEntry.arguments?.getString("isClicked")?.toBoolean()
+            Log.d("Navigation", "diaryId: $diaryId, isLiked: $isLiked")
             if (diaryId != null) {
-                DiaryPage(navController, userId, diaryId,0)
+                if (isLiked != null) {
+                    DiaryPage(navController, userId, diaryId,0,isLiked)
+                }
             } else {
                 Log.e("NavigationError", "diaryId is null or invalid")
             }

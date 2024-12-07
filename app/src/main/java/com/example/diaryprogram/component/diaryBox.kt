@@ -1,5 +1,6 @@
 package com.example.diaryprogram.component
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,6 +46,7 @@ import com.example.diaryprogram.api.DiaryApi.likeDiary
 import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.example.diaryprogram.util.utils.base64ToImage
+import kotlin.math.log
 
 
 @Composable
@@ -52,13 +54,13 @@ fun DiaryBox(
     navController: NavHostController,
     userId: Long,
     diaryInfo: DiaryResponseDto,
-    onDiaryClick: (Long) -> Unit,
+    onDiaryClick: (Long, Boolean) -> Unit,
+    onLikeToggle: (Long, Boolean) -> Unit,
+    isClicked: Boolean,
     option: Int
 ) {
     val context = LocalContext.current
-    var isClicked by remember { mutableStateOf(true) }
     var address by remember { mutableStateOf("...") }
-    var isFollowing by remember { mutableStateOf(true) }
 
     LaunchedEffect(diaryInfo) {
         address = getAddressFromLatLng(
@@ -66,15 +68,7 @@ fun DiaryBox(
             diaryInfo.latitude,
             diaryInfo.longitude
         )
-
-        isClicked=diaryInfo.isLiked
     }
-
-    LaunchedEffect(isClicked) {
-
-    }
-
-
 
     Box(
         modifier = Modifier
@@ -83,7 +77,7 @@ fun DiaryBox(
             .height(100.dp)
             .clickable(
                 onClick = {
-                    diaryInfo.diaryId.let { onDiaryClick(it) }
+                    onDiaryClick(diaryInfo.diaryId, isClicked)
                 }
             )
     ) {
@@ -96,20 +90,17 @@ fun DiaryBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
+            // 프로필 이미지 처리
             diaryInfo.profileImage?.let { image ->
                 if (image.url == "default.jpg") {
                     Image(
                         painter = painterResource(id = R.drawable.profile),
                         contentDescription = "Default Profile Icon",
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier
+                            .size(60.dp)
                             .clip(CircleShape)
                             .clickable {
-                                if (option == 0) {
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}")
-                                } else if (option == 1) {
-                                    isFollowing = false
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}")
-                                }
+                                navController.navigate("other_profile_page/${diaryInfo.userId}")
                             }
                     )
                 } else {
@@ -125,14 +116,14 @@ fun DiaryBox(
                                     navController.navigate("other_profile_page/${diaryInfo.userId}")
                                 },
                             contentScale = ContentScale.Crop
-
                         )
                     }
                 }
             } ?: Image(
                 painter = painterResource(id = R.drawable.profile),
                 contentDescription = "Default Profile Icon",
-                modifier = Modifier.size(60.dp)
+                modifier = Modifier
+                    .size(60.dp)
                     .clip(CircleShape)
                     .clickable {
                         navController.navigate("other_profile_page/${diaryInfo.userId}")
@@ -172,80 +163,23 @@ fun DiaryBox(
                     maxLines = 1
                 )
             }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Transparent)
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.End
-            ) {
-                Column {
 
-                    if (isClicked) {
-                        IconButton(
-                            onClick = {
-                                diaryInfo.diaryId?.let { diaryId ->
-                                    likeDiary(
-                                        apiService = apiService,
-                                        userId = userId,
-                                        diaryId = diaryId,
-                                        onSuccess = {
-                                            isClicked = false // 성공 시 좋아요 상태로 전환
-                                        },
-                                        onFailure = { throwable ->
-                                            Toast.makeText(
-                                                context,
-                                                "좋아요 실패: ${throwable.message}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                                .size(50.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.heart),
-                                contentDescription = "좋아요",
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
-                    } else {
-                        IconButton(
-                            onClick = {
-                                diaryInfo.diaryId.let { diaryId ->
-                                    likeDiary(
-                                        apiService = apiService,
-                                        userId = userId,
-                                        diaryId = diaryId,
-                                        onSuccess = {
-                                            isClicked = true // 성공 시 좋아요 상태로 전환
-                                        },
-                                        onFailure = { throwable ->
-                                            Toast.makeText(
-                                                context,
-                                                "좋아요 실패: ${throwable.message}",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                                .size(50.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.emptyheart),
-                                contentDescription = "좋아요",
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
-                    }
+            Spacer(modifier = Modifier.weight(1f)) // 남은 공간 채우기
 
-
+            Column {
+                IconButton(
+                    onClick = {
+                        onLikeToggle(diaryInfo.diaryId, !isClicked)
+                    },
+                    modifier = Modifier.size(50.dp)
+                ) {
+                    Image(
+                        painter = painterResource(
+                            id = if (isClicked) R.drawable.heart else R.drawable.emptyheart
+                        ),
+                        contentDescription = "좋아요 버튼",
+                        modifier = Modifier.size(40.dp)
+                    )
                 }
             }
         }

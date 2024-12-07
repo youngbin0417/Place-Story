@@ -51,7 +51,7 @@ fun ProfileBox(navController: NavHostController, user:Long, following:FollowList
         .width(300.dp).height(80.dp)
         .clickable(onClick = {
             // 네비게이션 사용
-            navController.navigate("other_profile_page/${following.userIds}/${if (isFollowing) "true" else "false"}")
+            navController.navigate("other_profile_page/${following.userIds}")
         })
     ) {
         Row(

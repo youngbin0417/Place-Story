@@ -1,5 +1,6 @@
 package com.example.diaryprogram.page
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,17 +54,17 @@ import com.example.diaryprogram.util.utils
 
 
 @Composable
-fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long, option:Int) {
+fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long, option:Int, isliked:Boolean) {
     val context = LocalContext.current
     var diaryDetails by remember { mutableStateOf<UserDiaryResponseDto?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var address by remember { mutableStateOf("") } // 주소 초기값은 빈 문자열로 설정
-    var isLiked by remember { mutableStateOf(false) } // 좋아요 상태 관리
+    var isLiked by remember { mutableStateOf(isliked) } // 좋아요 상태 관리
     val appBarOption = if (option == 0) 4 else 3 // 조건에 따라 option 값 설정
     var updatedLikesCount by remember { mutableStateOf(0) }
 
-
+    Log.d("DiaryPage", "isLiked인자, 현재 : $isliked  $isLiked")
     LaunchedEffect(diaryDetails) {
         // diaryDetails가 null이 아닐 때만 주소 변환 로직 실행
         diaryDetails?.let { details ->
@@ -79,7 +80,6 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
             onSuccess = { diary ->
                 diaryDetails = diary
                 isLoading = false
-                isLiked=false
             },
             onFailure = { throwable ->
                 errorMessage = throwable.message
@@ -215,46 +215,69 @@ fun DiaryPage(navHostController: NavHostController, userID: Long, diaryID: Long,
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        IconButton(
-                            onClick = {
-                                if (isLiked) {
+                        if (isLiked) {
+                            IconButton(
+                                onClick = {
+                                        likeDiary(
+                                            apiService = apiService,
+                                            userId = userID,
+                                            diaryId = diaryID,
+                                            onSuccess = {
+                                                updatedLikesCount -= 1
+                                                isLiked = false
+                                            },
+                                            onFailure = { throwable ->
+                                                Toast.makeText(
+                                                    context,
+                                                    "좋아요 취소 실패: ${throwable.message}",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+                                        )
+
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(
+                                        R.drawable.heart
+                                    ),
+                                    contentDescription = "좋아요 버튼",
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+                        }
+                        else{
+                            IconButton(
+                                onClick = {
                                     likeDiary(
                                         apiService = apiService,
                                         userId = userID,
                                         diaryId = diaryID,
                                         onSuccess = {
-                                            updatedLikesCount -=1
-                                            isLiked=false
+                                            updatedLikesCount += 1
+                                            isLiked = true
                                         },
                                         onFailure = { throwable ->
-                                            Toast.makeText(context, "좋아요 취소 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
+                                            Toast.makeText(
+                                                context,
+                                                "좋아요 실패: ${throwable.message}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
                                     )
 
-                                } else {
-                                    likeDiary(
-                                        apiService = apiService,
-                                        userId = userID,
-                                        diaryId = diaryID,
-                                        onSuccess = {
-                                            updatedLikesCount+=1
-                                            isLiked=true
-                                        },
-                                        onFailure = { throwable ->
-                                            Toast.makeText(context, "좋아요 실패: ${throwable.message}", Toast.LENGTH_SHORT).show()
-                                        }
-                                    )
-                                }
-                            },
-                            modifier = Modifier.size(40.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(
-                                    id = if (isLiked) R.drawable.heart else R.drawable.emptyheart
-                                ),
-                                contentDescription = "좋아요 버튼",
-                                modifier = Modifier.size(30.dp)
-                            )
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(
+                                        R.drawable.emptyheart
+                                    ),
+                                    contentDescription = "좋아요 버튼",
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
                         }
                         Text(
                             text = "${updatedLikesCount}명이 좋아요를 눌렀어요",
