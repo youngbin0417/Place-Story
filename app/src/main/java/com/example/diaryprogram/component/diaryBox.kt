@@ -30,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -48,6 +50,7 @@ import com.example.diaryprogram.data.DiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.util.utils
+import com.example.diaryprogram.util.utils.base64ToImage
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -109,15 +112,29 @@ fun DiaryBox(
                             .clip(CircleShape)
                             .clickable {
                                 if (option == 0) {
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
+                                    navController.navigate("other_profile_page/${diaryInfo.userId}")
                                 } else if (option == 1) {
                                     isFollowing = false
-                                    navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
+                                    navController.navigate("other_profile_page/${diaryInfo.userId}")
                                 }
                             }
                     )
                 } else {
-                    utils.DisplayCircleImage(base64String = image.url, size = 80.dp)
+                    val bitmap = base64ToImage(image.url)
+                    bitmap?.let {
+                        Image(
+                            bitmap = it.asImageBitmap(),
+                            contentDescription = "Diary Image",
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    navController.navigate("other_profile_page/${diaryInfo.userId}")
+                                },
+                            contentScale = ContentScale.Crop // 이미지 크기 조정 방식
+
+                        )
+                    }
                 }
             } ?: Image(
                 painter = painterResource(id = R.drawable.profile),
@@ -125,12 +142,7 @@ fun DiaryBox(
                 modifier = Modifier.size(60.dp)
                     .clip(CircleShape)
                     .clickable {
-                        if (option == 0) {
-                            navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                        } else if (option == 1) {
-                            isFollowing = false
-                            navController.navigate("other_profile_page/${diaryInfo.userId}/$isFollowing")
-                        }
+                        navController.navigate("other_profile_page/${diaryInfo.userId}")
                     }
             )
             Spacer(modifier = Modifier.width(16.dp))

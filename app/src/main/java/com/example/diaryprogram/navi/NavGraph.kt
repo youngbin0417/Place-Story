@@ -169,12 +169,11 @@ fun NavGraph(navController: NavHostController) {
             FollowPage(navController,userId)
         }
 
-        composable("other_profile_page/{userId}/{isFollowing}") { backStackEntry ->
+        composable("other_profile_page/{userId}") { backStackEntry ->
             val otheruserId = backStackEntry.arguments?.getString("userId")?.toLongOrNull()
-            val isFollowing = backStackEntry.arguments?.getString("isFollowing")?.toBoolean() ?: false
 
             if (otheruserId != null) {
-                OtherProfilePage(navController, userId, otheruserId, isFollowing)
+                OtherProfilePage(navController, userId, otheruserId)
             } else {
                 // 예외 처리
                 navController.navigate("main")

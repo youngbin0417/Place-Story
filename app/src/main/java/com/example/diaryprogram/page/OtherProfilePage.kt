@@ -2,7 +2,6 @@ package com.example.diaryprogram.page
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,10 +23,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,29 +41,42 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.ApiClient.apiService
 import com.example.diaryprogram.api.UserApi.followUser
+import com.example.diaryprogram.api.UserApi.loadFollowList
 import com.example.diaryprogram.api.UserApi.loadUserProfile
 import com.example.diaryprogram.api.UserApi.unfollowUser
 import com.example.diaryprogram.appbar.AppBar
+import com.example.diaryprogram.data.FollowListResponseDto
 import com.example.diaryprogram.data.UserProfileResponseDto
 import com.example.diaryprogram.util.utils
 
-// api 연동 해야함
 @Composable
-fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Long, initialIsFollowing: Boolean) {
+fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Long) {
     val customfont = FontFamily(Font(R.font.nanumbarunpenr))
     var userProfile by remember { mutableStateOf<UserProfileResponseDto?>(null) }
-    var isFollowing by rememberSaveable { mutableStateOf(initialIsFollowing) }
+    var isFollowing by remember { mutableStateOf(false) }
+    var followList by remember { mutableStateOf<List<FollowListResponseDto>>(emptyList()) }
+
 
     DisposableEffect(otherId) {
+        // otherId 변경 시 해당 유저 프로필 및 팔로우 리스트 로딩
         loadUserProfile(apiService, otherId) { profile ->
             userProfile = profile
         }
+        loadFollowList(apiService, userId) { loadedList ->
+            followList = loadedList
+        }
+
         onDispose { }
     }
+
+    // followList가 업데이트 될 때마다 isFollowing 값을 갱신
+    LaunchedEffect(followList) {
+        isFollowing = followList.any { it.userIds == otherId }
+    }
+
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -254,9 +266,10 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                     }
                     Spacer(modifier = Modifier.height(20.dp))
                     if (isFollowing){
-                        Button(onClick = { isFollowing=false
+                        Button(onClick = {
                             // 언팔로우 api 함수
-                            //unfollowUser(userId, otherId)
+                            isFollowing=false
+                            unfollowUser(userId, otherId)
                         },
                             modifier = Modifier.width(300.dp).height(45.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -269,8 +282,9 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                     }
                     else {
                         Button(
-                            onClick = { isFollowing=true
+                            onClick = {
                                 // 팔로우 api 함수
+                                isFollowing=true
                                 followUser(userId, otherId)
                             },
                             modifier = Modifier.width(300.dp).height(45.dp),
