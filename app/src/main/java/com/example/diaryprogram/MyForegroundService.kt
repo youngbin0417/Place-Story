@@ -45,17 +45,15 @@ class MyForegroundService : Service() {
             Log.e("UncaughtException", "Thread: $thread, Exception: ${throwable.message}", throwable)
         }
         // 알림 채널 생성
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                CHANNEL_ID,
-                "Foreground Service Channel",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Place Story 위치 서비스"
-            }
-            val manager = getSystemService(NotificationManager::class.java)
-            manager?.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            "Foreground Service Channel",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "Place Story 위치 서비스"
         }
+        val manager = getSystemService(NotificationManager::class.java)
+        manager?.createNotificationChannel(channel)
 
         // 위치 요청 초기화
         createLocationRequest()
@@ -64,7 +62,7 @@ class MyForegroundService : Service() {
     @SuppressLint("MissingPermission")
     private fun createLocationRequest() {
         locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 30_000L)
-            .setMinUpdateIntervalMillis(30_000L) // 최소 업데이트 주기 (30초)
+            .setMinUpdateIntervalMillis(10_000L) // 최소 업데이트 주기 (30초)
             .build()
     }
 
@@ -74,15 +72,18 @@ class MyForegroundService : Service() {
             locationRequest,
             locationCallback,
             Looper.getMainLooper()
-        )
-        Log.d("LocationTracking", "위치 추적이 시작되었습니다.")
+        ).addOnSuccessListener {
+            Log.d("LocationTracking", "위치 추적이 실행되었습니다")
+        }.addOnFailureListener { e ->
+            Log.e("LocationTracking", "위치 추적 실행 실패: ${e.message}")
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (!isForeground) {
-            val notification = createNotification()
-            startForeground(1, notification)
-            isForeground = true
+        val notification = createNotification()
+        startForeground(1, notification) // Foreground Service 시작
+        if (intent == null) {
+            Log.d("MyForegroundService", "Service restarted after being killed")
         }
 
         // 위치 추적 시작

@@ -7,11 +7,15 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.GeofencingRequest.INITIAL_TRIGGER_ENTER
+import com.google.android.gms.location.GeofencingRequest.InitialTrigger
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnCompleteListener
 
@@ -27,7 +31,7 @@ class GeofenceHelper(private val context: Context) {
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        val backgroundLocationPermission = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+        val backgroundLocationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
@@ -36,8 +40,13 @@ class GeofenceHelper(private val context: Context) {
             true
         }
 
+        if (!fineLocationPermission || !backgroundLocationPermission) {
+            Log.e("GeofenceHelper", "Required location permissions are missing!")
+        }
+
         return fineLocationPermission && backgroundLocationPermission
     }
+
 
     /**
      * 권한 요청 메서드
@@ -86,7 +95,7 @@ class GeofenceHelper(private val context: Context) {
             .build()
 
         val geofencingRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            .setInitialTrigger(INITIAL_TRIGGER_ENTER)
             .addGeofence(geofence)
             .build()
         if (ActivityCompat.checkSelfPermission(

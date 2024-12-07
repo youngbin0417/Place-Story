@@ -10,25 +10,31 @@ import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
+        Log.d("GeofenceReceiver", "onReceive triggered")
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
+
         if (geofencingEvent == null || geofencingEvent.hasError()) {
             val errorMessage = geofencingEvent?.errorCode ?: "Unknown error"
             Log.e("GeofenceReceiver", "Error: $errorMessage")
             return
         }
+        Log.d("GeofenceReceiver", "GeofencingEvent received")
 
         val geofenceTransition = geofencingEvent.geofenceTransition
         val triggeringGeofences = geofencingEvent.triggeringGeofences
+        Log.d("GeofenceReceiver", "Transition Type: $geofenceTransition")
+
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             Log.i("GeofenceReceiver", "Entered geofence area.")
+            Log.d("GeofenceDebug", "Transition Type: $geofenceTransition")
 
             triggeringGeofences?.forEach { geofence ->
                 val geofenceId = geofence.requestId
                 val diaryId = geofenceId.removePrefix("Diary_").toLongOrNull()
 
                 if (diaryId != null) {
-                    fetchDiaryAndShowNotification(context, userId = 2L, diaryId = diaryId)
+                    fetchDiaryAndShowNotification(context, userId = 3L, diaryId = diaryId)
                 } else {
                     Log.e("GeofenceReceiver", "Invalid geofence ID: $geofenceId")
                 }

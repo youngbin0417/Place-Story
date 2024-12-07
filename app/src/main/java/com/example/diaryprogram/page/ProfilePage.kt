@@ -74,7 +74,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
         )
     ) {
         Column {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(25.dp))
         Row(
             modifier = Modifier.fillMaxWidth()
                 .padding(16.dp),

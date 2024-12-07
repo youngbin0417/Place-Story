@@ -48,7 +48,7 @@ fun MainPage(navHostController: NavHostController, currentLocation:LatLng) {
         )
     ) {
         Column(modifier = Modifier.padding(30.dp)) {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(25.dp))
 
             Row (
                 modifier = Modifier.fillMaxWidth(),
