@@ -21,12 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.diaryprogram.navi.NavGraph
 import com.example.diaryprogram.ui.theme.DiaryProgramTheme
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,23 +49,27 @@ class MainActivity : ComponentActivity() {
         val context = LocalContext.current
         val navController = rememberNavController()
 
-        // 알림 Intent로 전달된 경로 처리
+        // 알림 Intent로 전달된 diaryId 처리
         LaunchedEffect(navController) {
-            val routeFromNotification = (context as? MainActivity)?.intent?.getStringExtra("navigateTo")
-            if (!routeFromNotification.isNullOrEmpty() && navController.currentDestination?.route != routeFromNotification) {
-                navController.navigate(routeFromNotification) {
-                    popUpTo("login") { inclusive = true } // 백스택 정리
+            val diaryId = intent?.getLongExtra("diaryId", -1L)
+            if (diaryId != null && diaryId != -1L) {
+                Log.d("Navigation", "Navigating to geodiary/$diaryId from notification")
+                navController.navigate("geodiary/$diaryId") {
+                    popUpTo("main") { inclusive = false } // 'main'까지 백스택 유지
                 }
             }
         }
 
-        val apiAvailability = GoogleApiAvailability.getInstance()
-        val status = apiAvailability.isGooglePlayServicesAvailable(context)
-        if (status != ConnectionResult.SUCCESS) {
-            Log.e("GeofenceDebug", "Google Play Services not available: $status")
-        }
+        // 권한 요청 및 서비스 실행 로직
+        PermissionAndServiceLogic(navController)
+    }
 
-        // 알림 권한 요청
+    @Composable
+    fun PermissionAndServiceLogic(navController: NavHostController) {
+        val context = LocalContext.current
+
+        // 권한 확인 및 Foreground Service 실행 로직 (생략하지 않고 기존 로직 유지)
+        // 알림 권한 및 위치 권한 요청 처리
         val notificationPermissionLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.RequestPermission()
         ) { granted ->
@@ -77,16 +81,12 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // 위치 및 Foreground Service 권한 요청
         val locationPermissionLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) { permissions ->
             val allGranted = permissions.values.all { it }
             if (allGranted) {
-                Log.d(
-                    "PermissionCheck",
-                    "All permissions granted. Requesting notification permission."
-                )
+                Log.d("PermissionCheck", "All permissions granted. Requesting notification permission.")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 } else {
@@ -94,24 +94,18 @@ class MainActivity : ComponentActivity() {
                 }
             } else {
                 Toast.makeText(context, "위치 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
-                Log.d("PermissionCheck", "One or more permissions were denied.")
             }
         }
 
-        // 권한 요청 및 Foreground Service 실행
         LaunchedEffect(Unit) {
             if (checkPermissions()) {
-                Log.d(
-                    "PermissionCheck",
-                    "Permissions already granted. Starting foreground service."
-                )
+                Log.d("PermissionCheck", "Permissions already granted. Starting foreground service.")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 } else {
                     startMyForegroundServiceWithDelay()
                 }
             } else {
-                Log.d("PermissionCheck", "Requesting permissions.")
                 val permissionsToRequest = mutableListOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION
@@ -123,28 +117,18 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        // 내비게이션 그래프 시작
         NavGraph(navController = navController)
     }
 
     private fun startMyForegroundServiceWithDelay() {
-        Log.d("ServiceStart", "Preparing to start foreground service with delay.")
-
         if (!isServiceRunning(MyForegroundService::class.java)) {
             window.decorView.postDelayed({
                 startMyForegroundService()
             }, 1000) // 1초 지연
-        } else {
-            Log.d("ServiceStart", "Service is already running. Skipping start.")
         }
     }
 
     private fun startMyForegroundService() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK // 서비스에서 실행하는 경우 필요
-            startActivity(intent)
-        }
         val serviceIntent = Intent(this, MyForegroundService::class.java)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ContextCompat.startForegroundService(this, serviceIntent)
@@ -153,8 +137,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-
     private fun isServiceRunning(serviceClass: Class<*>): Boolean {
         val manager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
         return manager.getRunningServices(Int.MAX_VALUE).any {
@@ -162,7 +144,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // 권한 확인
     private fun checkPermissions(): Boolean {
         val fineLocationGranted = ContextCompat.checkSelfPermission(
             this, Manifest.permission.ACCESS_FINE_LOCATION
@@ -186,6 +167,4 @@ class MainActivity : ComponentActivity() {
 
         return fineLocationGranted && coarseLocationGranted && notificationGranted && backgroundLocationGranted
     }
-
-
 }
