@@ -23,6 +23,86 @@ import java.time.LocalDate
 // 다이어리 API
 object DiaryApi {
 
+    fun updateDiary(
+        userId: Long,
+        diaryId: Long,
+        diaryRequestDto: DiaryRequestDto?,
+        addImageUris: List<Uri>,
+        removeImageIds: List<Long>?,
+        contentResolver: ContentResolver,
+        onSuccess: (ResponseDto?) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val gson = GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, object : TypeAdapter<LocalDate>() {
+                        override fun write(out: JsonWriter, value: LocalDate) {
+                            out.value(value.toString()) // LocalDate 직렬화
+                        }
+
+                        override fun read(input: JsonReader): LocalDate {
+                            return LocalDate.parse(input.nextString()) // LocalDate 역직렬화
+                        }
+                    })
+                    .registerTypeAdapter(DiaryStatus::class.java, DiaryStatusAdapter()) // DiaryStatus 직렬화 어댑터
+                    .create()
+
+                // DiaryRequestDto를 JSON으로 변환 (null 체크)
+                val diaryRequestBody = diaryRequestDto?.let {
+                    val diaryJson = gson.toJson(it)
+                    diaryJson.toRequestBody("application/json".toMediaTypeOrNull())
+                }
+
+                // 추가 이미지 파일 준비
+                val addImageParts = addImageUris.mapIndexed { index, uri ->
+                    val fileName = getFileNameFromUri(uri, contentResolver)?.let { extractedName ->
+                        val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+                        val extension = when (mimeType) {
+                            "image/jpeg" -> ".jpg"
+                            "image/png" -> ".png"
+                            "image/webp" -> ".webp"
+                            else -> ".jpg"
+                        }
+                        if (extractedName.contains(".")) extractedName else "$extractedName$extension"
+                    } ?: "image_$index.jpg"
+
+                    val requestBody = contentResolver.openInputStream(uri)?.use {
+                        it.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                    } ?: throw IllegalArgumentException("Unable to read image data for URI: $uri")
+
+                    MultipartBody.Part.createFormData("addImages", fileName, requestBody)
+                }
+
+                // API 호출
+                ApiClient.apiService.updateDiary(
+                    userId = userId,
+                    diaryId = diaryId,
+                    addImages = if (addImageParts.isNotEmpty()) addImageParts else null,
+                    removeImageIds = removeImageIds
+                ).enqueue(object : Callback<ResponseDto> {
+                    override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
+                        if (response.isSuccessful) {
+                            onSuccess(response.body())
+                        } else {
+                            val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                            onError("Error: $errorBody")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
+                        onError("Network error: ${t.message}")
+                    }
+                })
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    onError("Unexpected error: ${e.message}")
+                }
+            }
+        }
+    }
+
+
     fun createDiary(
         userId: Long,
         diaryRequestDto: DiaryRequestDto,
