@@ -194,7 +194,7 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                                 )
 
                                 Text(
-                                    text = "${userProfile?.totalLikesCount ?: 0}",
+                                    text = "${userProfile?.totalLikeCount ?: 0}",
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont

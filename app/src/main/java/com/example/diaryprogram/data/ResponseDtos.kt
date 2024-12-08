@@ -12,7 +12,7 @@ data class UserProfileResponseDto(
     val name: String,
     val premiumBadge: Boolean,
     val profileImage: Image?,
-    val totalLikesCount: Int,
+    val totalLikeCount: Int,
     val totalDiaryCount: Int,
     val totalFollowCount: Int
 )

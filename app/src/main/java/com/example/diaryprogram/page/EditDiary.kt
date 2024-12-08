@@ -54,16 +54,20 @@ import coil.compose.rememberAsyncImagePainter
 import com.com.example.diaryprogram.geo.GeofenceHelper
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.fetchUserDiary
-import com.example.diaryprogram.api.DiaryApi.updateDiary
+import com.example.diaryprogram.data.DiaryRequestDto
 import com.example.diaryprogram.data.DiaryStatus
 import com.example.diaryprogram.data.UserDiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.example.diaryprogram.util.utils
+import com.google.android.gms.location.Geofence
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun EditDiary(navController: NavHostController, userId: Long, diaryId: Long) {
 
     Log.d("EditDiaryDebug", "userId: $userId, diaryId: $diaryId")
+    var localDate : LocalDate by remember { mutableStateOf(LocalDate.now()) }
 
     val context = LocalContext.current
     var title by remember { mutableStateOf("") }
@@ -76,7 +80,7 @@ fun EditDiary(navController: NavHostController, userId: Long, diaryId: Long) {
     var selectedEnum by remember { mutableStateOf(0) }
     val geofenceHelper = GeofenceHelper(context) // GeofenceHelper 인스턴스 생성
     var diaryDetails by remember { mutableStateOf<UserDiaryResponseDto?>(null) }
-    val deletedImageUris = remember { mutableStateListOf<Uri>() } // 삭제된 이미지 URL을 저장하는 리스트
+    val deletedImageUris = remember { mutableStateListOf<Long>() } // 삭제된 이미지 URL을 저장하는 리스트
 
     LaunchedEffect(diaryDetails) {
         // diaryDetails가 null이 아닐 때만 주소 변환 로직 실행
@@ -84,6 +88,9 @@ fun EditDiary(navController: NavHostController, userId: Long, diaryId: Long) {
             address = getAddressFromLatLng(context, details.latitude, details.longitude)
             userInput = details.content
             title = details.title
+            val dateString = details.date
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            localDate = LocalDate.parse(dateString, formatter)
         }
     }
     DisposableEffect(diaryId) {
@@ -141,9 +148,14 @@ fun EditDiary(navController: NavHostController, userId: Long, diaryId: Long) {
 // 오른쪽 등록 버튼
                 IconButton(
                     onClick = {
-                        //updateDiary(
-
-                        //)
+                        val updatedDiary = DiaryRequestDto(
+                            latitude = diaryDetails!!.latitude,
+                            longitude = diaryDetails!!.longitude,
+                            title = title,
+                            content = userInput,
+                            date = localDate,
+                            diaryStatus = diaryStatus
+                        )
                     },
                     modifier = Modifier.size(50.dp)
                 ) {

@@ -114,4 +114,5 @@ interface ApiService {
         @Path("diaryId") diaryId: Long
     ): Call<ResponseDto>
 
+
 }

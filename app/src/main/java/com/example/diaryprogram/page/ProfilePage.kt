@@ -181,7 +181,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                                 )
 
                                 Text(
-                                    text = "${userProfile?.totalLikesCount}", // api 연동 필요
+                                    text = "${userProfile?.totalLikeCount}", // api 연동 필요
                                     color = Color.White,
                                     fontSize = 12.sp,
                                     fontFamily = customfont
