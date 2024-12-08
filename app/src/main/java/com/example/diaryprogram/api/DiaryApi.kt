@@ -75,25 +75,28 @@ object DiaryApi {
                 }
 
                 // API 호출
-                ApiClient.apiService.updateDiary(
-                    userId = userId,
-                    diaryId = diaryId,
-                    addImages = if (addImageParts.isNotEmpty()) addImageParts else null,
-                    removeImageIds = removeImageIds
-                ).enqueue(object : Callback<ResponseDto> {
-                    override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
-                        if (response.isSuccessful) {
-                            onSuccess(response.body())
-                        } else {
-                            val errorBody = response.errorBody()?.string() ?: "Unknown error"
-                            onError("Error: $errorBody")
+                diaryRequestBody?.let {
+                    ApiClient.apiService.updateDiary(
+                        userId = userId,
+                        diaryId = diaryId,
+                        diary = it,
+                        addImages = if (addImageParts.isNotEmpty()) addImageParts else null,
+                        removeImageIds = removeImageIds
+                    ).enqueue(object : Callback<ResponseDto> {
+                        override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
+                            if (response.isSuccessful) {
+                                onSuccess(response.body())
+                            } else {
+                                val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                                onError("Error: $errorBody")
+                            }
                         }
-                    }
 
-                    override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
-                        onError("Network error: ${t.message}")
-                    }
-                })
+                        override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
+                            onError("Network error: ${t.message}")
+                        }
+                    })
+                }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     onError("Unexpected error: ${e.message}")
