@@ -114,5 +114,4 @@ interface ApiService {
         @Path("diaryId") diaryId: Long
     ): Call<ResponseDto>
 
-    abstract fun getAllDiaries(userId: Long, diaryStatus: Int, page: Int): Call<PaginatedResponseDto<DiaryResponseDto>>
 }
