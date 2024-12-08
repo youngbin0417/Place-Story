@@ -2,7 +2,6 @@ package com.example.diaryprogram.page
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -54,12 +53,12 @@ import coil.compose.rememberAsyncImagePainter
 import com.com.example.diaryprogram.geo.GeofenceHelper
 import com.example.diaryprogram.R
 import com.example.diaryprogram.api.DiaryApi.fetchUserDiary
+import com.example.diaryprogram.api.DiaryApi.updateDiary
 import com.example.diaryprogram.data.DiaryRequestDto
 import com.example.diaryprogram.data.DiaryStatus
 import com.example.diaryprogram.data.UserDiaryResponseDto
 import com.example.diaryprogram.geo.getAddressFromLatLng
 import com.example.diaryprogram.util.utils
-import com.google.android.gms.location.Geofence
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -155,6 +154,19 @@ fun EditDiary(navController: NavHostController, userId: Long, diaryId: Long) {
                             content = userInput,
                             date = localDate,
                             diaryStatus = diaryStatus
+                        )
+                        updateDiary(
+                            userId = userId,
+                            diaryId = diaryId,
+                            diaryRequestDto = updatedDiary,
+                            addImageUris = selectedImageUris,
+                            contentResolver = context.contentResolver,
+                            onSuccess = {
+                                Log.d("EditDiaryDebug", "Diary updated successfully")
+                            },
+                            onError = {
+                                Log.e("EditDiaryDebug", "Error updating diary: $it")
+                            }
                         )
                     },
                     modifier = Modifier.size(50.dp)

@@ -31,7 +31,7 @@ interface ApiService {
         @Path("userId") userId: Long,
         @Path("diaryId") diaryId: Long,
         @Part("diary") diary: RequestBody, // JSON 형태로 전송
-        @Part("addImages") addImages: List<MultipartBody.Part>?,
+        @Part addImages: List<MultipartBody.Part>?,
         @Part("removeImages") removeImageIds: List<Long>?
     ): Call<ResponseDto>
 

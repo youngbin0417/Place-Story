@@ -23,6 +23,89 @@ import java.time.LocalDate
 // 다이어리 API
 object DiaryApi {
 
+    fun updateDiary(
+        userId: Long,
+        diaryId: Long,
+        diaryRequestDto: DiaryRequestDto,
+        addImageUris: List<Uri>? = null,
+        removeImageIds: List<Long>? = null,
+        contentResolver: ContentResolver?,
+        onSuccess: (ResponseDto?) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val gson = GsonBuilder()
+                    .registerTypeAdapter(LocalDate::class.java, object : TypeAdapter<LocalDate>() {
+                        override fun write(out: JsonWriter, value: LocalDate) {
+                            out.value(value.toString())
+                        }
+
+                        override fun read(input: JsonReader): LocalDate {
+                            return LocalDate.parse(input.nextString())
+                        }
+                    })
+                    .registerTypeAdapter(DiaryStatus::class.java, DiaryStatusAdapter())
+                    .create()
+
+                // DiaryRequestDto -> JSON -> RequestBody
+                val diaryJson = gson.toJson(diaryRequestDto)
+                val diaryRequestBody = diaryJson.toRequestBody("application/json".toMediaTypeOrNull())
+
+                // 추가 이미지 Multipart 변환 (addImageUris가 있고, 비어있지 않을 경우에만)
+                val addImageParts: List<MultipartBody.Part>? = if (!addImageUris.isNullOrEmpty() && contentResolver != null) {
+                    addImageUris.mapIndexed { index, uri ->
+                        val fileName = getFileNameFromUri(uri, contentResolver)?.let { extractedName ->
+                            val mimeType = contentResolver.getType(uri) ?: "image/jpeg"
+                            val extension = when (mimeType) {
+                                "image/jpeg" -> ".jpg"
+                                "image/png" -> ".png"
+                                "image/webp" -> ".webp"
+                                else -> ".jpg"
+                            }
+                            if (extractedName.contains(".")) extractedName else "$extractedName$extension"
+                        } ?: "image_$index.jpg"
+
+                        val requestBody = contentResolver.openInputStream(uri)?.use {
+                            it.readBytes().toRequestBody("image/*".toMediaTypeOrNull())
+                        } ?: throw IllegalArgumentException("Unable to read image data for URI: $uri")
+
+                        MultipartBody.Part.createFormData("addImages", fileName, requestBody)
+                    }
+                } else {
+                    null
+                }
+
+                // 제거할 이미지 IDs (removeImageIds가 비어있다면 null)
+                val removeImages = if (!removeImageIds.isNullOrEmpty()) removeImageIds else null
+
+                ApiClient.apiService.updateDiary(
+                    userId = userId,
+                    diaryId = diaryId,
+                    diary = diaryRequestBody,
+                    addImages = addImageParts,
+                    removeImageIds = removeImages
+                ).enqueue(object : Callback<ResponseDto> {
+                    override fun onResponse(call: Call<ResponseDto>, response: Response<ResponseDto>) {
+                        if (response.isSuccessful) {
+                            onSuccess(response.body())
+                        } else {
+                            val errorBody = response.errorBody()?.string() ?: "Unknown error"
+                            onError("Error: $errorBody")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<ResponseDto>, t: Throwable) {
+                        onError("Network error: ${t.message}")
+                    }
+                })
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    onError("Unexpected error: ${e.message}")
+                }
+            }
+        }
+    }
 
 
     fun createDiary(
