@@ -265,7 +265,7 @@ fun ProfilePage(navHostController: NavHostController, userId: Long) {
                     }
                     Spacer(modifier = Modifier.height(15.dp))
 
-                    Button(onClick = {navHostController.navigate("subscribe")},
+                    Button(onClick = {},
                         modifier = Modifier.width(300.dp).height(35.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorResource(R.color.box_daisy) // 버튼 배경색 설정

@@ -189,6 +189,7 @@ fun MyDiaryPage(navHostController: NavHostController, userID: Long, diaryID: Lon
                             IconButton(
                                 onClick = {
                                     ///수정 버튼 클릭 이벤트
+                                    navHostController.navigate("editDiary/$diaryID")
                                 },
                                 modifier = Modifier.size(30.dp)
                             ) {

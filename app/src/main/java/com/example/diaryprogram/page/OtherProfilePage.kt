@@ -210,7 +210,7 @@ fun OtherProfilePage(navController: NavHostController, userId: Long, otherId: Lo
                                 .clip(RoundedCornerShape(10.dp))
                                 .background(color = colorResource(id = R.color.box_daisy))
                                 .clickable {
-                                    userId?.let {
+                                    otherId?.let {
                                         navController.navigate("browseUserDiaries/$it")
                                     }
                                 },                        )

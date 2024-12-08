@@ -21,6 +21,7 @@ import com.example.diaryprogram.page.BrowseMineDiaryPage
 import com.example.diaryprogram.page.BrowsePublicDiaryPage
 import com.example.diaryprogram.page.BrowseUserDiaryPage
 import com.example.diaryprogram.page.DiaryPage
+import com.example.diaryprogram.page.EditDiary
 import com.example.diaryprogram.page.FollowPage
 import com.example.diaryprogram.page.LoadingPage
 import com.example.diaryprogram.page.LoginPage
@@ -128,6 +129,16 @@ fun NavGraph(navController: NavHostController) {
             }
         }
 
+        composable(route = "editDiary/{diaryID}") {
+            backStackEntry ->
+            val diaryId = backStackEntry.arguments?.getString("diaryID")?.toLongOrNull()
+            if (diaryId!=null){
+                EditDiary(navController,userId,diaryId)
+            }
+            else {
+                Log.e("NavigationError", "diaryId is null or invalid: $diaryId")
+            }
+        }
 
 
         // 팔로우 개인 조회
